@@ -10,15 +10,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Bottom Navigation
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
-        bottomNavigation.setOnNavigationItemSelectedListener { item ->
+
+        bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.menu_home -> true
-                R.id.menu_settings -> true
-                R.id.menu_notifications -> true
+                R.id.menu_home -> {
+                    true
+                }
+                R.id.menu_settings -> {
+                    true
+                }
+                R.id.menu_notifications -> {
+                    true
+                }
                 R.id.menu_profile -> {
-                    // Navigate to LoginActivity when Profile is clicked
                     val intent = Intent(this, ProfileActivity::class.java)
                     startActivity(intent)
                     true

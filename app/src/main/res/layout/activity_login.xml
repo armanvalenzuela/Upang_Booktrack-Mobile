@@ -3,13 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
     android:padding="20dp">
 
     <!-- University Logo -->
     <ImageView
         android:layout_width="150dp"
         android:layout_height="150dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="50dp"
         android:src="@drawable/logo"
         android:layout_gravity="center"
         android:contentDescription="University Logo" />
@@ -22,6 +23,7 @@
         android:textSize="25sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"
+        android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
         android:layout_gravity="center" />
 
@@ -32,28 +34,32 @@
         android:text="Sign in"
         android:textSize="18sp"
         android:textColor="@color/black"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:layout_gravity="center" />
 
     <!-- Username Field -->
     <EditText
         android:id="@+id/etUsername"
-        android:layout_width="match_parent"
+        android:layout_width="335dp"
         android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_gravity="center"
         android:hint="Username"
-        android:background="@android:color/white"
-        android:padding="10dp"
-        android:layout_marginTop="10dp" />
+        android:background="@drawable/field_border"
+        android:padding="10dp"/>
 
     <!-- Password Field -->
     <EditText
         android:id="@+id/etPassword"
-        android:layout_width="match_parent"
+        android:layout_width="335dp"
         android:layout_height="50dp"
-        android:hint="Password"
-        android:background="@android:color/white"
-        android:padding="10dp"
         android:layout_marginTop="10dp"
+        android:layout_gravity="center"
+        android:hint="Password"
+        android:background="@drawable/field_border"
+        android:padding="10dp"
         android:inputType="textPassword" />
 
     <!-- Login Button -->
@@ -62,8 +68,9 @@
         android:layout_width="250dp"
         android:layout_height="50dp"
         android:text="Login"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/dark_green"
+        android:layout_gravity="center"
+        android:background="@drawable/submit_border"
+        android:textColor="@color/white"
         android:layout_marginTop="20dp" />
 
     <!-- Forgot Password -->
@@ -73,7 +80,7 @@
         android:text="Forgot Password?"
         android:textColor="@color/green"
         android:textSize="14sp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="30dp"
         android:layout_gravity="center"
         android:id="@+id/tvForgotPassword" />
 
