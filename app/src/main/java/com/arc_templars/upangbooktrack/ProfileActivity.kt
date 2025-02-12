@@ -5,22 +5,42 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class ProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        // Back Button - Return to MainActivity
-        val btnBack = findViewById<ImageButton>(R.id.btnBack)
-        btnBack.setOnClickListener {
-            finish() // Closes the current activity and returns to MainActivity
-        }
-
         // Sign Out Button - Show Confirmation Before Logging Out
         val btnSignOut = findViewById<ImageButton>(R.id.btnSignOut)
         btnSignOut.setOnClickListener {
             showSignOutConfirmation()
+        }
+
+        // Bottom Navigation
+        val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+
+        // Highlight Profile tab when ProfileActivity is opened
+        bottomNavigation.selectedItemId = R.id.menu_profile
+
+        bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.menu_home -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    overridePendingTransition(0, 0) // Removes transition animation
+                    finish()
+                    true
+                }
+                R.id.menu_settings -> {
+                    true
+                }
+                R.id.menu_notifications -> {
+                    true
+                }
+                R.id.menu_profile -> true // Stay on the current activity
+                else -> false
+            }
         }
     }
 

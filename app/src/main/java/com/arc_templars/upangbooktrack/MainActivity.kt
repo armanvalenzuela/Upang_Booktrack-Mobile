@@ -29,8 +29,9 @@ class MainActivity : AppCompatActivity() {
                 R.id.menu_notifications -> true
                 R.id.menu_profile -> {
                     // Navigate to ProfileActivity when Profile is clicked
-                    val intent = Intent(this, ProfileActivity::class.java)
-                    startActivity(intent)
+                    startActivity(Intent(this, ProfileActivity::class.java))
+                    overridePendingTransition(0, 0) // Removes transition animation
+                    finish()
                     true
                 }
                 else -> false
