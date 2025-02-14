@@ -177,7 +177,7 @@
         -->
 
     <Button
-        android:id="@+id/btnLogin"
+        android:id="@+id/btnReset"
         android:layout_width="170dp"
         android:layout_height="60dp"
         android:backgroundTint="#1F631B"
