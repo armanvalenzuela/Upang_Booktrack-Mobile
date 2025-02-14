@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import okhttp3.ResponseBody
@@ -36,6 +37,7 @@ class LoginActivity : AppCompatActivity() {
         val etStudentNo = findViewById<EditText>(R.id.etStudentNo)
         val etPassword = findViewById<EditText>(R.id.etPassword)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
+        val tvForgotPassword = findViewById<TextView>(R.id.tvForgotPassword)
 
         btnLogin.setOnClickListener {
             val studentNo = etStudentNo.text.toString().trim()
@@ -46,6 +48,12 @@ class LoginActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Please fill all fields.", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        tvForgotPassword.setOnClickListener{
+            val intent = Intent (this@LoginActivity, ForgotPassActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 

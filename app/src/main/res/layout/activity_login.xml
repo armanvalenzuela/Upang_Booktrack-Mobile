@@ -69,13 +69,13 @@
 
     <!-- Forgot Password -->
     <TextView
+        android:id="@+id/tvForgotPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Forgot Password?"
         android:textColor="@color/green"
         android:textSize="14sp"
         android:layout_marginTop="10dp"
-        android:layout_gravity="center"
-        android:id="@+id/tvForgotPassword" />
+        android:layout_gravity="center" />
 
 </LinearLayout>
