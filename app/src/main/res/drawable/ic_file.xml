@@ -1,0 +1,17 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- File Background -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M6,2h8l6,6v12a2,2 0 0,1 -2,2h-12a2,2 0 0,1 -2,-2v-16a2,2 0 0,1 2,-2zM14,3.5v4.5h4z" />
+
+    <!-- Horizontal Lines (like text on paper) -->
+    <path
+        android:fillColor="#888888"
+        android:strokeWidth="1"
+        android:pathData="M8,10h8v1h-8zM8,13h8v1h-8zM8,16h6v1h-6z" />
+</vector>

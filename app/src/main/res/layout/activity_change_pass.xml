@@ -9,51 +9,67 @@
     tools:context=".ChangePassActivity">
 
     <ImageView
+        android:id="@+id/imageView"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:src="@drawable/logo"
         android:layout_gravity="center"
+        android:layout_marginBottom="72dp"
         android:contentDescription="University Logo"
+        android:src="@drawable/logo"
         app:layout_constraintBottom_toTopOf="@id/edit_pass_fields"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="50dp"/>
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="20dp"
+        android:text="Change Password"
+        android:textColor="@android:color/black"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/edit_pass_fields"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <LinearLayout
         android:id="@+id/edit_pass_fields"
-        android:layout_width="match_parent"
+        android:layout_width="355dp"
         android:layout_height="wrap_content"
+        android:background="@drawable/edittext_border"
         android:orientation="vertical"
         android:padding="20dp"
-        android:background="@drawable/edittext_border"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.56">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-        <EditText
-            android:id="@+id/etOldPass"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="Old Password"
-            android:background="@drawable/edittext_border"
-            android:padding="10dp"
-            android:layout_marginTop="10dp"
-            android:inputType="textPassword"/>
 
-        <ImageView
-            android:id="@+id/btnToggleOldPass"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/eyelogo"
-            android:contentDescription="Toggle Password"
-            />
+            <EditText
+                android:id="@+id/etOldPass"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/edittext_border"
+                android:hint="Old Password"
+                android:inputType="textPassword"
+                android:padding="10dp" />
+
+            <ImageView
+                android:id="@+id/btnToggleOldPass"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="10dp"
+                android:contentDescription="Toggle Password"
+                android:src="@drawable/eyelogo" />
         </RelativeLayout>
 
         <!-- New Password with Eye Toggle -->
@@ -66,11 +82,11 @@
                 android:id="@+id/etNewPass"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:hint="New Password"
                 android:background="@drawable/edittext_border"
-                android:padding="10dp"
+                android:hint="New Password"
                 android:inputType="textPassword"
-                android:paddingEnd="50dp"/>
+                android:padding="10dp"
+                android:paddingEnd="50dp" />
 
             <!-- Eye Icon for Toggle -->
             <ImageView
@@ -80,8 +96,8 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="10dp"
-                android:src="@drawable/eyelogo"
-                android:contentDescription="Toggle Password"/>
+                android:contentDescription="Toggle Password"
+                android:src="@drawable/eyelogo" />
         </RelativeLayout>
 
         <!-- Confirm Password with Eye Toggle -->
@@ -94,11 +110,11 @@
                 android:id="@+id/etConfirmPass"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:hint="Confirm New Password"
                 android:background="@drawable/edittext_border"
-                android:padding="10dp"
+                android:hint="Confirm New Password"
                 android:inputType="textPassword"
-                android:paddingEnd="50dp"/>
+                android:padding="10dp"
+                android:paddingEnd="50dp" />
 
             <!-- Eye Icon for Toggle -->
             <ImageView
@@ -108,25 +124,26 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="10dp"
-                android:src="@drawable/eyelogo"
-                android:contentDescription="Toggle Password"/>
+                android:contentDescription="Toggle Password"
+                android:src="@drawable/eyelogo" />
         </RelativeLayout>
 
-</LinearLayout>
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/btnSubmit"
         android:layout_width="70dp"
         android:layout_height="70dp"
+        android:layout_marginTop="36dp"
         android:background="@drawable/rounded_button_green"
-        android:src="@drawable/confirmlogo"
-        android:scaleType="fitCenter"
-        android:padding="15dp"
         android:contentDescription="Sign Out"
-        app:layout_constraintTop_toBottomOf="@id/edit_pass_fields"
-        android:layout_marginTop="50dp"
+        android:padding="15dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/confirmlogo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/edit_pass_fields" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

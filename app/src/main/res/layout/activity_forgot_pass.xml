@@ -10,28 +10,42 @@
     tools:context=".ForgotPassActivity">
 
     <ImageView
+        android:id="@+id/imageView2"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:src="@drawable/logo"
         android:layout_gravity="center"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="20dp"
-        android:contentDescription="University Logo" />
+        android:contentDescription="University Logo"
+        android:src="@drawable/logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Trouble Logging In?"
+        android:textColor="@color/black"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
     <LinearLayout
         android:id="@+id/forgot_pass_fields"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
         android:orientation="vertical"
         android:padding="20dp"
-        android:background="@drawable/edittext_border"
-        android:layout_marginBottom="60dp"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.643">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -42,57 +56,56 @@
                 android:id="@+id/etEmail"
                 android:layout_width="300dp"
                 android:layout_height="50dp"
-                android:maxLines="1"
-                android:singleLine="true"
-                android:hint="Email Address"
-                android:background="@drawable/edittext_border"
-                android:layout_centerInParent="true"
                 android:layout_alignParentStart="true"
+                android:layout_centerInParent="true"
                 android:layout_marginStart="2dp"
-                android:padding="10dp"
                 android:layout_marginTop="10dp"
-                />
+                android:background="@drawable/edittext_border"
+                android:hint="Email Address"
+                android:maxLines="1"
+                android:padding="10dp"
+                android:singleLine="true" />
 
             <ImageView
                 android:id="@+id/btnSubmit"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:background="@drawable/rounded_button_green"
-                android:layout_centerInParent="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="10dp"
+                android:layout_centerInParent="true"
                 android:layout_marginTop="50dp"
-                android:src="@drawable/key_icon"
-                android:scaleType="fitCenter"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/rounded_button_green"
                 android:padding="10dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                android:scaleType="fitCenter"
+                android:src="@drawable/key_icon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Send OTP"
-                android:layout_marginEnd="1dp"
+                android:layout_alignBottom="@id/btnSubmit"
                 android:layout_alignParentEnd="true"
-                android:layout_alignBottom="@id/btnSubmit"/>
+                android:layout_marginEnd="1dp"
+                android:text="Send OTP" />
 
 
         </RelativeLayout>
 
+
+        <!-- New Password with Eye Toggle -->
         <EditText
             android:id="@+id/etOTP"
             android:layout_width="140dp"
             android:layout_height="50dp"
             android:layout_marginTop="20dp"
-            android:hint="OTP Code"
             android:background="@drawable/edittext_border"
-            android:paddingStart="10dp"
+            android:hint="OTP Code"
             android:inputType="number"
             android:maxLength="6"
+            android:paddingStart="10dp"
             android:paddingEnd="50dp" />
 
-
-        <!-- New Password with Eye Toggle -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -102,11 +115,11 @@
                 android:id="@+id/etNewPass"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:hint="New Password"
                 android:background="@drawable/edittext_border"
-                android:padding="10dp"
+                android:hint="New Password"
                 android:inputType="textPassword"
-                android:paddingEnd="50dp"/>
+                android:padding="10dp"
+                android:paddingEnd="50dp" />
 
             <!-- Eye Icon for Toggle -->
             <ImageView
@@ -116,8 +129,8 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="10dp"
-                android:src="@drawable/eyelogo"
-                android:contentDescription="Toggle Password"/>
+                android:contentDescription="Toggle Password"
+                android:src="@drawable/eyelogo" />
         </RelativeLayout>
 
         <!-- Confirm Password with Eye Toggle -->
@@ -130,11 +143,11 @@
                 android:id="@+id/etConfirmPass"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:hint="Confirm New Password"
                 android:background="@drawable/edittext_border"
-                android:padding="10dp"
+                android:hint="Confirm New Password"
                 android:inputType="textPassword"
-                android:paddingEnd="50dp"/>
+                android:padding="10dp"
+                android:paddingEnd="50dp" />
 
             <!-- Eye Icon for Toggle -->
             <ImageView
@@ -144,23 +157,11 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="10dp"
-                android:src="@drawable/eyelogo"
-                android:contentDescription="Toggle Password"/>
+                android:contentDescription="Toggle Password"
+                android:src="@drawable/eyelogo" />
         </RelativeLayout>
 
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/tvBacktoLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Log in here"
-        android:textColor="@color/green"
-        android:textSize="17sp"
-        app:layout_constraintTop_toBottomOf="@id/forgot_pass_fields"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"/>
 
     <!--- NOT SURE PA IF MAY SIGNUP DITO SA MOBILE
     <TextView
@@ -176,18 +177,41 @@
 
         -->
 
+
+    <View
+        android:layout_width="350dp"
+        android:layout_height="1dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/gray"
+        app:layout_constraintBottom_toTopOf="@+id/tvBacktoLogin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tvBacktoLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="52dp"
+        android:text="Return to Login"
+        android:textColor="@color/green"
+        android:textSize="17sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <Button
         android:id="@+id/btnReset"
         android:layout_width="170dp"
         android:layout_height="60dp"
+        android:layout_marginTop="16dp"
         android:backgroundTint="#1F631B"
         android:gravity="center"
         android:text="Reset Password"
-        app:layout_constraintTop_toBottomOf="@id/tvBacktoLogin"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="50dp"
-        android:textColor="@android:color/white" />
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/forgot_pass_fields" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
