@@ -20,15 +20,15 @@ import retrofit2.http.POST
 
 interface ForgotPassApi {
     @FormUrlEncoded
-    @POST("forgot_password.php") // Ensure this matches your PHP script location
+    @POST("forgot_password.php")
     fun forgotPassword(
-        @Field("email") email: String // Sending email to the server
+        @Field("email") email: String
     ): Call<ResponseBody>
 }
 
 interface ResetPasswordApi {
     @FormUrlEncoded
-    @POST("verify_reset_password.php") // Ensure this matches your PHP script
+    @POST("verify_reset_password.php")
     fun resetPassword(
         @Field("email") email: String,
         @Field("otp") otp: String,

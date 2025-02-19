@@ -1,78 +1,156 @@
 package com.arc_templars.upangbooktrack
 
+import android.app.ProgressDialog
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Spinner
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
+import retrofit2.http.POST
+
+// API Interface
+interface SignupApi {
+    @FormUrlEncoded
+    @POST("signup.php")
+    fun signup(
+        @Field("first_name") firstName: String,
+        @Field("last_name") lastName: String,
+        @Field("gender") gender: String,
+        @Field("college") college: String,
+        @Field("email") email: String,
+        @Field("password") password: String
+    ): Call<ResponseBody>
+}
 
 class SignupActivity : AppCompatActivity() {
+
+    private lateinit var etFirstName: EditText
+    private lateinit var etLastName: EditText
+    private lateinit var radioGroupGender: RadioGroup
+    private lateinit var spinnerDep: Spinner
+    private lateinit var etEmail: EditText
+    private lateinit var etPassword: EditText
+    private lateinit var etConfirmPassword: EditText
+    private lateinit var btnSignUp: Button
+    private lateinit var tvLogin: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
-        val btnSignUp = findViewById<Button>(R.id.btnSignUp)
-        val tvLogin = findViewById<TextView>(R.id.tvLogin)
-        val spinnerDep = findViewById<Spinner>(R.id.spinnerDep)
+        // INITIALIZE COMPONENTSSS
+        etFirstName = findViewById(R.id.etFirstName)
+        etLastName = findViewById(R.id.etLastName)
+        radioGroupGender = findViewById(R.id.radioGroupGender)
+        spinnerDep = findViewById(R.id.spinnerDep)
+        etEmail = findViewById(R.id.etEmail)
+        etPassword = findViewById(R.id.etPassword)
+        etConfirmPassword = findViewById(R.id.etConfirmPassword)
+        btnSignUp = findViewById(R.id.btnSignUp)
+        tvLogin = findViewById(R.id.tvLogin)
 
-// Create a list with "Select" as the first item
+        //SPINNER NI ARMAN
         val departmentList = mutableListOf("Select a Department")
         departmentList.addAll(resources.getStringArray(R.array.departments))
 
-// Create an adapter with the custom list
         val departmentAdapter = object : ArrayAdapter<String>(
             this, android.R.layout.simple_spinner_item, departmentList
         ) {
             override fun isEnabled(position: Int): Boolean {
-                return position != 0  // Disable "Select a Department"
+                return position != 0 // MAKES SURE NA MAY NAKA SELECT
             }
 
             override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = super.getDropDownView(position, convertView, parent)
-                if (position == 0) {
-                    (view as TextView).setTextColor(Color.GRAY) // Make "Select" look disabled
-                } else {
-                    (view as TextView).setTextColor(Color.BLACK)
-                }
+                (view as TextView).setTextColor(if (position == 0) Color.GRAY else Color.BLACK)
                 return view
             }
         }
-
-// Set dropdown style
         departmentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerDep.adapter = departmentAdapter
 
-// Prevent selection of "Select a Department"
-        spinnerDep.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (position == 0) {
-                    (view as? TextView)?.setTextColor(Color.GRAY) // Keep "Select" gray in the dropdown
+        // SIGNUP BUTTON CLICK LISTENER
+        btnSignUp.setOnClickListener {
+            signUpUser()
+        }
+
+        // BALIK SA LOGIN
+        tvLogin.setOnClickListener {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }
+    }
+
+    private fun signUpUser() {
+        val firstName = etFirstName.text.toString().trim()
+        val lastName = etLastName.text.toString().trim()
+        val email = etEmail.text.toString().trim()
+        val password = etPassword.text.toString()
+        val confirmPassword = etConfirmPassword.text.toString()
+
+        // Gender Selection
+        val selectedGenderId = radioGroupGender.checkedRadioButtonId
+        val gender = when (selectedGenderId) {
+            R.id.rbMale -> "Male"
+            R.id.rbFemale -> "Female"
+            else -> ""
+        }
+
+        // COLLEGE SELECTION (KUNG ANO YUNG NAKA SELECT)
+        val college = if (spinnerDep.selectedItemPosition > 0) spinnerDep.selectedItem.toString() else ""
+
+        // VALIDATIONS HERE!
+        if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty() ||
+            confirmPassword.isEmpty() || gender.isEmpty() || college.isEmpty()
+        ) {
+            Toast.makeText(this, "All fields are required!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (password.length < 6) {
+            Toast.makeText(this, "Password must be at least 6 characters!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (password != confirmPassword) {
+            Toast.makeText(this, "Passwords do not match!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // PROGRESS DIALOGUE BOX!!!
+        val progressDialog = ProgressDialog(this)
+        progressDialog.setMessage("Signing up...")
+        progressDialog.setCancelable(false)
+        progressDialog.show()
+
+        // API CALL
+        val api = ApiClient.getRetrofitInstance().create(SignupApi::class.java)
+        val call = api.signup(firstName, lastName, gender, college, email, password)
+
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                progressDialog.dismiss()
+                if (response.isSuccessful) {
+                    Toast.makeText(applicationContext, "Registration successful! Check your email.", Toast.LENGTH_LONG).show()
+                    startActivity(Intent(this@SignupActivity, LoginActivity::class.java))
+                    finish()
+                } else {
+                    Toast.makeText(applicationContext, "Registration failed! Please try again.", Toast.LENGTH_LONG).show()
                 }
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
-
-
-
-        // Sign Up Button - Placeholder
-        btnSignUp.setOnClickListener {
-            Toast.makeText(this, "Sign Up functionality to be implemented", Toast.LENGTH_SHORT).show()
-        }
-
-        // Navigate to LoginActivity
-        tvLogin.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                progressDialog.dismiss()
+                Toast.makeText(applicationContext, "Error: ${t.message}", Toast.LENGTH_LONG).show()
+            }
+        })
     }
 }
