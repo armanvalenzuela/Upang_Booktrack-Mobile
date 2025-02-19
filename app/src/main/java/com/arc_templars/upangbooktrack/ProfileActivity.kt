@@ -37,26 +37,6 @@ class ProfileActivity : AppCompatActivity() {
             startActivity(Intent(this, ChangePassActivity::class.java))
         }
 
-        // Bottom Navigation
-        val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
-
-        // Highlight Profile tab when ProfileActivity is opened
-        bottomNavigation.selectedItemId = R.id.menu_profile
-
-        bottomNavigation.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.menu_home -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    overridePendingTransition(0, 0) // Removes transition animation
-                    finish()
-                    true
-                }
-                R.id.menu_settings -> true
-                R.id.menu_notifications -> true
-                R.id.menu_profile -> true // Stay on the current activity
-                else -> false
-            }
-        }
     }
 
 

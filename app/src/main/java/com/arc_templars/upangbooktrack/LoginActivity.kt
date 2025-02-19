@@ -38,6 +38,7 @@ class LoginActivity : AppCompatActivity() {
         val etPassword = findViewById<EditText>(R.id.etPassword)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val tvForgotPassword = findViewById<TextView>(R.id.tvForgotPassword)
+        val tvSignUp = findViewById<TextView>(R.id.tvSignUp)
 
         btnLogin.setOnClickListener {
             val studentNo = etStudentNo.text.toString().trim()
@@ -55,7 +56,14 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+
+        tvSignUp.setOnClickListener{
+            val intent = Intent (this@LoginActivity, SignupActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
+
 
     private fun sendLoginData(studentNo: String, password: String) {
         val loginApi = ApiClient.getRetrofitInstance().create(LoginApi::class.java)
