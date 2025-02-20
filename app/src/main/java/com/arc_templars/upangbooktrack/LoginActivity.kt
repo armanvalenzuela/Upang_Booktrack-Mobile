@@ -23,7 +23,7 @@ interface LoginApi {
     @FormUrlEncoded
     @POST("login.php") // Your actual PHP endpoint
     fun login(
-        @Field("studentNo") studentNo: String,
+        @Field("identifier") identifier: String,
         @Field("password") password: String
     ): Call<ResponseBody>
 }
@@ -65,9 +65,9 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
-    private fun sendLoginData(studentNo: String, password: String) {
+    private fun sendLoginData(identifier: String, password: String) {
         val loginApi = ApiClient.getRetrofitInstance().create(LoginApi::class.java)
-        loginApi.login(studentNo, password).enqueue(object : Callback<ResponseBody> {
+        loginApi.login(identifier, password).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
                     val jsonResponse = response.body()?.string() ?: return
@@ -75,25 +75,28 @@ class LoginActivity : AppCompatActivity() {
                     val status = jsonObject.getString("status")
 
                     if (status == "success") {
-                        val userId = jsonObject.getInt("id") // GETS ID SA DATABASE
-                        val studentName = jsonObject.getString("studentName") // GETS STUDENT NAME
+                        val userId = jsonObject.getInt("id")
+                        val studentName = jsonObject.getString("studentName")
+                        val studentNo = jsonObject.getString("studentNo") // Get student number
+                        val email = jsonObject.getString("email") // Get email
 
-                        // SAVES DATA INTO SHAREDPREFERENCES
+                        // Save user data into SharedPreferences
                         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                        val editor = sharedPreferences.edit()
-                        editor.putInt("id", userId)
-                        editor.putString("studentName", studentName)
-                        editor.putString("studentNo", studentNo)
-                        editor.putString("password", password)
-                        editor.apply()
+                        with(sharedPreferences.edit()) {
+                            putInt("id", userId)
+                            putString("studentName", studentName)
+                            putString("studentNo", studentNo) // Store student number
+                            putString("email", email) // Store email
+                            apply()
+                        }
 
                         Toast.makeText(this@LoginActivity, "Login successful!", Toast.LENGTH_SHORT).show()
 
-                        // GOES TO START ACTIVITY KAPAG SUCCESSFUL
+                        // Navigate to MainActivity
                         val intent = Intent(this@LoginActivity, MainActivity::class.java)
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                         startActivity(intent)
-                        finish() // CLOSE NA YUNG LOGIN ACTIVITY
+                        finish()
                     } else {
                         Toast.makeText(this@LoginActivity, "Login failed: ${jsonObject.getString("message")}", Toast.LENGTH_SHORT).show()
                     }
