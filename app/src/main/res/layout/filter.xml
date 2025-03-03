@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:padding="16dp"
+    android:elevation="8dp">
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Filter"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:paddingBottom="10dp"
+        android:textColor="@android:color/black"/>
+
+    <!-- Department Filter -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Department"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingTop="5dp"
+        android:textColor="@android:color/black"/>
+
+    <RadioGroup
+        android:id="@+id/departmentGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <RadioButton android:id="@+id/department_cea" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CEA"/>
+        <RadioButton android:id="@+id/department_cas" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CAS"/>
+        <RadioButton android:id="@+id/department_cma" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CMA"/>
+        <RadioButton android:id="@+id/department_cahs" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CAHS"/>
+        <RadioButton android:id="@+id/department_ccje" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CCJE"/>
+        <RadioButton android:id="@+id/department_cite" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CITE"/>
+    </RadioGroup>
+
+    <!-- Availability Switch -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Availability"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingTop="10dp"
+        android:textColor="@android:color/black"/>
+
+    <Switch
+        android:id="@+id/availabilitySwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Available Only"
+        android:padding="8dp"/>
+
+    <!-- Apply Button -->
+    <Button
+        android:id="@+id/applyFilterButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Apply"
+        android:backgroundTint="@color/green"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="10dp"/>
+</LinearLayout>

@@ -1,5 +1,6 @@
 package com.arc_templars.upangbooktrack
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,11 +10,16 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.arc_templars.upangbooktrack.models.Item
 
-class ItemAdapter(private val itemList: List<Item>) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
+class ItemAdapter(
+    private var itemList: List<Item>,
+    private val onItemClick: (Item) -> Unit // ✅ Added Click Listener
+) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val itemImage: ImageView = view.findViewById(R.id.itemImage)
         val itemName: TextView = view.findViewById(R.id.itemName)
+        val itemDepartment: TextView = view.findViewById(R.id.itemDepartment)
+        val itemCategory: TextView = view.findViewById(R.id.itemCategory)
         val itemAvailability: TextView = view.findViewById(R.id.itemAvailability)
     }
 
@@ -26,6 +32,8 @@ class ItemAdapter(private val itemList: List<Item>) : RecyclerView.Adapter<ItemA
         val item = itemList[position]
         holder.itemImage.setImageResource(item.imageResId)
         holder.itemName.text = item.name
+        holder.itemCategory.text = item.category
+        holder.itemDepartment.text = item.department
 
         // Set availability text and color
         if (item.availability) {
@@ -35,7 +43,15 @@ class ItemAdapter(private val itemList: List<Item>) : RecyclerView.Adapter<ItemA
             holder.itemAvailability.text = "Not Available"
             holder.itemAvailability.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.holo_red_dark))
         }
+
+        // ✅ Set Click Listener
+        holder.itemView.setOnClickListener { onItemClick(item) }
     }
 
     override fun getItemCount() = itemList.size
+
+    fun updateData(newList: List<Item>) {
+        itemList = newList
+        notifyDataSetChanged()
+    }
 }

@@ -1,10 +1,12 @@
 <resources>
     <string name="app_name">Upang Booktrack</string>
-        <string-array name="departments">
-            <item>CMA</item>
-            <item>CELA</item>
-            <item>CCJE</item>
-            <item>CAHS</item>
-            <item>CITE</item>
-        </string-array>
+    <string-array name="departments">
+        <item>CMA</item>
+        <item>CELA</item>
+        <item>CCJE</item>
+        <item>CAHS</item>
+        <item>CITE</item>
+        <item>CEA</item>
+        <item>CAS</item>
+    </string-array>
 </resources>

@@ -16,6 +16,18 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ItemDetail"
+            android:exported="true" />
+        <activity
+            android:name=".Saved"
+            android:exported="true" />
+        <activity
+            android:name=".Uniform"
+            android:exported="true" />
+        <activity
+            android:name=".Book"
+            android:exported="true" />
+        <activity
             android:name=".SignupActivity"
             android:exported="true" />
         <activity
@@ -26,7 +38,7 @@
             android:exported="true" />
         <activity
             android:name=".ProfileActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".LoginActivity"
             android:exported="true">

@@ -2,28 +2,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/menu_home"
+        android:icon="@drawable/home"
+        android:title="" />
+
+    <item
         android:id="@+id/menu_book"
-        android:icon="@drawable/ic_book"
-        android:title="Book" />
+        android:icon="@drawable/book"
+        android:title="" />
 
     <item
         android:id="@+id/menu_uniform"
-        android:icon="@drawable/ic_uniform"
-        android:title="Uniform" />
-
-    <item
-        android:id="@+id/menu_home"
-        android:icon="@drawable/ic_home"
-        android:title="Home" />
-
-    <item
-        android:id="@+id/menu_file"
-        android:icon="@drawable/ic_file"
-        android:title="Modules" />
+        android:icon="@drawable/tshirt"
+        android:title="" />
 
     <item
         android:id="@+id/menu_bookmark"
-        android:icon="@drawable/ic_bookmark"
-        android:title="Saved" />
+        android:icon="@drawable/save"
+        android:title="" />
 
 </menu>
