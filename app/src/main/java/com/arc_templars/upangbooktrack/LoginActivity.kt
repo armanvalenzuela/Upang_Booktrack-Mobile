@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -36,6 +37,7 @@ class LoginActivity : AppCompatActivity() {
 
         val etStudentNo = findViewById<EditText>(R.id.etStudentNo)
         val etPassword = findViewById<EditText>(R.id.etPassword)
+        val btnTogglePass = findViewById<ImageView>(R.id.btnTogglePass)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val tvForgotPassword = findViewById<TextView>(R.id.tvForgotPassword)
         val tvSignUp = findViewById<TextView>(R.id.tvSignUp)
@@ -62,6 +64,24 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+
+        var isPasswordVisible = false
+
+        btnTogglePass.setOnClickListener {
+            if (isPasswordVisible) {
+
+                // Hide password
+                etPassword.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+                btnTogglePass.setImageResource(R.drawable.eyelogo) // Use an appropriate closed-eye icon
+            } else {
+                // Show password
+                etPassword.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                btnTogglePass.setImageResource(R.drawable.eye_closed) // Use an open-eye icon
+            }
+            etPassword.setSelection(etPassword.text.length) // Keep cursor at the end
+            isPasswordVisible = !isPasswordVisible
+        }
+
     }
 
 

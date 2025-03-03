@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
@@ -31,9 +32,10 @@ class ChangePassActivity : AppCompatActivity() {
     private lateinit var etNewPass: EditText
     private lateinit var etConfirmPass: EditText
     private lateinit var btnToggleOldPass: ImageView
+    private lateinit var btnBackButton: ImageView
     private lateinit var btnToggleNewPass: ImageView
     private lateinit var btnToggleConfirmPass: ImageView
-    private lateinit var btnSubmit: ImageView
+    private lateinit var btnSubmit: Button
 
     private var userId: Int = -1
 
@@ -56,21 +58,31 @@ class ChangePassActivity : AppCompatActivity() {
         btnToggleOldPass = findViewById(R.id.btnToggleOldPass)
         btnToggleNewPass = findViewById(R.id.btnToggleNewPass)
         btnToggleConfirmPass = findViewById(R.id.btnToggleConfirmPass)
+        btnBackButton = findViewById(R.id.btnBackButton)
         btnSubmit = findViewById(R.id.btnSubmit)
 
-        btnToggleNewPass.setOnClickListener { togglePasswordVisibility(etNewPass) }
-        btnToggleConfirmPass.setOnClickListener { togglePasswordVisibility(etConfirmPass) }
-        btnToggleOldPass.setOnClickListener { togglePasswordVisibility(etOldPass) }
+        btnToggleOldPass.setOnClickListener { togglePasswordVisibility(etOldPass, btnToggleOldPass) }
+        btnToggleNewPass.setOnClickListener { togglePasswordVisibility(etNewPass, btnToggleNewPass) }
+        btnToggleConfirmPass.setOnClickListener { togglePasswordVisibility(etConfirmPass, btnToggleConfirmPass) }
         btnSubmit.setOnClickListener { validateAndChangePassword() }
+
+        btnBackButton.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
     }
 
-    private fun togglePasswordVisibility(editText: EditText) {
-        if (editText.inputType == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) {
-            editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-        } else {
+    private fun togglePasswordVisibility(editText: EditText, toggleButton: ImageView) {
+        if (editText.inputType == (InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
             editText.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            toggleButton.setImageResource(R.drawable.eye_closed) // Change icon to "eye open"
+        } else {
+            editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            toggleButton.setImageResource(R.drawable.eyelogo) // Change icon to "eye closed"
         }
-        editText.setSelection(editText.text.length)
+        editText.setSelection(editText.text.length) // Retain cursor position
     }
 
     private fun validateAndChangePassword() {

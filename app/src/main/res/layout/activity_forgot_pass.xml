@@ -14,10 +14,11 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_gravity="center"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="44dp"
         android:contentDescription="University Logo"
         android:src="@drawable/logo"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,11 +26,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginTop="12dp"
         android:text="Trouble Logging In?"
         android:textColor="@color/black"
         android:textSize="25sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
@@ -37,15 +40,13 @@
         android:id="@+id/forgot_pass_fields"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp"
+        android:layout_marginTop="252dp"
         android:orientation="vertical"
         android:padding="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.643">
+        app:layout_constraintTop_toTopOf="parent">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -98,13 +99,13 @@
             android:id="@+id/etOTP"
             android:layout_width="140dp"
             android:layout_height="50dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="0dp"
             android:background="@drawable/edittext_border"
             android:hint="OTP Code"
             android:inputType="number"
             android:maxLength="6"
             android:paddingStart="10dp"
-            android:paddingEnd="50dp" />
+            android:paddingEnd="30dp" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -163,46 +164,34 @@
 
     </LinearLayout>
 
-    <!--- NOT SURE PA IF MAY SIGNUP DITO SA MOBILE
-    <TextView
-        android:id="@+id/tvSignUp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sign up here"
-        android:textSize="20sp"
-        app:layout_constraintTop_toBottomOf="@id/forgot_pass_fields"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="10dp" />
-
-        -->
-
     <View
+        android:id="@+id/view"
         android:layout_width="350dp"
         android:layout_height="1dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="12dp"
         android:background="@color/gray"
-        app:layout_constraintBottom_toTopOf="@+id/tvBacktoLogin"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnReset" />
 
     <TextView
         android:id="@+id/tvBacktoLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="52dp"
+        android:layout_marginTop="12dp"
         android:text="Return to Login"
         android:textColor="@color/green"
         android:textSize="17sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
 
     <Button
         android:id="@+id/btnReset"
         android:layout_width="170dp"
         android:layout_height="60dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:backgroundTint="#1F631B"
         android:gravity="center"
         android:text="Reset Password"

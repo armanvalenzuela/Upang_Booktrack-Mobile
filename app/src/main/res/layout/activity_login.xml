@@ -44,21 +44,46 @@
         android:id="@+id/etStudentNo"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:hint="Student No."
+        android:hint="Student No. or Email"
         android:background="@drawable/edittext_border"
         android:padding="10dp"
         android:layout_marginTop="10dp" />
 
     <!-- Password Field -->
-    <EditText
-        android:id="@+id/etPassword"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:hint="Password"
-        android:background="@drawable/edittext_border"
-        android:padding="10dp"
-        android:layout_marginTop="10dp"
-        android:inputType="textPassword" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Password Input -->
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Password"
+                android:background="@drawable/edittext_border"
+                android:padding="10dp"
+                android:inputType="textPassword"
+                android:paddingEnd="50dp" />
+
+            <!-- Eye Toggle Icon -->
+            <ImageView
+                android:id="@+id/btnTogglePass"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="10dp"
+                android:contentDescription="Toggle Password"
+                android:src="@drawable/eyelogo" />
+        </RelativeLayout>
+    </LinearLayout>
+
 
     <!-- Remember Me and Forgot Password Row -->
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -4,6 +4,7 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.text.InputType
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -38,9 +39,14 @@ class SignupActivity : AppCompatActivity() {
     private lateinit var spinnerDep: Spinner
     private lateinit var etEmail: EditText
     private lateinit var etPassword: EditText
+    private lateinit var ivTogglePassword: ImageView
     private lateinit var etConfirmPassword: EditText
+    private lateinit var ivToggleConfirmPassword: ImageView
     private lateinit var btnSignUp: Button
     private lateinit var tvLogin: TextView
+
+    private var isPasswordVisible = false
+    private var isConfirmPasswordVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,9 +59,12 @@ class SignupActivity : AppCompatActivity() {
         spinnerDep = findViewById(R.id.spinnerDep)
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
+        ivTogglePassword = findViewById(R.id.ivTogglePassword)
         etConfirmPassword = findViewById(R.id.etConfirmPassword)
+        ivToggleConfirmPassword = findViewById(R.id.ivToggleConfirmPassword)
         btnSignUp = findViewById(R.id.btnSignUp)
         tvLogin = findViewById(R.id.tvLogin)
+
 
         //SPINNER NI ARMAN
         val departmentList = mutableListOf("Select a Department")
@@ -77,6 +86,17 @@ class SignupActivity : AppCompatActivity() {
         departmentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerDep.adapter = departmentAdapter
 
+        // PASSWORD TOGGLE FUNCTIONALITY
+        ivTogglePassword.setOnClickListener {
+            isPasswordVisible = !isPasswordVisible
+            togglePasswordVisibility(etPassword, ivTogglePassword, isPasswordVisible)
+        }
+
+        ivToggleConfirmPassword.setOnClickListener {
+            isConfirmPasswordVisible = !isConfirmPasswordVisible
+            togglePasswordVisibility(etConfirmPassword, ivToggleConfirmPassword, isConfirmPasswordVisible)
+        }
+
         // SIGNUP BUTTON CLICK LISTENER
         btnSignUp.setOnClickListener {
             signUpUser()
@@ -87,6 +107,17 @@ class SignupActivity : AppCompatActivity() {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
+    }
+
+    private fun togglePasswordVisibility(editText: EditText, imageView: ImageView, isVisible: Boolean) {
+        if (isVisible) {
+            editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            imageView.setImageResource(R.drawable.eye_closed) // Open eye icon
+        } else {
+            editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            imageView.setImageResource(R.drawable.eyelogo) // Closed eye icon
+        }
+        editText.setSelection(editText.text.length) // Keep cursor at end
     }
 
     private fun signUpUser() {

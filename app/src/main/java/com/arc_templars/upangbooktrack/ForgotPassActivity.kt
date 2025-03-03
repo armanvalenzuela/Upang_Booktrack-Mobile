@@ -38,6 +38,10 @@ interface ResetPasswordApi {
 
 
 class ForgotPassActivity : AppCompatActivity() {
+
+    private var isNewPassVisible = false
+    private var isConfirmPassVisible = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -49,7 +53,10 @@ class ForgotPassActivity : AppCompatActivity() {
         val etEmail = findViewById<EditText>(R.id.etEmail)
         val etOTP = findViewById<EditText>(R.id.etOTP)
         val etNewPass = findViewById<EditText>(R.id.etNewPass)
+        val btnToggleNewPass = findViewById<ImageView>(R.id.btnToggleNewPass)
         val etConfirmpass = findViewById<EditText>(R.id.etConfirmPass)
+        val btnToggleConfirmPass = findViewById<ImageView>(R.id.btnToggleConfirmPass)
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -98,6 +105,31 @@ class ForgotPassActivity : AppCompatActivity() {
             sendResetPasswordData(email, otp, newPassword)
         }
 
+        // Toggle Password Visibility for New Password
+        btnToggleNewPass.setOnClickListener {
+            if (isNewPassVisible) {
+                etNewPass.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+                btnToggleNewPass.setImageResource(R.drawable.eye_closed)
+            } else {
+                etNewPass.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                btnToggleNewPass.setImageResource(R.drawable.eyelogo)
+            }
+            etNewPass.setSelection(etNewPass.text.length) // Keep cursor at end
+            isNewPassVisible = !isNewPassVisible
+        }
+
+        // Toggle Password Visibility for Confirm Password
+        btnToggleConfirmPass.setOnClickListener {
+            if (isConfirmPassVisible) {
+                etConfirmpass.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+                btnToggleConfirmPass.setImageResource(R.drawable.eye_closed)
+            } else {
+                etConfirmpass.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                btnToggleConfirmPass.setImageResource(R.drawable.eyelogo)
+            }
+            etConfirmpass.setSelection(etConfirmpass.text.length) // Keep cursor at end
+            isConfirmPassVisible = !isConfirmPassVisible
+        }
 
     }
 
