@@ -40,8 +40,8 @@ class Book : AppCompatActivity() {
         val profileIcon = findViewById<ImageView>(R.id.profileIcon)
 
         // Show Dropdown Menu on Profile Icon Click
-        profileIcon.setOnClickListener { view ->
-            showProfileMenu(view)
+        profileIcon.setOnClickListener {
+            showProfileMenu()
         }
 
         recyclerView = findViewById(R.id.recyclerView)
@@ -84,7 +84,18 @@ class Book : AppCompatActivity() {
         }
     }
 
-    // ✅ Function to Open Filter Dialog
+    // Function to Open Item Details
+    private fun openItemDetail(item: Item) {
+        val intent = Intent(this, ItemDetail::class.java)
+        intent.putExtra("itemType", "book")
+        intent.putExtra("title", item.name)
+        intent.putExtra("description", "${item.category} | ${item.department}")
+        intent.putExtra("stock", item.stock)
+        intent.putExtra("imageResId", item.imageResId)
+        startActivity(intent)
+    }
+
+    //  Function to Open Filter Dialog
     private fun showFilterDialog() {
         val dialog = BottomSheetDialog(this)
         val view = LayoutInflater.from(this).inflate(R.layout.filter, null)
@@ -132,84 +143,108 @@ class Book : AppCompatActivity() {
         dialog.show()
     }
 
-    // ✅ Function to Apply Filters
+    // Function to Apply Filters
     private fun applyFilters() {
         var filteredList = itemList
 
-        // ✅ Filter by Category
+        //  Filter by Category
         if (selectedCategory != null) {
             filteredList = filteredList.filter { it.department == selectedCategory }
         }
 
-        // ✅ Filter by Availability
+        //  Filter by Availability
         if (showAvailableOnly) {
             filteredList = filteredList.filter { it.availability }
         }
 
-        // ✅ Update the RecyclerView
+        //  Update the RecyclerView
         itemAdapter.updateData(filteredList)
     }
 
-    //  Function to Show Profile Dropdown Menu
-    private fun showProfileMenu(view: View) {
-        val popupMenu = PopupMenu(this, view)
-        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+    // Function to Show Profile Dropdown Menu
+    private fun showProfileMenu() {
+        val builder = AlertDialog.Builder(this)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_profile_menu, null)
+        builder.setView(dialogView)
 
-        // Retrieve stored user details
-        val studentName = sharedPreferences.getString("studentName", "Guest") ?: "Guest"
-        val studentNumber = sharedPreferences.getString("studentNumber", "N/A") ?: "N/A"
-        val department = sharedPreferences.getString("department", "Unknown") ?: "Unknown"
+        val alertDialog = builder.create()
 
-        // Add header as user info (non-clickable)
-        popupMenu.menu.add("$studentName\n$studentNumber\n$department").isEnabled = false
+        // Apply transparent background
+        alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        // Add menu items
-        popupMenu.menu.add("Change Password")
-        popupMenu.menu.add("Log Out")
-
-        popupMenu.setOnMenuItemClickListener { menuItem: MenuItem ->
-            when (menuItem.title) {
-                "Change Password" -> {
-                    startActivity(Intent(this, ChangePassActivity::class.java))
-                }
-                "Log Out" -> {
-                    showLogoutConfirmation() // ✅ Show confirmation before logging out
-                }
-            }
-            true
+        // **Set custom width & height**
+        alertDialog.setOnShowListener {
+            val window = alertDialog.window
+            window?.setLayout(400 * resources.displayMetrics.density.toInt(), 375 * resources.displayMetrics.density.toInt()) // Convert dp to pixels
         }
 
-        popupMenu.show()
-    }
+        // Find views
+        val txtUserInfo = dialogView.findViewById<TextView>(R.id.txtUserInfo)
+        val btnChangePassword = dialogView.findViewById<LinearLayout>(R.id.btnChangePassword)
+        val btnLogout = dialogView.findViewById<LinearLayout>(R.id.btnLogout)
 
-    // Function to Show Log Out Confirmation Dialog
-    private fun showLogoutConfirmation() {
-        val alertDialog = AlertDialog.Builder(this)
-            .setTitle("Log Out")
-            .setMessage("Are you sure you want to log out?")
-            .setPositiveButton("Yes") { _, _ ->
-                val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                val editor = sharedPreferences.edit()
-                editor.clear() // Clear saved user data
-                editor.apply()
+        // Load user details
+        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val studentName = sharedPreferences.getString("studentName", "Lastname, Firstname") ?: "Lastname, Firstname"
+        val studentNumber = sharedPreferences.getString("studentNumber", "N/A") ?: "N/A"
 
-                startActivity(Intent(this, LoginActivity::class.java))
-                finish()
-            }
-            .setNegativeButton("Cancel", null)
-            .create()
+        txtUserInfo.text = "Welcome, $studentName"
+
+        // Button click listeners
+        btnChangePassword.setOnClickListener {
+            startActivity(Intent(this, ChangePassActivity::class.java))
+            alertDialog.dismiss()
+        }
+
+        btnLogout.setOnClickListener {
+            showLogoutConfirmation()
+            alertDialog.dismiss()
+        }
 
         alertDialog.show()
     }
 
-    // ✅ Function to Open Item Details
-    private fun openItemDetail(item: Item) {
-        val intent = Intent(this, ItemDetail::class.java)
-        intent.putExtra("itemType", "book")
-        intent.putExtra("title", item.name)
-        intent.putExtra("description", "${item.category} | ${item.department}")
-        intent.putExtra("stock", item.stock)
-        intent.putExtra("imageResId", item.imageResId)
-        startActivity(intent)
+    // Function to Show Log Out Confirmation Dialog
+    private fun showLogoutConfirmation() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_logout_confirmation, null)
+        val dialog = AlertDialog.Builder(this, R.style.CustomDialog)
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        // Apply animation
+        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+
+        // Find views
+        val switchRememberMe = dialogView.findViewById<Switch>(R.id.switchRememberMe)
+        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+        val btnConfirmLogout = dialogView.findViewById<Button>(R.id.btnConfirmLogout)
+
+        // Cancel button
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        // Confirm Logout button
+        btnConfirmLogout.setOnClickListener {
+            val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+
+            // Check if "Remember Me" is checked
+            if (!switchRememberMe.isChecked) {
+                editor.clear() // Clear saved login info
+            }
+            editor.apply()
+
+            // Redirect to LoginActivity
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 }

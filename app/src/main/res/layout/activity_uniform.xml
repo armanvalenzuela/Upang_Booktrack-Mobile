@@ -9,40 +9,43 @@
     tools:context=".MainActivity">
 
     <!-- White Header with Logo & Search Bar -->
+
     <LinearLayout
         android:id="@+id/headerLayout"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:background="@color/white"
+        android:elevation="4dp"
         android:orientation="horizontal"
         android:padding="10dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:elevation="4dp">
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <!-- App Logo -->
         <ImageView
             android:id="@+id/logoImage"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
             android:contentDescription="App Logo"
-            android:src="@drawable/logo"
-            android:layout_marginEnd="10dp"/>
+            android:src="@drawable/logo" />
 
         <!-- Search Bar -->
         <androidx.cardview.widget.CardView
-            android:layout_width="0dp"
-            android:layout_height="45dp"
-            android:layout_weight="1"
+            android:layout_width="215dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="15dp"
+            android:background="@android:color/white"
             android:radius="10dp"
-            app:cardElevation="2dp"
-            android:background="@android:color/white">
+            app:cardElevation="2dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical"
+                android:gravity="center"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp">
 
@@ -50,30 +53,42 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/search"
-                    app:tint="@color/gray"/>
+                    app:tint="@color/gray" />
 
                 <EditText
                     android:id="@+id/searchBar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Search..."
-                    android:textSize="16sp"
                     android:background="@android:color/transparent"
+                    android:hint="Search..."
                     android:paddingStart="10dp"
                     android:textColor="@android:color/black"
-                    android:textColorHint="@color/gray"/>
+                    android:textColorHint="@color/gray"
+                    android:textSize="16sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+        <!-- Notification -->
+        <ImageView
+            android:id="@+id/notificationIcon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="5dp"
+            android:src="@drawable/bell"
+            app:tint="@color/dark_yellow" />
 
         <!-- Profile Icon -->
         <ImageView
             android:id="@+id/profileIcon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="5dp"
             android:src="@drawable/profile"
-            app:tint="@color/brown"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="5dp"/>
+            app:tint="@color/dark_green" />
     </LinearLayout>
 
     <ScrollView
@@ -100,8 +115,10 @@
                     android:id="@+id/tvUniform"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="5dp"
                     android:layout_weight="1"
-                    android:text="Uniforms"
+                    android:text="UNIFORMS"
                     android:textSize="18sp"
                     android:textStyle="bold"/>
 
@@ -110,11 +127,11 @@
                     android:id="@+id/btnFilter"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/filter"
+                    android:layout_marginEnd="15dp"
                     app:tint="@color/green"
-                    android:contentDescription="Filter"
-                    android:layout_alignParentEnd="true"
-                    android:layout_margin="8dp"/>
+                    android:src="@drawable/filter"
+                    android:contentDescription="Filter Items"
+                    android:layout_marginStart="10dp"/>
             </LinearLayout>
 
             <!-- RecyclerView -->

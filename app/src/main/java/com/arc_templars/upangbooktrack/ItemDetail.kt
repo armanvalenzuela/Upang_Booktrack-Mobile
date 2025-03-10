@@ -35,7 +35,7 @@ class ItemDetail : AppCompatActivity() {
             itemStocks.visibility = TextView.VISIBLE
             itemSizes.visibility = TextView.GONE
         } else if (itemType == "uniform") {
-            itemSizes.text = "Sizes: $sizes"
+            itemSizes.text = formatSizes(sizes)
             itemSizes.visibility = TextView.VISIBLE
             itemStocks.visibility = TextView.GONE
         }
@@ -45,5 +45,20 @@ class ItemDetail : AppCompatActivity() {
         itemAvailability.setTextColor(resources.getColor(if (isAvailable) android.R.color.holo_green_dark else android.R.color.holo_red_dark))
 
         backButton.setOnClickListener { finish() }
+    }
+
+    // ✅ Function to format sizes properly
+    private fun formatSizes(sizes: String): String {
+        if (sizes.isEmpty()) return "Sizes: Not Available"
+
+        // Convert sizes from "S:10 M:5 L:0 XL:2" to a structured format
+        val sizeList = sizes.split(" ")
+            .filter { it.contains(":") } // Only valid size entries
+            .joinToString("\n") { sizeEntry ->
+                val (size, count) = sizeEntry.split(":")
+                "$size: $count pcs"
+            }
+
+        return "Available Sizes:\n$sizeList"
     }
 }

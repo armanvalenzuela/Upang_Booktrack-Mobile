@@ -24,25 +24,26 @@
         <!-- App Logo -->
         <ImageView
             android:id="@+id/logoImage"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="10dp"
             android:contentDescription="App Logo"
             android:src="@drawable/logo"
             android:layout_marginEnd="10dp"/>
 
         <!-- Search Bar -->
         <androidx.cardview.widget.CardView
-            android:layout_width="0dp"
-            android:layout_height="45dp"
-            android:layout_weight="1"
+            android:layout_width="215dp"
+            android:layout_height="35dp"
             android:radius="10dp"
+            android:layout_marginTop="15dp"
             app:cardElevation="2dp"
             android:background="@android:color/white">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical"
+                android:gravity="center"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp">
 
@@ -65,14 +66,27 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+        <!-- Notification -->
+        <ImageView
+            android:id="@+id/notificationIcon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginTop="15dp"
+            android:src="@drawable/bell"
+            app:tint="@color/dark_yellow"
+            />
+
         <!-- Profile Icon -->
         <ImageView
             android:id="@+id/profileIcon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="15dp"
             android:src="@drawable/profile"
-            app:tint="@color/brown"
-            android:layout_marginStart="15dp"
+            app:tint="@color/dark_green"
+            android:layout_marginStart="10dp"
             android:layout_marginEnd="5dp"/>
     </LinearLayout>
 
@@ -100,8 +114,10 @@
                     android:id="@+id/tvSavedItems"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="5dp"
                     android:layout_weight="1"
-                    android:text="Saved Items"
+                    android:text="SAVED ITEMS"
                     android:textSize="18sp"
                     android:textStyle="bold"/>
 
@@ -110,6 +126,7 @@
                     android:id="@+id/btnFilter"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
+                    android:layout_marginEnd="15dp"
                     android:src="@drawable/filter"
                     android:contentDescription="Filter Items"
                     android:layout_marginStart="10dp"
