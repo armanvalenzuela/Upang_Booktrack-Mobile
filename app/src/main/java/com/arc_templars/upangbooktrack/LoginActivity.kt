@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -99,6 +100,12 @@ class LoginActivity : AppCompatActivity() {
                         val studentName = jsonObject.getString("studentName")
                         val studentNo = jsonObject.getString("studentNo") // Get student number
                         val email = jsonObject.getString("email") // Get email
+
+                        // Log for debugging
+                        Log.d("LoginActivity", "User ID: $userId")
+                        Log.d("LoginActivity", "Student Name: $studentName")
+                        Log.d("LoginActivity", "Student No: $studentNo")
+                        Log.d("LoginActivity", "Email: $email")
 
                         // Save user data into SharedPreferences
                         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)

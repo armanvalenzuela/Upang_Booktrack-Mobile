@@ -34,6 +34,7 @@
             android:layout_marginTop="8dp"/>
 
         <!-- Item Name -->
+
         <TextView
             android:id="@+id/itemName"
             android:layout_width="wrap_content"
@@ -44,6 +45,16 @@
             android:textColor="@android:color/black"
             android:gravity="center"
             android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/itemSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Size:"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            />
 
         <!-- Department -->
         <TextView
