@@ -14,13 +14,14 @@ import com.bumptech.glide.Glide
 
 class ItemAdapter(
     private var itemList: List<Item>,
-    private val onItemClick: (Item) -> Unit // ✅ Added Click Listener
+    private val onItemClick: (Item) -> Unit
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val itemImage: ImageView = view.findViewById(R.id.itemImage)
         val itemName: TextView = view.findViewById(R.id.itemName)
         val itemSize: TextView = view.findViewById(R.id.itemSize)
+        val itemGender: TextView = view.findViewById(R.id.itemGender)
         val itemDepartment: TextView = view.findViewById(R.id.itemDepartment)
         val itemCategory: TextView = view.findViewById(R.id.itemCategory)
         val itemAvailability: TextView = view.findViewById(R.id.itemAvailability)
@@ -36,7 +37,7 @@ class ItemAdapter(
 
         Log.d("ItemAdapter", "Image URL: ${item.imageResId}")  // Debugging
 
-        // ✅ Use Glide to load the image from a URL
+        // Uses Glide to load image from url (check php to see the url)
         Glide.with(holder.itemView.context)
             .load(item.imageResId) // URL of the image
             .placeholder(R.drawable.placeholder) // Optional placeholder
@@ -44,12 +45,19 @@ class ItemAdapter(
 
         holder.itemName.text = item.name
 
-        // ✅ Hide size TextView if null/empty, otherwise display it
+        // hide textview if value is null or empty (for books with no size or gender)
         if (item.size.isNullOrEmpty()) {
             holder.itemSize.visibility = View.GONE // Hide the TextView
         } else {
             holder.itemSize.visibility = View.VISIBLE // Show it if there's a size
             holder.itemSize.text = "Size: ${item.size}"
+        }
+
+        if (item.gender.isNullOrEmpty()){
+            holder.itemGender.visibility = View.GONE
+        } else{
+            holder.itemGender.visibility = View.VISIBLE
+            holder.itemGender.text = "Gender: ${item.gender}"
         }
 
         holder.itemCategory.text = item.category

@@ -5,8 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
+import android.widget.CheckBox
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.PopupMenu
+import android.widget.Switch
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -40,14 +45,21 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val profileIcon = findViewById<ImageView>(R.id.profileIcon)
-        profileIcon.setOnClickListener { view -> showProfileMenu(view) }
 
+        // Show Dropdown Menu on Profile Icon Click
+        profileIcon.setOnClickListener { showProfileMenu() }
+
+
+
+        // Set up RecyclerView
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = GridLayoutManager(this, 2)
         itemAdapter = ItemAdapter(itemList) { item -> openItemDetail(item) }
         recyclerView.adapter = itemAdapter
         recyclerView.addItemDecoration(GridSpacingItemDecoration(2, 30, true))
 
+
+        // Bottom Navigation
         fetchAllItems()
 
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
@@ -130,47 +142,110 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    // Function to Show item detail, fixed for both books and unif -kenchi
     private fun openItemDetail(item: Item) {
-        Toast.makeText(this, "${item.name} - ${item.category}\n${item.department}\nStock: ${item.stock}", Toast.LENGTH_LONG).show()
-    }
+        val intent = Intent(this, ItemDetail::class.java)
 
-    private fun showProfileMenu(view: View) {
-        val popupMenu = PopupMenu(this, view)
-        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val studentName = sharedPreferences.getString("studentName", "Guest") ?: "Guest"
-        val studentNumber = sharedPreferences.getString("studentNo", "N/A") ?: "N/A"
-        val department = sharedPreferences.getString("department", "Unknown") ?: "Unknown"
-
-        popupMenu.menu.add("$studentName\n$studentNumber\n$department").isEnabled = false
-        popupMenu.menu.add("Change Password")
-        popupMenu.menu.add("Log Out")
-
-        popupMenu.setOnMenuItemClickListener { menuItem: MenuItem ->
-            when (menuItem.title) {
-                "Change Password" -> startActivity(Intent(this, ChangePassActivity::class.java))
-                "Log Out" -> showLogoutConfirmation()
-            }
-            true
+        if (item.category == "Book") {
+            intent.putExtra("itemType", "book")
+            intent.putExtra("title", item.name)
+            intent.putExtra("description", "${item.category} | ${item.department}")
+            intent.putExtra("stock", item.stock)
+        } else if (item.category == "Uniform") {
+            intent.putExtra("itemType", "uniform")
+            intent.putExtra("title", item.name)
+            intent.putExtra("description", "${item.category} | ${item.department}")
+            intent.putExtra("sizes", "Available Sizes: ${item.size}")
         }
-        popupMenu.show()
+
+        intent.putExtra("imageResId", item.imageResId)
+        startActivity(intent)
     }
 
-    private fun showLogoutConfirmation() {
-        val alertDialog = AlertDialog.Builder(this)
-            .setTitle("Log Out")
-            .setMessage("Are you sure you want to log out?")
-            .setPositiveButton("Yes") { _, _ ->
-                val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                val editor = sharedPreferences.edit()
-                editor.clear()
-                editor.apply()
+    // Function to Show Profile Dropdown Menu
+    private fun showProfileMenu() {
+        val builder = AlertDialog.Builder(this)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_profile_menu, null)
+        builder.setView(dialogView)
 
-                startActivity(Intent(this, LoginActivity::class.java))
-                finish()
-            }
-            .setNegativeButton("Cancel", null)
-            .create()
+        val alertDialog = builder.create()
+
+        // Apply transparent background
+        alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        // **Set custom width & height**
+        alertDialog.setOnShowListener {
+            val window = alertDialog.window
+            window?.setLayout(400 * resources.displayMetrics.density.toInt(), 375 * resources.displayMetrics.density.toInt()) // Convert dp to pixels
+        }
+
+        // Find views
+        val txtUserInfo = dialogView.findViewById<TextView>(R.id.txtUserInfo)
+        val btnChangePassword = dialogView.findViewById<LinearLayout>(R.id.btnChangePassword)
+        val btnLogout = dialogView.findViewById<LinearLayout>(R.id.btnLogout)
+
+        // Load user details
+        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val studentName = sharedPreferences.getString("studentName", "Lastname, Firstname") ?: "Lastname, Firstname"
+        val studentNumber = sharedPreferences.getString("studentNumber", "N/A") ?: "N/A"
+
+        txtUserInfo.text = "Welcome, $studentName"
+
+        // Button click listeners
+        btnChangePassword.setOnClickListener {
+            startActivity(Intent(this, ChangePassActivity::class.java))
+            alertDialog.dismiss()
+        }
+
+        btnLogout.setOnClickListener {
+            showLogoutConfirmation()
+            alertDialog.dismiss()
+        }
 
         alertDialog.show()
+    }
+
+    // Function to Show Log Out Confirmation Dialog
+    private fun showLogoutConfirmation() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_logout_confirmation, null)
+        val dialog = AlertDialog.Builder(this, R.style.CustomDialog)
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        // Apply animation
+        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+
+        // Find views
+        val switchRememberMe = dialogView.findViewById<Switch>(R.id.switchRememberMe)
+        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+        val btnConfirmLogout = dialogView.findViewById<Button>(R.id.btnConfirmLogout)
+
+        // Cancel button
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        // Confirm Logout button
+        btnConfirmLogout.setOnClickListener {
+            val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+
+            // Check if "Remember Me" is checked
+            if (!switchRememberMe.isChecked) {
+                editor.clear() // Clear saved login info
+            }
+            editor.apply()
+
+            // Redirect to LoginActivity
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 }

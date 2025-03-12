@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:background="@color/white">
+    android:background="@drawable/login_backg">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <!-- Back Button (Left) -->
         <ImageView
@@ -17,7 +18,7 @@
             android:layout_height="40dp"
             android:src="@drawable/back_button"
             android:contentDescription="Back"
-            app:tint="@color/green"
+            app:tint="@color/dark_green"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_margin="8dp"/>
@@ -71,20 +72,42 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="5dp"/>
 
+        <TextView
+            android:id="@+id/itemGender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gender: Unspecified"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/itemDescription"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="5dp"/>
+
         <!-- Availability Status (Centered) -->
         <TextView
             android:id="@+id/itemAvailability"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:text="Available"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/itemDescription"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="10dp"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/itemGender" />
 
         <!-- Stock (For Books) - Hidden by Default -->
+
+        <Button
+            android:id="@+id/btnRequest"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="136dp"
+            android:text="Request"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/itemAvailability" />
+
         <TextView
             android:id="@+id/itemStocks"
             android:layout_width="wrap_content"

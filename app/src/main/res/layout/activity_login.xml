@@ -24,11 +24,12 @@
         android:text="UPang Booktrack"
         android:textSize="25sp"
         android:textStyle="bold"
+        android:fontFamily=""
         android:textColor="@color/dark_green"
         android:layout_marginTop="10dp"
         android:layout_gravity="center" />
 
-    <!-- Sign In Title -->
+    <!-- Log In Title -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
