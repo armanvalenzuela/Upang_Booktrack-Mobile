@@ -2,7 +2,7 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
@@ -18,56 +18,66 @@
         <!-- Item Image -->
         <ImageView
             android:id="@+id/itemImage"
-            android:layout_width="140dp"
-            android:layout_height="140dp"
-            android:scaleType="centerInside"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="fitCenter"
             android:src="@drawable/placeholder" />
 
-        <!-- Category -->
         <TextView
             android:id="@+id/itemCategory"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Category"
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:textColor="@android:color/darker_gray"
             android:gravity="center"
-            android:layout_marginTop="6dp"/>
+            android:layout_marginTop="8dp"/>
 
         <!-- Item Name -->
+
         <TextView
             android:id="@+id/itemName"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Item Name"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@android:color/black"
             android:gravity="center"
-            android:layout_marginTop="4dp"/>
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/itemSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Size:"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            />
 
         <!-- Department -->
         <TextView
             android:id="@+id/itemDepartment"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Department"
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:textColor="@android:color/darker_gray"
             android:gravity="center"
-            android:layout_marginTop="2dp"/>
+            android:layout_marginTop="4dp"/>
 
         <!-- Availability Status -->
         <TextView
             android:id="@+id/itemAvailability"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Available"
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="@android:color/holo_green_dark"
             android:gravity="center"
-            android:layout_marginTop="2dp"/>
+            android:layout_marginTop="4dp"/>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

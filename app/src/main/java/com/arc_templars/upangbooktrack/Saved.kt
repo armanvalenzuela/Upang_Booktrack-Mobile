@@ -28,18 +28,12 @@ class Saved : AppCompatActivity() {
     private lateinit var btnFilter: ImageView
 
     private var itemList = listOf(
-        Item("Applied Anatomy and Physiology", R.drawable.anatomy_physiology, true, "Book", "CAHS"),
-        Item("Foundation of Nursing Theories", R.drawable.theories, true, "Book", "CAHS"),
-        Item("Corporate (Male)", R.drawable.bsit_m, true, "Uniform", "CITE"),
-        Item("Corporate (Female)", R.drawable.bsit_f, true, "Uniform", "CITE"),
-        Item("Intermediate Accounting", R.drawable.accounting, true, "Book", "CMA"),
-        Item("Auditing and Assurance Services: An Applied Approach", R.drawable.auditing, true, "Book", "CMA"),
-        Item("University (Female)", R.drawable.college_f, true, "Uniform", "General"),
-        Item("University (Male)", R.drawable.college_m, true, "Uniform", "General"),
-        Item("Nursing (Female)", R.drawable.bspsych_f, true, "Uniform", "CAHS"),
-        Item("Nursing (Male)", R.drawable.bspsych_m, true, "Uniform", "CAHS"),
-        Item("CITE - RSO", R.drawable.tshirt, true, "Uniform", "CITE"),
-        Item("Trojan", R.drawable.tshirt, false, "Uniform", "CITE")
+        Item("Applied Anatomy and Physiology", "", true, "Book", "CAHS", "", "", "", 0),
+        Item("Foundation of Nursing Theories", "", false, "Book", "CAHS", "", "", "", 0),
+        Item("Intermediate Accounting", "", true, "Book", "CMA", "", "", "", 0),
+        Item("Auditing and Assurance Services", "", false, "Book", "CMA", "", "", "", 0),
+        Item("Advanced Engineering Mathematics", "", true, "Book", "CEA", "", "", "", 0),
+        Item("Basic Electronics", "", false, "Book", "CEA", "", "", "", 0)
     )
 
     private var selectedCategory: String? = null

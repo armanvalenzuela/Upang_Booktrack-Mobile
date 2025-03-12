@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -14,6 +15,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arc_templars.upangbooktrack.models.Item
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+
+interface fetchBookApi {
+    @GET("user_fetch_books.php")
+    fun getBooks(): Call<List<Item>>
+}
 
 class Book : AppCompatActivity() {
 
@@ -21,17 +33,10 @@ class Book : AppCompatActivity() {
     private lateinit var btnFilter: ImageView
     private lateinit var itemAdapter: ItemAdapter
 
-    private var itemList = listOf(
-        Item("Applied Anatomy and Physiology", R.drawable.anatomy_physiology, true, "Book", "CAHS"),
-        Item("Foundation of Nursing Theories", R.drawable.theories, false, "Book", "CAHS"),
-        Item("Intermediate Accounting", R.drawable.accounting, true, "Book", "CMA"),
-        Item("Auditing and Assurance Services", R.drawable.auditing, false, "Book", "CMA"),
-        Item("Advanced Engineering Mathematics", R.drawable.book, true, "Book", "CEA"),
-        Item("Basic Electronics", R.drawable.book_icon, false, "Book", "CEA")
-    )
 
     private var selectedCategory: String? = null
     private var showAvailableOnly: Boolean = false
+    private var itemList = listOf<Item>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,25 +45,23 @@ class Book : AppCompatActivity() {
         val profileIcon = findViewById<ImageView>(R.id.profileIcon)
 
         // Show Dropdown Menu on Profile Icon Click
-        profileIcon.setOnClickListener {
-            showProfileMenu()
-        }
+        profileIcon.setOnClickListener { showProfileMenu() }
 
         recyclerView = findViewById(R.id.recyclerView)
         btnFilter = findViewById(R.id.btnFilter)
 
-        // ✅ Set up RecyclerView with Click Listener
+        // Set up RecyclerView with Click Listener
         recyclerView.layoutManager = GridLayoutManager(this, 2)
         itemAdapter = ItemAdapter(itemList) { item -> openItemDetail(item) }
         recyclerView.adapter = itemAdapter
         recyclerView.addItemDecoration(GridSpacingItemDecoration(2, 30, true))
 
-        // ✅ Open Filter Dialog on Click
-        btnFilter.setOnClickListener {
-            showFilterDialog()
-        }
+        // Open Filter Dialog on Click
+        btnFilter.setOnClickListener { showFilterDialog() }
 
-        // ✅ Bottom Navigation - Highlight Book
+        fetchBooks() // Fetch books from API
+
+        // Bottom Navigation - Highlight Book
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
         bottomNavigation.selectedItemId = R.id.menu_book
         bottomNavigation.setOnNavigationItemSelectedListener { item ->
@@ -82,6 +85,28 @@ class Book : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+
+    private fun fetchBooks() {
+        val apiService = ApiClient.getRetrofitInstance().create(fetchBookApi::class.java)
+
+        apiService.getBooks().enqueue(object : Callback<List<Item>> {
+            override fun onResponse(call: Call<List<Item>>, response: Response<List<Item>>) {
+                if (response.isSuccessful) {
+                    val books = response.body()
+                    if (books != null) {
+                        itemList = books
+                        itemAdapter.updateData(itemList) // Update RecyclerView
+                    }
+                } else {
+                    Toast.makeText(this@Book, "Failed to fetch books", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<Item>>, t: Throwable) {
+                Toast.makeText(this@Book, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     // Function to Open Item Details

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
@@ -14,6 +15,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arc_templars.upangbooktrack.models.Item
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+
+interface fetchUnifApi{
+    @GET("user_fetch_uniforms.php")
+    fun getuniform(): Call<List<Item>>
+}
 
 class Uniform : AppCompatActivity() {
 
@@ -21,25 +33,9 @@ class Uniform : AppCompatActivity() {
     private lateinit var btnFilter: ImageView
     private lateinit var itemAdapter: ItemAdapter
 
-    private var itemList = listOf(
-        Item("Corporate (Male)", R.drawable.bsit_m, true, "Uniform", "CITE"),
-        Item("Corporate (Female)", R.drawable.bsit_f, false, "Uniform", "CITE"),
-        Item("RSO", R.drawable.tshirt, true, "Uniform", "CITE"),
-        Item("Trojan", R.drawable.tshirt, false, "Uniform", "CITE"),
-        Item("University (Female)", R.drawable.college_f, true, "Uniform", "General"),
-        Item("University (Male)", R.drawable.college_m, true, "Uniform", "General"),
-        Item("Nursing (Female)", R.drawable.bspsych_f, true, "Uniform", "CAHS"),
-        Item("Nursing (Male)", R.drawable.bspsych_m, true, "Uniform", "CAHS"),
-        Item("CPE (Male)", R.drawable.bscomp_m, true, "Uniform", "CEA"),
-        Item("CPE (Female)", R.drawable.bscomp_f, true, "Uniform", "CEA"),
-        Item("Duty (Male)", R.drawable.bscrim_m, true, "Uniform", "CCJE"),
-        Item("Criminology - Duty (Female)", R.drawable.bscrim_f, false, "Uniform", "CCJE"),
-        Item("RSO", R.drawable.cas_rso, true, "Uniform", "CAS"),
-        Item("RSO", R.drawable.tshirt, false, "Uniform", "CEA"),
-    )
-
     private var selectedCategory: String? = null
     private var showAvailableOnly: Boolean = false
+    private var itemList = listOf<Item>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,9 +44,7 @@ class Uniform : AppCompatActivity() {
         val profileIcon = findViewById<ImageView>(R.id.profileIcon)
 
         // Show Dropdown Menu on Profile Icon Click
-        profileIcon.setOnClickListener {
-            showProfileMenu()
-        }
+        profileIcon.setOnClickListener { showProfileMenu() }
 
         recyclerView = findViewById(R.id.recyclerView)
         btnFilter = findViewById(R.id.btnFilter)
@@ -62,9 +56,9 @@ class Uniform : AppCompatActivity() {
         recyclerView.addItemDecoration(GridSpacingItemDecoration(2, 30, true))
 
         //Open Filter Dialog on Click
-        btnFilter.setOnClickListener {
-            showFilterDialog()
-        }
+        btnFilter.setOnClickListener { showFilterDialog() }
+
+        fetchUniforms() // Fetch data from API
 
         //Bottom Navigation - Highlight Uniform
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
@@ -90,6 +84,28 @@ class Uniform : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+
+    private fun fetchUniforms() {
+        val apiService = ApiClient.getRetrofitInstance().create(fetchUnifApi::class.java)
+
+        apiService.getuniform().enqueue(object : Callback<List<Item>> {
+            override fun onResponse(call: Call<List<Item>>, response: Response<List<Item>>) {
+                if (response.isSuccessful) {
+                    val uniforms = response.body()
+                    if (uniforms != null) {
+                        itemList = uniforms
+                        itemAdapter.updateData(itemList) // Update RecyclerView
+                    }
+                } else {
+                    Toast.makeText(this@Uniform, "Failed to fetch uniforms", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<Item>>, t: Throwable) {
+                Toast.makeText(this@Uniform, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     //Function to Open Filter Dialog
@@ -250,7 +266,7 @@ class Uniform : AppCompatActivity() {
         intent.putExtra("itemType", "uniform")
         intent.putExtra("title", item.name)
         intent.putExtra("description", "${item.category} | ${item.department}")
-        intent.putExtra("sizes", "Available Sizes: ${item.sizes}")
+        intent.putExtra("sizes", "Available Sizes: ${item.size}")
         intent.putExtra("imageResId", item.imageResId)
         startActivity(intent)
     }

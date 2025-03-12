@@ -12,14 +12,34 @@ import android.widget.LinearLayout
 import android.widget.PopupMenu
 import android.widget.Switch
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arc_templars.upangbooktrack.models.Item
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.http.GET
+
+interface fetchAllApi {
+    @GET("user_fetch_all.php")
+    fun getAll(): Call<BookUniformResponse>
+}
+
+data class BookUniformResponse(
+    val books: List<BookData>,
+    val uniforms: List<UniformData>
+)
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var itemAdapter: ItemAdapter
+    private var itemList = listOf<Item>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -27,38 +47,23 @@ class MainActivity : AppCompatActivity() {
         val profileIcon = findViewById<ImageView>(R.id.profileIcon)
 
         // Show Dropdown Menu on Profile Icon Click
-        profileIcon.setOnClickListener {
-            showProfileMenu()
-        }
+        profileIcon.setOnClickListener { showProfileMenu() }
 
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
 
-        // Items
-        val itemList = listOf(
-            Item("Applied Anatomy and Physiology", R.drawable.anatomy_physiology, true, "Book", "CAHS"),
-            Item("Foundation of Nursing Theories", R.drawable.theories, false, "Book", "CAHS"),
-            Item("Corporate (Male)", R.drawable.bsit_m, true, "Uniform", "CITE"),
-            Item("Corporate (Female)", R.drawable.bsit_f, false, "Uniform", "CITE"),
-            Item("Intermediate Accounting", R.drawable.accounting, true, "Book", "CMA"),
-            Item("Auditing and Assurance Services: An Applied Approach", R.drawable.auditing, false, "Book", "CMA"),
-            Item("University (Female)", R.drawable.college_f, true, "Uniform", "General"),
-            Item("University (Male)", R.drawable.college_m, true, "Uniform", "General"),
-            Item("Nursing (Female)", R.drawable.bspsych_f, true, "Uniform", "CAHS"),
-            Item("Nursing (Male)", R.drawable.bspsych_m, true, "Uniform", "CAHS"),
-            Item("Computer Engineering (Male)", R.drawable.bscomp_m, true, "Uniform", "CEA"),
-            Item("Computer Engineering (Female)", R.drawable.bscomp_f, true, "Uniform", "CEA"),
-            Item("Criminology - Duty (Male)", R.drawable.bscrim_m, true, "Uniform", "CCJE"),
-            Item("Criminology - Duty (Female)", R.drawable.bscrim_f, false, "Uniform", "CCJE")
-        )
+
         // Set up RecyclerView
+        recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = GridLayoutManager(this, 2)
-        val adapter = ItemAdapter(itemList) { item -> openItemDetail(item) }
-        recyclerView.adapter = adapter
-
+        itemAdapter = ItemAdapter(itemList) { item -> openItemDetail(item) }
+        recyclerView.adapter = itemAdapter
         recyclerView.addItemDecoration(GridSpacingItemDecoration(2, 30, true))
 
+
         // Bottom Navigation
+        fetchAllItems()
+
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+        bottomNavigation.selectedItemId = R.id.menu_home
         bottomNavigation.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.menu_book -> {
@@ -82,22 +87,64 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // **✅ Function to Open Item Detail Page**
-    private fun openItemDetail(item: Item) {
-        val intent = Intent(this, ItemDetail::class.java)
-        intent.putExtra("itemType", item.category.lowercase()) // "book" or "uniform"
-        intent.putExtra("title", item.name)
-        intent.putExtra("description", "${item.category} | ${item.department}")
-        intent.putExtra("stock", item.stock)
-        intent.putExtra("sizes", item.sizes)
-        intent.putExtra("imageResId", item.imageResId)
+    private fun fetchAllItems() {
+        val apiService = ApiClient.getRetrofitInstance().create(fetchAllApi::class.java)
+        apiService.getAll().enqueue(object : Callback<BookUniformResponse> {
+            override fun onResponse(call: Call<BookUniformResponse>, response: Response<BookUniformResponse>) {
+                if (response.isSuccessful) {
+                    val data = response.body()
+                    if (data != null) {
+                        val newList = mutableListOf<Item>()
 
-        if (item.category.lowercase() == "book") {
-            intent.putExtra("stock", item.stock)
-        } else if (item.category.lowercase() == "uniform") {
-            intent.putExtra("sizes", item.sizes)
-        }
-        startActivity(intent)
+                        data.books.forEach { book ->
+                            newList.add(
+                                Item(
+                                    name = book.bookname,
+                                    imageResId = book.bookimage,
+                                    availability = book.bookstat == "available",
+                                    category = "Book",
+                                    department = book.bookcollege,
+                                    description = book.bookdesc,
+                                    size = "",
+                                    gender = "",
+                                    stock = book.bookstock.toIntOrNull() ?: 0
+                                )
+                            )
+                        }
+
+                        data.uniforms.forEach { uniform ->
+                            newList.add(
+                                Item(
+                                    name = uniform.uniformname,
+                                    imageResId = uniform.uniformimage,
+                                    availability = uniform.uniformstat == "available",
+                                    category = "Uniform",
+                                    department = uniform.uniformcollege,
+                                    description = uniform.uniformdesc,
+                                    size = uniform.uniformsize,
+                                    gender = uniform.uniformgender,
+                                    stock = uniform.uniformstock.toIntOrNull() ?: 0
+                                )
+                            )
+                        }
+
+                        itemList = newList
+                        itemAdapter.updateData(itemList)
+                    }
+                } else {
+                    Toast.makeText(this@MainActivity, "Failed to fetch data", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<BookUniformResponse>, t: Throwable) {
+                Toast.makeText(this@MainActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    //Function to Open Item Detail Page
+    private fun openItemDetail(item: Item) {
+        Toast.makeText(this, "${item.name} - ${item.category}\n${item.department}\nStock: ${item.stock}", Toast.LENGTH_LONG).show()
     }
 
     // Function to Show Profile Dropdown Menu
