@@ -142,9 +142,24 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    //Function to Open Item Detail Page
+    // Function to Show item detail, fixed for both books and unif -kenchi
     private fun openItemDetail(item: Item) {
-        Toast.makeText(this, "${item.name} - ${item.category}\n${item.department}\nStock: ${item.stock}", Toast.LENGTH_LONG).show()
+        val intent = Intent(this, ItemDetail::class.java)
+
+        if (item.category == "Book") {
+            intent.putExtra("itemType", "book")
+            intent.putExtra("title", item.name)
+            intent.putExtra("description", "${item.category} | ${item.department}")
+            intent.putExtra("stock", item.stock)
+        } else if (item.category == "Uniform") {
+            intent.putExtra("itemType", "uniform")
+            intent.putExtra("title", item.name)
+            intent.putExtra("description", "${item.category} | ${item.department}")
+            intent.putExtra("sizes", "Available Sizes: ${item.size}")
+        }
+
+        intent.putExtra("imageResId", item.imageResId)
+        startActivity(intent)
     }
 
     // Function to Show Profile Dropdown Menu
@@ -233,5 +248,4 @@ class MainActivity : AppCompatActivity() {
 
         dialog.show()
     }
-
 }

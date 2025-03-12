@@ -262,11 +262,17 @@ class Uniform : AppCompatActivity() {
     }
     //  Function to Open Item Details
     private fun openItemDetail(item: Item) {
+        // Filter all items with the same name, department, AND gender
+        val relatedSizes = itemList
+            .filter { it.name == item.name && it.department == item.department && it.gender == item.gender }
+            .joinToString(" ") { "${it.size}:${it.stock}" }
+
         val intent = Intent(this, ItemDetail::class.java)
         intent.putExtra("itemType", "uniform")
         intent.putExtra("title", item.name)
-        intent.putExtra("description", "${item.category} | ${item.department}")
-        intent.putExtra("sizes", "Available Sizes: ${item.size}")
+        intent.putExtra("description", "${item.category} | ${item.department} | ${item.gender}")
+        intent.putExtra("sizes", relatedSizes)
+        intent.putExtra("gender", item.gender)
         intent.putExtra("imageResId", item.imageResId)
         startActivity(intent)
     }
