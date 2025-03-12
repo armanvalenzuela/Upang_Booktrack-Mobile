@@ -77,11 +77,11 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.menu_home -> true
-                R.id.menu_bookmark -> {
+                /*R.id.menu_bookmark -> {
                     startActivity(Intent(this, Saved::class.java))
                     overridePendingTransition(0, 0)
                     true
-                }
+                } */
                 else -> false
             }
         }
@@ -99,6 +99,7 @@ class MainActivity : AppCompatActivity() {
                         data.books.forEach { book ->
                             newList.add(
                                 Item(
+                                    uniform_id = null,
                                     name = book.bookname,
                                     imageResId = book.bookimage,
                                     availability = book.bookstat == "available",
@@ -115,6 +116,7 @@ class MainActivity : AppCompatActivity() {
                         data.uniforms.forEach { uniform ->
                             newList.add(
                                 Item(
+                                    uniform_id = uniform.uniform_id,
                                     name = uniform.uniformname,
                                     imageResId = uniform.uniformimage,
                                     availability = uniform.uniformstat == "available",

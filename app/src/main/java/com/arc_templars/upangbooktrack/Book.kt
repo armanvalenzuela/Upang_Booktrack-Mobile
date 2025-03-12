@@ -77,14 +77,14 @@ class Book : AppCompatActivity() {
                     overridePendingTransition(0, 0)
                     true
                 }
-                R.id.menu_bookmark -> {
-                    startActivity(Intent(this, Saved::class.java))
-                    overridePendingTransition(0, 0)
-                    true
-                }
-                else -> false
-            }
-        }
+                /* R.id.menu_bookmark -> {
+                   startActivity(Intent(this, Saved::class.java))
+                   overridePendingTransition(0, 0)
+                   true
+               } */
+               else -> false
+           }
+       }
     }
 
     private fun fetchBooks() {

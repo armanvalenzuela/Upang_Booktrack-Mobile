@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arc_templars.upangbooktrack.models.Item
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+/*
 
 class Saved : AppCompatActivity() {
 
@@ -27,8 +28,9 @@ class Saved : AppCompatActivity() {
     private lateinit var itemAdapter: ItemAdapter
     private lateinit var btnFilter: ImageView
 
+
     private var itemList = listOf(
-        Item("Applied Anatomy and Physiology", "", true, "Book", "CAHS", "", "", "", 0),
+        Item("","Applied Anatomy and Physiology", "", true, "Book", "CAHS", "", "", "", 0),
         Item("Foundation of Nursing Theories", "", false, "Book", "CAHS", "", "", "", 0),
         Item("Intermediate Accounting", "", true, "Book", "CMA", "", "", "", 0),
         Item("Auditing and Assurance Services", "", false, "Book", "CMA", "", "", "", 0),
@@ -252,3 +254,4 @@ class Saved : AppCompatActivity() {
         dialog.show()
     }
 }
+*/

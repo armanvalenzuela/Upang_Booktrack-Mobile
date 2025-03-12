@@ -76,11 +76,11 @@ class Uniform : AppCompatActivity() {
                     true
                 }
                 R.id.menu_uniform -> true
-                R.id.menu_bookmark -> {
+                /* R.id.menu_bookmark -> {
                     startActivity(Intent(this, Saved::class.java))
                     overridePendingTransition(0, 0)
                     true
-                }
+                }*/
                 else -> false
             }
         }
@@ -262,6 +262,9 @@ class Uniform : AppCompatActivity() {
     }
     //  Function to Open Item Details
     private fun openItemDetail(item: Item) {
+
+        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("user_id", -1) // Get user_id, default to -1 if not found
         // Filter all items with the same name, department, AND gender
         val relatedSizes = itemList
             .filter { it.name == item.name && it.department == item.department && it.gender == item.gender }
@@ -274,6 +277,8 @@ class Uniform : AppCompatActivity() {
         intent.putExtra("sizes", relatedSizes)
         intent.putExtra("gender", item.gender)
         intent.putExtra("imageResId", item.imageResId)
+        intent.putExtra("uniform_id", item.uniform_id) // ✅ Add uniform_id
+        intent.putExtra("user_id", userId) // ✅ Pass user ID from session/storage
         startActivity(intent)
     }
 }

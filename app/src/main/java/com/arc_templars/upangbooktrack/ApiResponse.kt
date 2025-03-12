@@ -15,6 +15,7 @@ data class BookData(
 )
 
 data class UniformData(
+    val uniform_id: Int,
     val uniformname: String,
     val uniformimage: String,
     val uniformstat: String,
