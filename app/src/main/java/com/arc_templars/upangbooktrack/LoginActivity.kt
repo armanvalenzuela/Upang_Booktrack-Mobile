@@ -114,6 +114,7 @@ class LoginActivity : AppCompatActivity() {
                             putString("studentName", studentName)
                             putString("studentNo", studentNo) // Store student number
                             putString("email", email) // Store email
+                            putString("password", password) // TODO: MODIFY DB TO HANDLE PASSWORD HASHING HA! THIS IS FOR DEBUGGING MUNA
                             apply()
                         }
 
