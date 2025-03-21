@@ -4,12 +4,18 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import okhttp3.ResponseBody
 import retrofit2.http.Field
@@ -126,22 +132,69 @@ class ItemDetail : AppCompatActivity() {
             return
         }
 
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Request What Size?")
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_request, null)
+        val dialog = AlertDialog.Builder(this, R.style.CustomDialog)
+            .setView(dialogView)
+            .create()
 
-        var selectedSize = sizeOptions[0] // Default selection
-        builder.setSingleChoiceItems(sizeOptions.toTypedArray(), 0) { _, which ->
-            selectedSize = sizeOptions[which]
+        val sizeContainer = dialogView.findViewById<LinearLayout>(R.id.sizeContainer)
+        val btnRequest = dialogView.findViewById<Button>(R.id.btnRequest)
+        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+
+        var selectedSize = sizeOptions[0] // Default selected size
+        val radioGroup = RadioGroup(this)
+        radioGroup.orientation = RadioGroup.VERTICAL
+        sizeContainer.addView(radioGroup)
+
+        // Add sizes with dividers
+        sizeOptions.forEachIndexed { index, size ->
+            val radioButton = RadioButton(this)
+            radioButton.text = size
+            radioButton.id = View.generateViewId()
+            radioGroup.addView(radioButton)
+
+            // Set default selection
+            if (index == 0) {
+                radioButton.isChecked = true
+            }
+
+            // Add a divider after each radio button except the last one
+            if (index != sizeOptions.lastIndex) {
+                val divider = View(this)
+                val params = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 2 // Thickness of the divider
+                )
+                params.setMargins(16, 8, 16, 8) // Margins for spacing
+                divider.layoutParams = params
+                divider.setBackgroundColor(ContextCompat.getColor(this, R.color.gray)) // Divider color
+                radioGroup.addView(divider) // Add divider inside the RadioGroup
+            }
         }
 
-        builder.setPositiveButton("Request") { _, _ ->
+        // Listen for selection changes
+        radioGroup.setOnCheckedChangeListener { group, checkedId ->
+            val selectedRadioButton = group.findViewById<RadioButton>(checkedId)
+            selectedSize = selectedRadioButton.text.toString()
+        }
+
+        // Create and show dialog
+        val alertDialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        // Handle button clicks
+        btnRequest.setOnClickListener {
             sendRequest(uniformId, userId, selectedSize)
+            alertDialog.dismiss()
         }
 
-        builder.setNegativeButton("Cancel", null)
-        builder.show()
-    }
+        btnCancel.setOnClickListener {
+            alertDialog.dismiss()
+        }
 
+        alertDialog.show()
+    }
 
     // Size formatting
     private fun formatSizes(sizes: String): String {

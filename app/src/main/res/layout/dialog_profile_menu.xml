@@ -12,12 +12,24 @@
         android:id="@+id/txtUserInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Welcome, "
+        android:text="Name: "
         android:textSize="16sp"
         android:textStyle="bold"
         android:paddingBottom="8dp"
         android:gravity="center"
         android:textColor="@color/black"/>
+
+   <!-- User Info
+    <TextView
+        android:id="@+id/txtStudentNo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Student No: "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingBottom="8dp"
+        android:gravity="center"
+        android:textColor="@color/black"/>-->
 
     <!-- Change Password -->
     <LinearLayout
