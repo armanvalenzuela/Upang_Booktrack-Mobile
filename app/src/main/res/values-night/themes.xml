@@ -1,5 +1,14 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Base.Theme.UpangBooktrack" parent="Theme.Material3.Light.NoActionBar">
-        <item name="android:windowBackground">@color/white</item>
+    <style name="Base.Theme.UpangBooktrack" parent="Theme.Material3.Light                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                .NoActionBar">
+        <!-- set yung background color -->
+        <item name="android:windowBackground">@color/black</item>
+
+        <!-- match light theme -->
+        <item name="colorPrimary">@color/green</item>
+        <item name="colorPrimaryVariant">@color/dark_green</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+
+        <!-- color ng status bar (yung tuktok) -->
+        <item name="android:statusBarColor">@color/dark_green</item>
     </style>
 </resources>
