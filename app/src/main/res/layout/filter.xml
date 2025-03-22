@@ -12,7 +12,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Filter / Sort"
+        android:text="Filter"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"
@@ -69,23 +69,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sort by"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black"
-                android:paddingBottom="8dp"/>
 
-            <TextView
-                android:id="@+id/sortByDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Date added ⬇"
-                android:textSize="14sp"
-                android:textColor="@android:color/darker_gray"
-                android:paddingBottom="16dp"/>
 
             <TextView
                 android:layout_width="wrap_content"

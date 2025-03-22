@@ -68,7 +68,8 @@ class ItemDetail : AppCompatActivity() {
         val imageUrl = intent.getStringExtra("imageResId") ?: ""
         val uniformId = intent.getIntExtra("uniform_id", -1) // Get uniform ID
 
-        val sharedPreferences: SharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val sharedPreferences: SharedPreferences =
+            getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("id", -1)
 
         Log.d("ItemDetail", "Uniform ID: $uniformId, User ID: $userId")
@@ -87,7 +88,8 @@ class ItemDetail : AppCompatActivity() {
                 HtmlCompat.FROM_HTML_MODE_LEGACY
             )
         }
-        itemGender.text = HtmlCompat.fromHtml("<b>Gender:</b> $gender", HtmlCompat.FROM_HTML_MODE_LEGACY)
+        itemGender.text =
+            HtmlCompat.fromHtml("<b>Gender:</b> $gender", HtmlCompat.FROM_HTML_MODE_LEGACY)
 
         if (itemType == "book") {
             itemStocks.text = "Stock: $stock"
@@ -123,14 +125,26 @@ class ItemDetail : AppCompatActivity() {
         apiService.requestUniform(uniformId, userId, size).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
-                    Toast.makeText(applicationContext, "Request for size $size successful!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        applicationContext,
+                        "Request for size $size successful!",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
-                    Toast.makeText(applicationContext, "Request failed! Try again.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        applicationContext,
+                        "Request failed! Try again.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Toast.makeText(applicationContext, "Network error! Check connection.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    applicationContext,
+                    "Network error! Check connection.",
+                    Toast.LENGTH_SHORT
+                ).show()
                 Log.e("ItemDetail", "Request failed: ${t.message}")
             }
         })
@@ -187,12 +201,11 @@ class ItemDetail : AppCompatActivity() {
         dialog.show()
     }
 
-    // Size formatting
     private fun formatSizes(sizes: String): SpannableStringBuilder {
         val spannable = SpannableStringBuilder()
 
-        // Bold "Sizes:"
-        val label = SpannableString("Sizes:\n")
+        //
+        val label = SpannableString("Sizes:\n \n")
         label.setSpan(StyleSpan(Typeface.BOLD), 0, label.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         spannable.append(label)
 
@@ -201,18 +214,24 @@ class ItemDetail : AppCompatActivity() {
             return spannable
         }
 
-        sizes.split(" ").filter { it.contains(":") }.forEach { sizeEntry ->
+        val sizeList = sizes.split(" ").filter { it.contains(":") }
+
+        sizeList.forEachIndexed { index, sizeEntry ->
             val (size, count) = sizeEntry.split(":")
 
-            // Bold size type (e.g., "M:")
-            val sizeSpan = SpannableString("$size: ")
+            // Bold size type
+            val sizeSpan = SpannableString("$size:")
             sizeSpan.setSpan(StyleSpan(Typeface.BOLD), 0, sizeSpan.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             spannable.append(sizeSpan)
 
-            // Append count (e.g., "15 pcs")
-            spannable.append("$count \n")
-        }
+            // Normal count (e.g., "55")
+            spannable.append(" $count")
 
+            if (index != sizeList.size - 1) {
+                spannable.append(" | ") // Add separator except for last item
+            }
+        }
         return spannable
     }
+
 }
