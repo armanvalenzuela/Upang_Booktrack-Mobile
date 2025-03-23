@@ -11,6 +11,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -155,14 +156,50 @@ class SignupActivity : AppCompatActivity() {
             else -> ""
         }
 
-        // COLLEGE SELECTION (KUNG ANO YUNG NAKA SELECT)
+        // College Selection
         val college = if (tvSelectedDepartment.text != "Select Department") tvSelectedDepartment.text.toString() else ""
 
-        // VALIDATIONS HERE!
+        // VALIDATION CHECKS
         if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty() ||
             confirmPassword.isEmpty() || gender.isEmpty() || college.isEmpty()
         ) {
             Toast.makeText(this, "All fields are required!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        //EMPTY SPACE CHECKS
+        if (firstName.contains(" ")) {
+            Toast.makeText(this, "First name cannot contain spaces!", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (lastName.contains(" ")) {
+            Toast.makeText(this, "Last name cannot contain spaces!", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (email.contains(" ")) {
+            Toast.makeText(this, "Email cannot contain spaces!", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (password.contains(" ")) {
+            Toast.makeText(this, "Password cannot contain spaces!", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (confirmPassword.contains(" ")) {
+            Toast.makeText(this, "Confirm password cannot contain spaces!", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (gender.contains(" ")) {
+            Toast.makeText(this, "Gender cannot contain spaces!", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (college.contains(" ")) {
+            Toast.makeText(this, "College cannot contain spaces!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        //CLIENT SIDE EMAIL VALIDATION (PHP ALSO DOES IT)
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "Please enter a valid email!", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -176,13 +213,12 @@ class SignupActivity : AppCompatActivity() {
             return
         }
 
-        // PROGRESS DIALOGUE BOX!!!
+        //Proceed with signup process if all checks pass
         val progressDialog = ProgressDialog(this)
         progressDialog.setMessage("Signing up...")
         progressDialog.setCancelable(false)
         progressDialog.show()
 
-        // API CALL
         val api = ApiClient.getRetrofitInstance().create(SignupApi::class.java)
         val call = api.signup(firstName, lastName, gender, college, email, password)
 
@@ -190,11 +226,21 @@ class SignupActivity : AppCompatActivity() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 progressDialog.dismiss()
                 if (response.isSuccessful) {
-                    Toast.makeText(applicationContext, "Registration successful! Check your email.", Toast.LENGTH_LONG).show()
-                    startActivity(Intent(this@SignupActivity, LoginActivity::class.java))
-                    finish()
+                    val jsonResponse = response.body()?.string() ?: "{}"
+                    val jsonObject = JSONObject(jsonResponse)
+
+                    val status = jsonObject.optString("status", "error")
+                    val message = jsonObject.optString("message", "Something went wrong.")
+
+                    if (status == "success") {
+                        Toast.makeText(applicationContext, "Registration successful!", Toast.LENGTH_LONG).show()
+                        startActivity(Intent(this@SignupActivity, LoginActivity::class.java))
+                        finish()
+                    } else {
+                        Toast.makeText(applicationContext, "Registration failed: $message", Toast.LENGTH_LONG).show()
+                    }
                 } else {
-                    Toast.makeText(applicationContext, "Registration failed! Please try again.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(applicationContext, "Server error: ${response.message()}", Toast.LENGTH_LONG).show()
                 }
             }
 

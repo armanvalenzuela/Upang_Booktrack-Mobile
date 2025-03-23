@@ -256,11 +256,15 @@ class Book : AppCompatActivity() {
             val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
             val editor = sharedPreferences.edit()
 
-            // Check if "Remember Me" is checked
+            // Completely remove all stored user data
+            editor.clear()
+            editor.apply()
 
             // Redirect to LoginActivity
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK // Clears all previous activities
+            startActivity(intent)
+            finish() // Close MainActivity
 
             dialog.dismiss()
         }
