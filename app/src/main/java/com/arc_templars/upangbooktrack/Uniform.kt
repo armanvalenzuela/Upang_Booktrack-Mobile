@@ -4,9 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.util.Log
-import android.view.MenuItem
-import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -125,6 +122,7 @@ class Uniform : AppCompatActivity() {
             "CAHS" -> departmentGroup.check(R.id.department_cahs)
             "CCJE" -> departmentGroup.check(R.id.department_ccje)
             "CITE" -> departmentGroup.check(R.id.department_cite)
+            "SHS" -> departmentGroup.check(R.id.department_shs)
         }
         availabilitySwitch.isChecked = showAvailableOnly
 
@@ -137,6 +135,7 @@ class Uniform : AppCompatActivity() {
                 R.id.department_cahs -> "CAHS"
                 R.id.department_ccje -> "CCJE"
                 R.id.department_cite -> "CITE"
+                R.id.department_shs -> "SHS"
                 else -> null
             }
         }
@@ -202,7 +201,7 @@ class Uniform : AppCompatActivity() {
         val studentName = sharedPreferences.getString("studentName", "Lastname, Firstname") ?: "Lastname, Firstname"
         val studentNumber = sharedPreferences.getString("studentNumber", "N/A") ?: "N/A"
 
-        txtUserInfo.text = "Welcome, $studentName"
+        txtUserInfo.text = "Name: $studentName"
 
         // Button click listeners
         btnChangePassword.setOnClickListener {

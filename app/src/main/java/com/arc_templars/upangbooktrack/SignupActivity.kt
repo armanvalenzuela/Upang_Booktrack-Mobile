@@ -8,6 +8,7 @@ import android.text.InputType
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -36,7 +37,7 @@ class SignupActivity : AppCompatActivity() {
     private lateinit var etFirstName: EditText
     private lateinit var etLastName: EditText
     private lateinit var radioGroupGender: RadioGroup
-    private lateinit var spinnerDep: Spinner
+    private lateinit var tvSelectedDepartment: TextView
     private lateinit var etEmail: EditText
     private lateinit var etPassword: EditText
     private lateinit var ivTogglePassword: ImageView
@@ -56,7 +57,7 @@ class SignupActivity : AppCompatActivity() {
         etFirstName = findViewById(R.id.etFirstName)
         etLastName = findViewById(R.id.etLastName)
         radioGroupGender = findViewById(R.id.radioGroupGender)
-        spinnerDep = findViewById(R.id.spinnerDep)
+        tvSelectedDepartment = findViewById(R.id.tvSelectedDepartment)
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         ivTogglePassword = findViewById(R.id.ivTogglePassword)
@@ -65,26 +66,10 @@ class SignupActivity : AppCompatActivity() {
         btnSignUp = findViewById(R.id.btnSignUp)
         tvLogin = findViewById(R.id.tvLogin)
 
-
-        //SPINNER NI ARMAN
-        val departmentList = mutableListOf("Select a Department")
-        departmentList.addAll(resources.getStringArray(R.array.departments))
-
-        val departmentAdapter = object : ArrayAdapter<String>(
-            this, android.R.layout.simple_spinner_item, departmentList
-        ) {
-            override fun isEnabled(position: Int): Boolean {
-                return position != 0 // MAKES SURE NA MAY NAKA SELECT
-            }
-
-            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-                val view = super.getDropDownView(position, convertView, parent)
-                (view as TextView).setTextColor(if (position == 0) Color.GRAY else Color.BLACK)
-                return view
-            }
+        // Click Listener for Department Selection
+        tvSelectedDepartment.setOnClickListener {
+            showDepartmentSelectionDialog()
         }
-        departmentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerDep.adapter = departmentAdapter
 
         // PASSWORD TOGGLE FUNCTIONALITY
         ivTogglePassword.setOnClickListener {
@@ -108,6 +93,41 @@ class SignupActivity : AppCompatActivity() {
             finish()
         }
     }
+
+    // Function to Show Custom AlertDialog for Department Selection
+    private fun showDepartmentSelectionDialog() {
+        val departmentList = resources.getStringArray(R.array.departments)
+
+        // Inflate the custom layout
+        val dialogView = layoutInflater.inflate(R.layout.dialog_department_selection, null)
+
+        // Find UI components in the custom layout
+        val listView = dialogView.findViewById<ListView>(R.id.listViewDepartments)
+
+        // Create & set adapter for ListView
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, departmentList)
+        listView.adapter = adapter
+
+        // Create AlertDialog
+        val dialog = AlertDialog.Builder(this, R.style.CustomDialog) // ✅ Use Custom Style
+            .setView(dialogView)
+            .create()
+
+        // Handle item selection
+        listView.setOnItemClickListener { _, _, position, _ ->
+            tvSelectedDepartment.text = departmentList[position] // ✅ Updates TextView
+            dialog.dismiss()
+        }
+
+        // Show dialog
+        dialog.show()
+
+        // Set custom width & height
+        val window = dialog.window
+        window?.setLayout(500, 1000) // ✅ Adjust width & height (in pixels)
+        window?.setBackgroundDrawableResource(R.drawable.dialog_background) // ✅ Apply rounded corners
+    }
+
 
     private fun togglePasswordVisibility(editText: EditText, imageView: ImageView, isVisible: Boolean) {
         if (isVisible) {
@@ -136,7 +156,7 @@ class SignupActivity : AppCompatActivity() {
         }
 
         // COLLEGE SELECTION (KUNG ANO YUNG NAKA SELECT)
-        val college = if (spinnerDep.selectedItemPosition > 0) spinnerDep.selectedItem.toString() else ""
+        val college = if (tvSelectedDepartment.text != "Select Department") tvSelectedDepartment.text.toString() else ""
 
         // VALIDATIONS HERE!
         if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty() ||

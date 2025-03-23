@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:text="Confirm Logout"
         android:textSize="18sp"
-        android:textStyle="bold"
+        android:fontFamily="@font/poppins_bold"
         android:textColor="@color/black"
         android:layout_marginTop="12dp"
         android:gravity="center"/>
@@ -33,6 +33,7 @@
         android:layout_height="wrap_content"
         android:text="Are you sure you want to log out? You will need to re-enter your credentials to sign in again."
         android:textSize="14sp"
+        android:fontFamily="@font/poppins_light"
         android:textColor="@color/black"
         android:gravity="center"
         android:layout_marginTop="8dp"/>
@@ -53,6 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Cancel"
+            android:fontFamily="@font/poppins_bold"
             android:backgroundTint="@color/gray"
             android:textColor="@color/white"
             android:paddingVertical="8dp"/>
@@ -63,6 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Log Out"
+            android:fontFamily="@font/poppins_bold"
             android:backgroundTint="@color/dark_green"
             android:textColor="@color/white"
             android:paddingVertical="8dp"

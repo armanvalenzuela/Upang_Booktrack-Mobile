@@ -2,20 +2,28 @@ package com.arc_templars.upangbooktrack
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ListView
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import com.bumptech.glide.Glide
 import okhttp3.ResponseBody
 import retrofit2.http.Field
@@ -60,7 +68,8 @@ class ItemDetail : AppCompatActivity() {
         val imageUrl = intent.getStringExtra("imageResId") ?: ""
         val uniformId = intent.getIntExtra("uniform_id", -1) // Get uniform ID
 
-        val sharedPreferences: SharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val sharedPreferences: SharedPreferences =
+            getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("id", -1)
 
         Log.d("ItemDetail", "Uniform ID: $uniformId, User ID: $userId")
@@ -72,8 +81,15 @@ class ItemDetail : AppCompatActivity() {
             .into(itemImageDetail)
 
         itemTitle.text = title
-        itemDescription.text = description
-        itemGender.text = "Gender: $gender"
+        // ✅ **Make Description Bold**
+        if (description != null) {
+            itemDescription.text = HtmlCompat.fromHtml(
+                "<b>${description.replace("|", "</b> | <b>")}</b>",
+                HtmlCompat.FROM_HTML_MODE_LEGACY
+            )
+        }
+        itemGender.text =
+            HtmlCompat.fromHtml("<b>Gender:</b> $gender", HtmlCompat.FROM_HTML_MODE_LEGACY)
 
         if (itemType == "book") {
             itemStocks.text = "Stock: $stock"
@@ -109,14 +125,26 @@ class ItemDetail : AppCompatActivity() {
         apiService.requestUniform(uniformId, userId, size).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
-                    Toast.makeText(applicationContext, "Request for size $size successful!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        applicationContext,
+                        "Request for size $size successful!",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
-                    Toast.makeText(applicationContext, "Request failed! Try again.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        applicationContext,
+                        "Request failed! Try again.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Toast.makeText(applicationContext, "Network error! Check connection.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    applicationContext,
+                    "Network error! Check connection.",
+                    Toast.LENGTH_SHORT
+                ).show()
                 Log.e("ItemDetail", "Request failed: ${t.message}")
             }
         })
@@ -132,83 +160,79 @@ class ItemDetail : AppCompatActivity() {
             return
         }
 
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_request, null)
-        val dialog = AlertDialog.Builder(this, R.style.CustomDialog)
-            .setView(dialogView)
-            .create()
-
-        val sizeContainer = dialogView.findViewById<LinearLayout>(R.id.sizeContainer)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_request, null)
         val btnRequest = dialogView.findViewById<Button>(R.id.btnRequest)
         val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+        val sizeContainer = dialogView.findViewById<LinearLayout>(R.id.sizeContainer)
 
-        var selectedSize = sizeOptions[0] // Default selected size
+        var selectedSize = sizeOptions[0] // ✅ Default to first available size
+
+        // Create radio buttons dynamically
         val radioGroup = RadioGroup(this)
-        radioGroup.orientation = RadioGroup.VERTICAL
-        sizeContainer.addView(radioGroup)
-
-        // Add sizes with dividers
         sizeOptions.forEachIndexed { index, size ->
-            val radioButton = RadioButton(this)
-            radioButton.text = size
-            radioButton.id = View.generateViewId()
+            val radioButton = RadioButton(this).apply {
+                text = size
+                id = View.generateViewId()
+            }
             radioGroup.addView(radioButton)
 
-            // Set default selection
             if (index == 0) {
-                radioButton.isChecked = true
-            }
-
-            // Add a divider after each radio button except the last one
-            if (index != sizeOptions.lastIndex) {
-                val divider = View(this)
-                val params = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, 2 // Thickness of the divider
-                )
-                params.setMargins(16, 8, 16, 8) // Margins for spacing
-                divider.layoutParams = params
-                divider.setBackgroundColor(ContextCompat.getColor(this, R.color.gray)) // Divider color
-                radioGroup.addView(divider) // Add divider inside the RadioGroup
+                radioButton.isChecked = true // ✅ First size is selected by default
             }
         }
+        sizeContainer.addView(radioGroup)
 
-        // Listen for selection changes
-        radioGroup.setOnCheckedChangeListener { group, checkedId ->
-            val selectedRadioButton = group.findViewById<RadioButton>(checkedId)
-            selectedSize = selectedRadioButton.text.toString()
-        }
-
-        // Create and show dialog
-        val alertDialog = AlertDialog.Builder(this)
+        // ✅ Create the dialog and apply custom background
+        val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
-            .setCancelable(false)
             .create()
 
-        // Handle button clicks
+        dialog.window?.setBackgroundDrawableResource(R.drawable.dialog_background) // ✅ Apply Custom Border
+
         btnRequest.setOnClickListener {
             sendRequest(uniformId, userId, selectedSize)
-            alertDialog.dismiss()
+            dialog.dismiss()
         }
 
         btnCancel.setOnClickListener {
-            alertDialog.dismiss()
+            dialog.dismiss()
         }
 
-        alertDialog.show()
+        dialog.show()
     }
 
-    // Size formatting
-    private fun formatSizes(sizes: String): String {
-        if (sizes.isEmpty()) return "Sizes: Not Available"
+    private fun formatSizes(sizes: String): SpannableStringBuilder {
+        val spannable = SpannableStringBuilder()
 
-        val sizeList = sizes.split(" ")
-            .filter { it.contains(":") }
-            .joinToString("\n") { sizeEntry ->
-                val (size, count) = sizeEntry.split(":")
-                "$size: $count pcs"
+        //
+        val label = SpannableString("Sizes:\n \n")
+        label.setSpan(StyleSpan(Typeface.BOLD), 0, label.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        spannable.append(label)
+
+        if (sizes.isEmpty()) {
+            spannable.append("Not Available")
+            return spannable
+        }
+
+        val sizeList = sizes.split(" ").filter { it.contains(":") }
+
+        sizeList.forEachIndexed { index, sizeEntry ->
+            val (size, count) = sizeEntry.split(":")
+
+            // Bold size type
+            val sizeSpan = SpannableString("$size:")
+            sizeSpan.setSpan(StyleSpan(Typeface.BOLD), 0, sizeSpan.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            spannable.append(sizeSpan)
+
+            // Normal count (e.g., "55")
+            spannable.append(" $count")
+
+            if (index != sizeList.size - 1) {
+                spannable.append(" | ") // Add separator except for last item
             }
-
-        return "Available Sizes:\n$sizeList"
+        }
+        return spannable
     }
-}
 
 //TODO IF STATUS = AVAILABLE HIDE THE REQUEST BUTTON **OR** SAY "CANNOT REQUEST"
+}
