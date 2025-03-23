@@ -26,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
 import com.bumptech.glide.Glide
 import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
@@ -39,7 +40,8 @@ interface RequestService {
     fun requestUniform(
         @Field("uniform_id") uniformId: Int,
         @Field("user_id") userId: Int,
-        @Field("uniform_size") size: String
+        @Field("uniform_size") size: String,
+        @Field("gender") gender: String
     ): Call<ResponseBody>
 }
 
@@ -67,13 +69,18 @@ class ItemDetail : AppCompatActivity() {
         val gender = intent.getStringExtra("gender") ?: "Unspecified"
         val imageUrl = intent.getStringExtra("imageResId") ?: ""
         val uniformId = intent.getIntExtra("uniform_id", -1) // Get uniform ID
+        val availability = intent.getBooleanExtra("availability", false) // ✅ Get availability from API
+        val isAvailable = availability // ✅ Use API response directly
 
+
+        //SHAREDPREF TO GET USER VALUES
         val sharedPreferences: SharedPreferences =
             getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("id", -1)
 
         Log.d("ItemDetail", "Uniform ID: $uniformId, User ID: $userId")
 
+        //IMAGE LOADING
         Glide.with(this)
             .load(imageUrl)
             .placeholder(R.drawable.placeholder)
@@ -81,7 +88,8 @@ class ItemDetail : AppCompatActivity() {
             .into(itemImageDetail)
 
         itemTitle.text = title
-        // ✅ **Make Description Bold**
+
+        //DESCRIPTION FORMATTING
         if (description != null) {
             itemDescription.text = HtmlCompat.fromHtml(
                 "<b>${description.replace("|", "</b> | <b>")}</b>",
@@ -91,6 +99,7 @@ class ItemDetail : AppCompatActivity() {
         itemGender.text =
             HtmlCompat.fromHtml("<b>Gender:</b> $gender", HtmlCompat.FROM_HTML_MODE_LEGACY)
 
+        //CONDITIONALS SO THAT IF ITEM IS BOOK, GENDER AND SIZE ISNT SHOWN
         if (itemType == "book") {
             itemStocks.text = "Stock: $stock"
             itemStocks.visibility = TextView.VISIBLE
@@ -101,58 +110,63 @@ class ItemDetail : AppCompatActivity() {
             itemStocks.visibility = TextView.GONE
         }
 
-        val isAvailable = if (itemType == "book") stock > 0 else !sizes.contains("L: 0")
+        //CHECK AVAILABILITY, IF TRUE HIDE BUTTON IF FALSE SHOW
         itemAvailability.text = if (isAvailable) "Available" else "Not Available"
-        itemAvailability.setTextColor(resources.getColor(if (isAvailable) android.R.color.holo_green_dark else android.R.color.holo_red_dark))
+        itemAvailability.setTextColor(
+            resources.getColor(if (isAvailable) android.R.color.holo_green_dark else android.R.color.holo_red_dark)
+        )
+
+        btnRequest.isEnabled = !isAvailable
+        btnRequest.visibility = if (!isAvailable) View.VISIBLE else View.GONE
 
         backButton.setOnClickListener { finish() }
 
-        // Handle request button click
+        // REQUEST BUTTON LISTENER
         btnRequest.setOnClickListener {
             if (uniformId != -1 && userId != -1) {
-                showSizeSelectionDialog(uniformId, userId, sizes)
+                showSizeSelectionDialog(uniformId, userId, sizes, gender)
             } else {
                 Toast.makeText(this, "Invalid item or user!", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    // API call to request uniform
-    private fun sendRequest(uniformId: Int, userId: Int, size: String) {
+    // FUNCT TO SEND UNIFORM REQUEST
+    private fun sendUnifRequest(uniformId: Int, userId: Int, size: String, gender: String) {
         val apiService = ApiClient.getRetrofitInstance().create(RequestService::class.java)
 
-        Log.d("sendRequest", "Sending request - Uniform ID: $uniformId, User ID: $userId, Size:")
-        apiService.requestUniform(uniformId, userId, size).enqueue(object : Callback<ResponseBody> {
+        Log.d("sendUnifRequest", "Sending request - Uniform ID: $uniformId, User ID: $userId, Size: $size, Gender: $gender")
+        apiService.requestUniform(uniformId, userId, size, gender).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                if (response.isSuccessful) {
-                    Toast.makeText(
-                        applicationContext,
-                        "Request for size $size successful!",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                if (response.isSuccessful && response.body() != null) {
+                    try {
+                        val jsonResponse = response.body()!!.string()
+                        val jsonObject = JSONObject(jsonResponse)
+
+                        // Get the message directly from JSON response
+                        Toast.makeText(applicationContext, jsonObject.getString("message"), Toast.LENGTH_SHORT).show()
+
+                    } catch (e: Exception) {
+                        Toast.makeText(applicationContext, "Response error!", Toast.LENGTH_SHORT).show()
+                        Log.e("sendUnifRequest", "JSON Parsing error: ${e.message}")
+                    }
                 } else {
-                    Toast.makeText(
-                        applicationContext,
-                        "Request failed! Try again.",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(applicationContext, "Request failed! Try again.", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Toast.makeText(
-                    applicationContext,
-                    "Network error! Check connection.",
-                    Toast.LENGTH_SHORT
-                ).show()
-                Log.e("ItemDetail", "Request failed: ${t.message}")
+                Toast.makeText(applicationContext, "Network error! Check connection.", Toast.LENGTH_SHORT).show()
+                Log.e("sendUnifRequest", "Request failed: ${t.message}")
             }
         })
     }
 
-    private fun showSizeSelectionDialog(uniformId: Int, userId: Int, sizes: String) {
+
+    //SIZE SELECTION FOR UNIFORM WHEN REQUESTING
+    private fun showSizeSelectionDialog(uniformId: Int, userId: Int, sizes: String, gender: String) {
         val sizeOptions = sizes.split(" ")
-            .filter { it.contains(":") && !it.endsWith(":0") } // Exclude out-of-stock sizes
+            .filter { it.contains(":") }
             .map { it.split(":")[0] } // Extract size names only
 
         if (sizeOptions.isEmpty()) {
@@ -167,7 +181,6 @@ class ItemDetail : AppCompatActivity() {
 
         var selectedSize = sizeOptions[0] // ✅ Default to first available size
 
-        // Create radio buttons dynamically
         val radioGroup = RadioGroup(this)
         sizeOptions.forEachIndexed { index, size ->
             val radioButton = RadioButton(this).apply {
@@ -175,22 +188,18 @@ class ItemDetail : AppCompatActivity() {
                 id = View.generateViewId()
             }
             radioGroup.addView(radioButton)
-
             if (index == 0) {
-                radioButton.isChecked = true // ✅ First size is selected by default
+                radioButton.isChecked = true
             }
         }
         sizeContainer.addView(radioGroup)
 
-        // ✅ Create the dialog and apply custom background
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .create()
 
-        dialog.window?.setBackgroundDrawableResource(R.drawable.dialog_background) // ✅ Apply Custom Border
-
         btnRequest.setOnClickListener {
-            sendRequest(uniformId, userId, selectedSize)
+            sendUnifRequest(uniformId, userId, selectedSize, gender)
             dialog.dismiss()
         }
 
@@ -201,6 +210,7 @@ class ItemDetail : AppCompatActivity() {
         dialog.show()
     }
 
+    //SIZE FORMATTING
     private fun formatSizes(sizes: String): SpannableStringBuilder {
         val spannable = SpannableStringBuilder()
 
@@ -234,5 +244,5 @@ class ItemDetail : AppCompatActivity() {
         return spannable
     }
 
-//TODO IF STATUS = AVAILABLE HIDE THE REQUEST BUTTON **OR** SAY "CANNOT REQUEST"
+//TODO IF STATUS = AVAILABLE HIDE THE REQUEST BUTTON **OR** SAY "CANNOT REQUEST" !!!DONE!!!
 }

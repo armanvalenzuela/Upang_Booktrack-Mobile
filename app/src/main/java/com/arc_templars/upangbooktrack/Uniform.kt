@@ -277,6 +277,7 @@ class Uniform : AppCompatActivity() {
         intent.putExtra("imageResId", item.imageResId)
         intent.putExtra("uniform_id", item.uniform_id) // ✅ Add uniform_id
         intent.putExtra("user_id", userId) // ✅ Pass user ID from session/storage
+        intent.putExtra("availability", item.availability)
         startActivity(intent)
     }
 }

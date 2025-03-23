@@ -117,6 +117,7 @@ class Book : AppCompatActivity() {
         intent.putExtra("description", "${item.category} | ${item.department}")
         intent.putExtra("stock", item.stock)
         intent.putExtra("imageResId", item.imageResId)
+        intent.putExtra("availability", item.availability)
         startActivity(intent)
     }
 
