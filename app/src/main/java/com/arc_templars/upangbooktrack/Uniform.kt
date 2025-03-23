@@ -122,6 +122,7 @@ class Uniform : AppCompatActivity() {
             "CAHS" -> departmentGroup.check(R.id.department_cahs)
             "CCJE" -> departmentGroup.check(R.id.department_ccje)
             "CITE" -> departmentGroup.check(R.id.department_cite)
+            "SHS" -> departmentGroup.check(R.id.department_shs)
         }
         availabilitySwitch.isChecked = showAvailableOnly
 
@@ -134,6 +135,7 @@ class Uniform : AppCompatActivity() {
                 R.id.department_cahs -> "CAHS"
                 R.id.department_ccje -> "CCJE"
                 R.id.department_cite -> "CITE"
+                R.id.department_shs -> "SHS"
                 else -> null
             }
         }

@@ -119,8 +119,8 @@
                     android:layout_marginTop="5dp"
                     android:layout_weight="1"
                     android:text="BOOKS"
-                    android:textSize="18sp"
-                    android:textStyle="bold"/>
+                    android:textSize="21sp"
+                    android:fontFamily="@font/poppins_bold"/>
 
                 <!-- Filter Button (Dropdown) -->
                 <ImageView

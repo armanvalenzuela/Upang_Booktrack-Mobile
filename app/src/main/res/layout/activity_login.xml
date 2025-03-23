@@ -22,9 +22,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="UPang Booktrack"
-        android:textSize="25sp"
+        android:textSize="29sp"
         android:textStyle="bold"
-        android:fontFamily=""
+        android:fontFamily="@font/poppins_bold"
         android:textColor="@color/dark_green"
         android:layout_marginTop="10dp"
         android:layout_gravity="center" />
@@ -35,6 +35,7 @@
         android:layout_height="wrap_content"
         android:text="Log in"
         android:textSize="25sp"
+        android:fontFamily="@font/poppins_bold"
         android:textStyle="bold"
         android:textColor="@color/black"
         android:layout_marginTop="20dp"
@@ -45,7 +46,9 @@
         android:id="@+id/etStudentNo"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:inputType="text"
         android:hint="Student No. or Email"
+        android:fontFamily="@font/poppins_light"
         android:background="@drawable/edittext_border"
         android:padding="10dp"
         android:layout_marginTop="10dp" />
@@ -68,6 +71,7 @@
                 android:layout_height="50dp"
                 android:hint="Password"
                 android:background="@drawable/edittext_border"
+                android:fontFamily="@font/poppins_light"
                 android:padding="10dp"
                 android:inputType="textPassword"
                 android:paddingEnd="50dp" />
@@ -102,6 +106,7 @@
             android:text="Remember Me"
             android:textColor="@color/green"
             android:textSize="14sp"
+            android:fontFamily="@font/poppins_light"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -114,6 +119,7 @@
             android:layout_marginBottom="4dp"
             android:text="Forgot Password?"
             android:textColor="@color/green"
+            android:fontFamily="@font/poppins_light"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -122,14 +128,18 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Login Button -->
+
     <Button
         android:id="@+id/btnLogin"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
+        android:layout_width="210dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/dark_green"
+        android:fontFamily="@font/poppins_bold"
         android:text="Login"
         android:textColor="@android:color/white"
-        android:backgroundTint="@color/dark_green"
-        android:layout_marginTop="20dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <View
         android:layout_width="350dp"
@@ -143,6 +153,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:text="No account yet? Sign Up"
+        android:fontFamily="@font/poppins_light"
         android:textColor="@color/green"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"

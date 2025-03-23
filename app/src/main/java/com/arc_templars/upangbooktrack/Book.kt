@@ -214,7 +214,7 @@ class Book : AppCompatActivity() {
         val studentName = sharedPreferences.getString("studentName", "Lastname, Firstname") ?: "Lastname, Firstname"
         val studentNumber = sharedPreferences.getString("studentNumber", "N/A") ?: "N/A"
 
-        txtUserInfo.text = "Welcome, $studentName"
+        txtUserInfo.text = "Name; $studentName"
 
         // Button click listeners
         btnChangePassword.setOnClickListener {

@@ -29,8 +29,8 @@
         android:layout_marginTop="12dp"
         android:text="Trouble Logging In?"
         android:textColor="@color/black"
+        android:fontFamily="@font/poppins_bold"
         android:textSize="25sp"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.123"
         app:layout_constraintStart_toStartOf="parent"
@@ -63,6 +63,7 @@
                 android:layout_marginTop="10dp"
                 android:background="@drawable/edittext_border"
                 android:hint="Email Address"
+                android:fontFamily="@font/poppins_light"
                 android:maxLines="1"
                 android:padding="10dp"
                 android:singleLine="true" />
@@ -88,7 +89,8 @@
                 android:layout_alignBottom="@id/btnSubmit"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="1dp"
-                android:text="Send OTP" />
+                android:text="Send OTP"
+                android:fontFamily="@font/poppins_light"/>
 
 
         </RelativeLayout>
@@ -102,6 +104,7 @@
             android:layout_marginTop="0dp"
             android:background="@drawable/edittext_border"
             android:hint="OTP Code"
+            android:fontFamily="@font/poppins_light"
             android:inputType="number"
             android:maxLength="6"
             android:paddingStart="10dp"
@@ -119,6 +122,7 @@
                 android:background="@drawable/edittext_border"
                 android:hint="New Password"
                 android:inputType="textPassword"
+                android:fontFamily="@font/poppins_light"
                 android:padding="10dp"
                 android:paddingEnd="50dp" />
 
@@ -146,6 +150,7 @@
                 android:layout_height="50dp"
                 android:background="@drawable/edittext_border"
                 android:hint="Confirm New Password"
+                android:fontFamily="@font/poppins_light"
                 android:inputType="textPassword"
                 android:padding="10dp"
                 android:paddingEnd="50dp" />
@@ -182,6 +187,7 @@
         android:layout_marginTop="12dp"
         android:text="Return to Login"
         android:textColor="@color/green"
+        android:fontFamily="@font/poppins_light"
         android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -189,12 +195,14 @@
 
     <Button
         android:id="@+id/btnReset"
-        android:layout_width="170dp"
+        android:layout_width="195dp"
         android:layout_height="60dp"
         android:layout_marginTop="12dp"
         android:backgroundTint="#1F631B"
         android:gravity="center"
         android:text="Reset Password"
+        android:textSize="16sp"
+        android:fontFamily="@font/poppins_bold"
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"

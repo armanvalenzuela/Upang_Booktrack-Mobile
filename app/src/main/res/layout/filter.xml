@@ -13,6 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Filter"
+        android:fontFamily="@font/poppins_bold"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"
@@ -36,6 +37,7 @@
                 android:layout_height="wrap_content"
                 android:text="Department"
                 android:textSize="16sp"
+                android:fontFamily="@font/poppins_bold"
                 android:textStyle="bold"
                 android:textColor="@android:color/black"
                 android:paddingBottom="8dp"/>
@@ -46,12 +48,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <RadioButton android:id="@+id/department_cea" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CEA"/>
-                <RadioButton android:id="@+id/department_cas" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CAS"/>
-                <RadioButton android:id="@+id/department_cma" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CMA"/>
-                <RadioButton android:id="@+id/department_cahs" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CAHS"/>
-                <RadioButton android:id="@+id/department_ccje" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CCJE"/>
-                <RadioButton android:id="@+id/department_cite" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CITE"/>
+                <RadioButton android:id="@+id/department_cea" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CEA" android:fontFamily="@font/poppins_light" android:textStyle="bold"/>
+                <RadioButton android:id="@+id/department_cas" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CAS" android:fontFamily="@font/poppins_light" android:textStyle="bold"/>
+                <RadioButton android:id="@+id/department_cma" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CMA" android:fontFamily="@font/poppins_light" android:textStyle="bold"/>
+                <RadioButton android:id="@+id/department_cahs" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CAHS" android:fontFamily="@font/poppins_light" android:textStyle="bold"/>
+                <RadioButton android:id="@+id/department_ccje" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CCJE" android:fontFamily="@font/poppins_light" android:textStyle="bold"/>
+                <RadioButton android:id="@+id/department_cite" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CITE" android:fontFamily="@font/poppins_light" android:textStyle="bold"/>
+                <RadioButton android:id="@+id/department_shs" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SHS" android:fontFamily="@font/poppins_light" android:textStyle="bold"/>/>
             </RadioGroup>
         </LinearLayout>
 
@@ -76,6 +79,7 @@
                 android:layout_height="wrap_content"
                 android:text="Availability"
                 android:textSize="14sp"
+                android:fontFamily="@font/poppins_bold"
                 android:textStyle="bold"
                 android:textColor="@android:color/black"
                 android:paddingBottom="4dp"/>
@@ -90,6 +94,7 @@
                 android:layout_height="wrap_content"
                 android:text="Show Available Only"
                 android:textSize="12sp"
+                android:fontFamily="@font/poppins_light"
                 android:textColor="@android:color/darker_gray"
                 android:paddingTop="4dp"/>
 
@@ -99,6 +104,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Apply"
+                android:fontFamily="@font/poppins_bold"
                 android:backgroundTint="@color/green"
                 android:textColor="@android:color/white"
                 android:layout_marginTop="15dp"/>
