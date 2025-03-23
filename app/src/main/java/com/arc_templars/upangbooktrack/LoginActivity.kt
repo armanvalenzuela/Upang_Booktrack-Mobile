@@ -2,12 +2,11 @@ package com.arc_templars.upangbooktrack
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -42,6 +41,32 @@ class LoginActivity : AppCompatActivity() {
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val tvForgotPassword = findViewById<TextView>(R.id.tvForgotPassword)
         val tvSignUp = findViewById<TextView>(R.id.tvSignUp)
+        val rememberMeSwitch = findViewById<Switch>(R.id.rememberme)
+
+        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val isRemembered = sharedPreferences.getBoolean("rememberMe", false)
+
+        if (isRemembered) {
+            val savedStudentNo = sharedPreferences.getString("studentNo", "")
+            val savedPassword = sharedPreferences.getString("password", "")
+            val studentName = sharedPreferences.getString("studentName", "")
+
+            if (!savedStudentNo.isNullOrEmpty() && !savedPassword.isNullOrEmpty()) {
+                etStudentNo.setText(savedStudentNo)
+                etPassword.setText(savedPassword)
+                etPassword.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+                rememberMeSwitch.isChecked = true
+
+                Toast.makeText(this, "Welcome back, $studentName!", Toast.LENGTH_SHORT).show()
+
+                // Delay the transition slightly so the toast can be seen
+                etStudentNo.postDelayed({
+                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
+                }, 1000) // 1-second delay
+            }
+        }
 
         btnLogin.setOnClickListener {
             val studentNo = etStudentNo.text.toString().trim()
@@ -55,38 +80,30 @@ class LoginActivity : AppCompatActivity() {
         }
 
         tvForgotPassword.setOnClickListener{
-            val intent = Intent (this@LoginActivity, ForgotPassActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this@LoginActivity, ForgotPassActivity::class.java))
             finish()
         }
 
         tvSignUp.setOnClickListener{
-            val intent = Intent (this@LoginActivity, SignupActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this@LoginActivity, SignupActivity::class.java))
             finish()
         }
 
         var isPasswordVisible = false
-
         btnTogglePass.setOnClickListener {
             if (isPasswordVisible) {
-
-                // Hide password
                 etPassword.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
-                btnTogglePass.setImageResource(R.drawable.eyelogo) // Use an appropriate closed-eye icon
+                btnTogglePass.setImageResource(R.drawable.eyelogo)
             } else {
-                // Show password
                 etPassword.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-                btnTogglePass.setImageResource(R.drawable.eye_closed) // Use an open-eye icon
+                btnTogglePass.setImageResource(R.drawable.eye_closed)
             }
-            etPassword.setSelection(etPassword.text.length) // Keep cursor at the end
+            etPassword.setSelection(etPassword.text.length)
             isPasswordVisible = !isPasswordVisible
         }
-
     }
 
-
-    private fun sendLoginData(identifier: String, password: String) {
+    private fun sendLoginData(identifier: String, password: String, isAutoLogin: Boolean = false) {
         val loginApi = ApiClient.getRetrofitInstance().create(LoginApi::class.java)
         loginApi.login(identifier, password).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
@@ -98,27 +115,34 @@ class LoginActivity : AppCompatActivity() {
                     if (status == "success") {
                         val userId = jsonObject.getInt("id")
                         val studentName = jsonObject.getString("studentName")
-                        val studentNo = jsonObject.getString("studentNo") // Get student number
-                        val email = jsonObject.getString("email") // Get email
+                        val studentNo = jsonObject.getString("studentNo")
+                        val email = jsonObject.getString("email")
 
-                        // Log for debugging
-                        Log.d("LoginActivity", "User ID: $userId")
-                        Log.d("LoginActivity", "Student Name: $studentName")
-                        Log.d("LoginActivity", "Student No: $studentNo")
-                        Log.d("LoginActivity", "Email: $email")
-
-                        // Save user data into SharedPreferences
                         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                        val rememberMeSwitch = findViewById<Switch>(R.id.rememberme)
+
                         with(sharedPreferences.edit()) {
                             putInt("id", userId)
                             putString("studentName", studentName)
-                            putString("studentNo", studentNo) // Store student number
-                            putString("email", email) // Store email
-                            putString("password", password) // TODO: MODIFY DB TO HANDLE PASSWORD HASHING HA! THIS IS FOR DEBUGGING MUNA
+                            putString("studentNo", studentNo)
+                            putString("email", email)
+
+                            if (rememberMeSwitch.isChecked) {
+                                putString("password", password)
+                                putBoolean("rememberMe", true)
+                            } else {
+                                remove("password")
+                                putBoolean("rememberMe", false)
+                            }
                             apply()
                         }
 
-                        Toast.makeText(this@LoginActivity, "Login successful!", Toast.LENGTH_SHORT).show()
+                        val welcomeMessage = if (isAutoLogin) {
+                            "Welcome back, $studentName!"
+                        } else {
+                            "Log in successful!"
+                        }
+                        Toast.makeText(this@LoginActivity, welcomeMessage, Toast.LENGTH_SHORT).show()
 
                         // Navigate to MainActivity
                         val intent = Intent(this@LoginActivity, MainActivity::class.java)

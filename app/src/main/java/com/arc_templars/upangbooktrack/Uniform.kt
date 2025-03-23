@@ -231,7 +231,6 @@ class Uniform : AppCompatActivity() {
         dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
 
         // Find views
-        val switchRememberMe = dialogView.findViewById<Switch>(R.id.switchRememberMe)
         val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
         val btnConfirmLogout = dialogView.findViewById<Button>(R.id.btnConfirmLogout)
 
@@ -244,12 +243,6 @@ class Uniform : AppCompatActivity() {
         btnConfirmLogout.setOnClickListener {
             val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
             val editor = sharedPreferences.edit()
-
-            // Check if "Remember Me" is checked
-            if (!switchRememberMe.isChecked) {
-                editor.clear() // Clear saved login info
-            }
-            editor.apply()
 
             // Redirect to LoginActivity
             startActivity(Intent(this, LoginActivity::class.java))

@@ -210,3 +210,5 @@ class ItemDetail : AppCompatActivity() {
         return "Available Sizes:\n$sizeList"
     }
 }
+
+//TODO IF STATUS = AVAILABLE HIDE THE REQUEST BUTTON **OR** SAY "CANNOT REQUEST"

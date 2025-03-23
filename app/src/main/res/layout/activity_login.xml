@@ -48,7 +48,8 @@
         android:hint="Student No. or Email"
         android:background="@drawable/edittext_border"
         android:padding="10dp"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="10dp"
+        android:singleLine="true"/>
 
     <!-- Password Field -->
     <LinearLayout

@@ -38,14 +38,6 @@
         android:layout_marginTop="8dp"/>
 
     <!-- "Remember Me" Checkbox -->
-    <Switch
-        android:id="@+id/switchRememberMe"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Remember me"
-        android:textSize="14sp"
-        android:textColor="@color/green"
-        android:layout_marginTop="8dp"/>
 
     <!-- Buttons Layout -->
     <LinearLayout
@@ -53,7 +45,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="48dp">
 
         <!-- Cancel Button -->
         <Button
