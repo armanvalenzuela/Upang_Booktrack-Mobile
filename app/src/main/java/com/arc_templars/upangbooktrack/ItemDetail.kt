@@ -43,6 +43,13 @@ interface RequestService {
         @Field("uniform_size") size: String,
         @Field("gender") gender: String
     ): Call<ResponseBody>
+
+    @FormUrlEncoded
+    @POST("user_request_book.php")
+    fun requestBook(
+        @Field("book_id") bookId: Int,
+        @Field("user_id") userId: Int
+    ): Call<ResponseBody>
 }
 
 class ItemDetail : AppCompatActivity() {
@@ -123,12 +130,34 @@ class ItemDetail : AppCompatActivity() {
 
         // REQUEST BUTTON LISTENER
         btnRequest.setOnClickListener {
-            if (uniformId != -1 && userId != -1) {
-                showSizeSelectionDialog(uniformId, userId, sizes, gender)
-            } else {
-                Toast.makeText(this, "Invalid item or user!", Toast.LENGTH_SHORT).show()
+            when (itemType) {
+                //IF TYPE IS A BOOK
+                "book" -> {
+                    val bookId = intent.getIntExtra("book_id", -1) // Get book ID
+                    Log.d("BookRequest", "Book ID: $bookId, User ID: $userId") // ✅ Log values before request
+
+                    if (bookId != -1 && userId != -1) {
+                        sendBookRequest(bookId, userId) // ✅ Request book
+                    } else {
+                        Toast.makeText(this, "Invalid book or user!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                //IF TYPE IS A UNIFORM
+                "uniform" -> {
+                    Log.d("UniformRequest", "Uniform ID: $uniformId, User ID: $userId") // ✅ Log values before request
+
+                    if (uniformId != -1 && userId != -1) {
+                        showSizeSelectionDialog(uniformId, userId, sizes, gender) // ✅ Request uniform
+                    } else {
+                        Toast.makeText(this, "Invalid uniform or user!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                else -> {
+                    Toast.makeText(this, "Unknown item type!", Toast.LENGTH_SHORT).show()
+                }
             }
         }
+
     }
 
     // FUNCT TO SEND UNIFORM REQUEST
@@ -161,6 +190,38 @@ class ItemDetail : AppCompatActivity() {
             }
         })
     }
+
+    private fun sendBookRequest(bookId: Int, userId: Int) {
+        val apiService = ApiClient.getRetrofitInstance().create(RequestService::class.java)
+
+        Log.d("sendBookRequest", "Sending request - Book ID: $bookId, User ID: $userId")
+
+        apiService.requestBook(bookId, userId).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful && response.body() != null) {
+                    try {
+                        val jsonResponse = response.body()!!.string()
+                        val jsonObject = JSONObject(jsonResponse)
+
+                        val message = jsonObject.getString("message")
+                        Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+
+                    } catch (e: Exception) {
+                        Toast.makeText(applicationContext, "Response error!", Toast.LENGTH_SHORT).show()
+                        Log.e("sendBookRequest", "JSON Parsing error: ${e.message}")
+                    }
+                } else {
+                    Toast.makeText(applicationContext, "Request failed! Try again.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Toast.makeText(applicationContext, "Network error! Check connection.", Toast.LENGTH_SHORT).show()
+                Log.e("sendBookRequest", "Request failed: ${t.message}")
+            }
+        })
+    }
+
 
 
     //SIZE SELECTION FOR UNIFORM WHEN REQUESTING

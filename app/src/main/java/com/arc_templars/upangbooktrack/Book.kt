@@ -113,6 +113,7 @@ class Book : AppCompatActivity() {
     private fun openItemDetail(item: Item) {
         val intent = Intent(this, ItemDetail::class.java)
         intent.putExtra("itemType", "book")
+        intent.putExtra("book_id", item.book_id) // ✅ Passes book_id
         intent.putExtra("title", item.name)
         intent.putExtra("description", "${item.category} | ${item.department}")
         intent.putExtra("stock", item.stock)

@@ -2,6 +2,7 @@ package com.arc_templars.upangbooktrack.models
 
 data class Item(
     val uniform_id: Int? = null,
+    val book_id: Int? = null,
     val name: String,
     val imageResId: String,
     val availability: Boolean,
