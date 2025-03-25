@@ -1,16 +1,16 @@
+//TODO: Fix the logic error of Uniforms and Books being in the same list(I tried, sorry bro :( )
+//TODO: add notification functionality
+//TODO: add bookmark functionality
+//TODO: add search functionality
+
 package com.arc_templars.upangbooktrack
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
-import android.view.View
 import android.widget.Button
-import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.PopupMenu
-import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog

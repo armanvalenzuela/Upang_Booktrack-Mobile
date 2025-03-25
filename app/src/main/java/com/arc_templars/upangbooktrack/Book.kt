@@ -1,11 +1,13 @@
+//TODO: add notification functionality
+//TODO: add bookmark functionality
+//TODO: add search functionality
+
 package com.arc_templars.upangbooktrack
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
 import android.widget.*
 import android.util.Log
 import androidx.appcompat.app.AlertDialog

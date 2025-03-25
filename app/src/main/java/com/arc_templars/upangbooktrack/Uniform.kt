@@ -1,3 +1,7 @@
+//TODO: add notification functionality
+//TODO: add bookmark functionality
+//TODO: add search functionality
+
 package com.arc_templars.upangbooktrack
 
 import android.content.Context

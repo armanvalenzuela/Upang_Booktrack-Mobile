@@ -57,13 +57,14 @@
                 <EditText
                     android:id="@+id/etsearchBar"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Search..."
-                    android:textSize="16sp"
+                    android:layout_height="21dp"
                     android:background="@android:color/transparent"
+                    android:hint="Search..."
+                    android:inputType="text"
                     android:paddingStart="10dp"
                     android:textColor="@android:color/black"
-                    android:textColorHint="@color/gray"/>
+                    android:textColorHint="@color/gray"
+                    android:textSize="16sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

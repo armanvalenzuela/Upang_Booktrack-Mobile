@@ -81,6 +81,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/itemTitle" />
 
+        <!-- Gender (For Uniforms) - Hidden by Default -->
+
         <TextView
             android:id="@+id/itemGender"
             android:layout_width="wrap_content"
@@ -89,6 +91,7 @@
             android:text="Gender: Unspecified"
             android:fontFamily="@font/poppins_light"
             android:textSize="16sp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"

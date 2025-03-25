@@ -222,8 +222,6 @@ class ItemDetail : AppCompatActivity() {
         })
     }
 
-
-
     //SIZE SELECTION FOR UNIFORM WHEN REQUESTING
     private fun showSizeSelectionDialog(uniformId: Int, userId: Int, sizes: String, gender: String) {
         val sizeOptions = sizes.split(" ")
@@ -236,17 +234,27 @@ class ItemDetail : AppCompatActivity() {
         }
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_request, null)
+        val dialog = AlertDialog.Builder(this, R.style.CustomDialog)
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(R.drawable.dialog_background) // Apply rounded corners
+
+
         val btnRequest = dialogView.findViewById<Button>(R.id.btnRequest)
         val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
         val sizeContainer = dialogView.findViewById<LinearLayout>(R.id.sizeContainer)
 
-        var selectedSize = sizeOptions[0] // ✅ Default to first available size
+        var selectedSize = sizeOptions[0] // Default to first available size
 
         val radioGroup = RadioGroup(this)
+        radioGroup.orientation = RadioGroup.VERTICAL // Ensure vertical layout
+
         sizeOptions.forEachIndexed { index, size ->
             val radioButton = RadioButton(this).apply {
                 text = size
                 id = View.generateViewId()
+                setOnClickListener { selectedSize = size }
             }
             radioGroup.addView(radioButton)
             if (index == 0) {
@@ -255,9 +263,6 @@ class ItemDetail : AppCompatActivity() {
         }
         sizeContainer.addView(radioGroup)
 
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .create()
 
         btnRequest.setOnClickListener {
             sendUnifRequest(uniformId, userId, selectedSize, gender)
@@ -304,6 +309,5 @@ class ItemDetail : AppCompatActivity() {
         }
         return spannable
     }
-
-//TODO IF STATUS = AVAILABLE HIDE THE REQUEST BUTTON **OR** SAY "CANNOT REQUEST" !!!DONE!!!
 }
+//TODO IF STATUS = AVAILABLE HIDE THE REQUEST BUTTON **OR** SAY "CANNOT REQUEST" !!!DONE!!!

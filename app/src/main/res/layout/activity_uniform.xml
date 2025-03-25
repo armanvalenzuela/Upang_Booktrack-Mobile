@@ -61,6 +61,7 @@
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
                     android:hint="Search..."
+                    android:inputType="text"
                     android:paddingStart="10dp"
                     android:textColor="@android:color/black"
                     android:textColorHint="@color/gray"
