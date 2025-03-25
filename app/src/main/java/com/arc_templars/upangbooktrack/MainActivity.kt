@@ -1,4 +1,4 @@
-//TODO: Fix the logic error of Uniforms and Books being in the same list(I tried, sorry bro :( )
+//TODO: Fix the logic error of Uniforms and Books being in the same list(I tried, sorry bro :( ) ~igotchu bro. improved na yung call request nya -kenken~
 //TODO: add notification functionality
 //TODO: add bookmark functionality
 //TODO: add search functionality
@@ -8,6 +8,7 @@ package com.arc_templars.upangbooktrack
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -26,7 +27,7 @@ import retrofit2.http.GET
 
 interface fetchAllApi {
     @GET("user_fetch_all.php")
-    fun getAll(): Call<BookUniformResponse>
+    fun getAll(): Call<Map<String, List<Map<String, String>>>>
 }
 
 data class BookUniformResponse(
@@ -87,49 +88,62 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // FETCH ALL DATA (MEDYO MAGULO PERO TIIS TIIS INTINDIHIN NYO LANG)
     private fun fetchAllItems() {
         val apiService = ApiClient.getRetrofitInstance().create(fetchAllApi::class.java)
-        apiService.getAll().enqueue(object : Callback<BookUniformResponse> {
-            override fun onResponse(call: Call<BookUniformResponse>, response: Response<BookUniformResponse>) {
+
+        // CALL THE API TO GET ALL DATA (BOTH BOOKS AND UNIFORMS)
+        apiService.getAll().enqueue(object : Callback<Map<String, List<Map<String, String>>>> {
+            override fun onResponse(
+                call: Call<Map<String, List<Map<String, String>>>>,
+                response: Response<Map<String, List<Map<String, String>>>>
+            ) {
                 if (response.isSuccessful) {
                     val data = response.body()
+                    Log.d("MainActivity", "API Response: $data") // DEBUG LOG
+
                     if (data != null) {
-                        val newList = mutableListOf<Item>()
+                        val newList = mutableListOf<Item>() // CREATE A LIST TO STORE THE ITEMS
 
-                        data.books.forEach { book ->
+                        // DITO PRINO PROCESS BOOKS
+                        data["books"]?.forEach { book ->
                             newList.add(
                                 Item(
-                                    uniform_id = null,
-                                    name = book.bookname,
-                                    imageResId = book.bookimage,
-                                    availability = book.bookstat == "available",
+                                    book_id = book["book_id"]?.toIntOrNull(), // BOOK ID FROM STRING TO INT
+                                    uniform_id = null, //IF ITS A BOOK NULL DAPAT SI UNIF ID
+                                    name = book["bookname"] ?: "Unknown",
+                                    imageResId = book["bookimage"] ?: "",
+                                    availability = book["bookstat"] == "available",
                                     category = "Book",
-                                    department = book.bookcollege,
-                                    description = book.bookdesc,
-                                    size = "",
-                                    gender = "",
-                                    stock = book.bookstock.toIntOrNull() ?: 0
+                                    department = book["bookcollege"] ?: "",
+                                    description = book["bookdesc"] ?: "",
+                                    size = "",// EMPTY KASI WALA NAMANG SIZE ANG BOOKS
+                                    gender = "", // EMPTY RIN KASI WALA NAMANG GENDER
+                                    stock = book["bookstock"]?.toIntOrNull() ?: 0 //STOCK TO INT
                                 )
                             )
                         }
 
-                        data.uniforms.forEach { uniform ->
+                        // PROCESS ALL UNIFORMS FROM THE API RESPONSE
+                        data["uniforms"]?.forEach { uniform ->
                             newList.add(
                                 Item(
-                                    uniform_id = uniform.uniform_id,
-                                    name = uniform.uniformname,
-                                    imageResId = uniform.uniformimage,
-                                    availability = uniform.uniformstat == "available",
+                                    book_id = null, // SINCE UNIFORM NO BOOK ID
+                                    uniform_id = uniform["uniform_id"]?.toIntOrNull(), // CONVERT uniform_id FROM STRING TO INT
+                                    name = uniform["uniformname"] ?: "Unknown",
+                                    imageResId = uniform["uniformimage"] ?: "",
+                                    availability = uniform["uniformstat"] == "available",
                                     category = "Uniform",
-                                    department = uniform.uniformcollege,
-                                    description = uniform.uniformdesc,
-                                    size = uniform.uniformsize,
-                                    gender = uniform.uniformgender,
-                                    stock = uniform.uniformstock.toIntOrNull() ?: 0
+                                    department = uniform["uniformcollege"] ?: "",
+                                    description = uniform["uniformdesc"] ?: "",
+                                    size = uniform["uniformsize"] ?: "",
+                                    gender = uniform["uniformgender"] ?: "",
+                                    stock = uniform["uniformstock"]?.toIntOrNull() ?: 0 // CONVERT STOCK TO INT, DEFAULT TO 0 IF EMPTY
                                 )
                             )
                         }
 
+                        // UPDATE THE RECYCLERVIEW WITH THE NEW LIST OF ITEMS
                         itemList = newList
                         itemAdapter.updateData(itemList)
                     }
@@ -138,31 +152,46 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<BookUniformResponse>, t: Throwable) {
+            override fun onFailure(call: Call<Map<String, List<Map<String, String>>>>, t: Throwable) {
                 Toast.makeText(this@MainActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
+
+
     // Function to Show item detail, fixed for both books and unif -kenchi
     private fun openItemDetail(item: Item) {
         val intent = Intent(this, ItemDetail::class.java)
+        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("user_id", -1) // Get user_id from session
 
-        if (item.category == "Book") {
-            intent.putExtra("itemType", "book")
-            intent.putExtra("title", item.name)
-            intent.putExtra("description", "${item.category} | ${item.department}")
+        intent.putExtra("itemType", if (item.uniform_id == null) "book" else "uniform")
+        intent.putExtra("title", item.name)
+        intent.putExtra("description", "${item.category} | ${item.department}")
+        intent.putExtra("imageResId", item.imageResId)
+        intent.putExtra("availability", item.availability)
+        intent.putExtra("user_id", userId) // ✅ Pass user ID from session
+
+        if (item.uniform_id == null) {
+            // It's a book
+            intent.putExtra("book_id", item.book_id) // ✅ Pass book ID
             intent.putExtra("stock", item.stock)
-        } else if (item.category == "Uniform") {
-            intent.putExtra("itemType", "uniform")
-            intent.putExtra("title", item.name)
-            intent.putExtra("description", "${item.category} | ${item.department}")
-            intent.putExtra("sizes", "Available Sizes: ${item.size}")
+        } else {
+            // It's a uniform
+            val relatedSizes = itemList
+                .filter { it.name == item.name && it.department == item.department && it.gender == item.gender }
+                .joinToString(" ") { "${it.size}:${it.stock}" }
+
+            intent.putExtra("uniform_id", item.uniform_id) // ✅ Pass uniform ID
+            intent.putExtra("sizes", relatedSizes) // ✅ Pass related sizes
+            intent.putExtra("gender", item.gender)
         }
 
-        intent.putExtra("imageResId", item.imageResId)
         startActivity(intent)
     }
+
+
 
     // Function to Show Profile Dropdown Menu
     private fun showProfileMenu() {
