@@ -41,7 +41,7 @@
         <ImageView
             android:id="@+id/itemImage"
             android:layout_width="350dp"
-            android:layout_height="350dp"
+            android:layout_height="300dp"
             android:scaleType="centerCrop"
             android:src="@drawable/placeholder"
             app:layout_constraintTop_toBottomOf="@id/btnBack"
@@ -66,6 +66,21 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/itemImage" />
 
+        <!-- Item Description -->
+
+        <TextView
+            android:id="@+id/DescriptionforItems"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="This is where the descripion for Books will be placed"
+            android:textSize="20sp"
+            android:gravity="start"
+            android:fontFamily="@font/poppins_light"
+            app:layout_constraintTop_toBottomOf="@id/itemTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+
         <!-- Availability Status (Centered) -->
 
         <TextView
@@ -79,7 +94,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/itemTitle" />
+            app:layout_constraintTop_toBottomOf="@id/DescriptionforItems" />
 
         <!-- Gender (For Uniforms) - Hidden by Default -->
 

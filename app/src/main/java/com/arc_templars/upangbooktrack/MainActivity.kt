@@ -169,6 +169,7 @@ class MainActivity : AppCompatActivity() {
         intent.putExtra("itemType", if (item.uniform_id == null) "book" else "uniform")
         intent.putExtra("title", item.name)
         intent.putExtra("description", "${item.category} | ${item.department}")
+        intent.putExtra("book_description", item.description)
         intent.putExtra("imageResId", item.imageResId)
         intent.putExtra("availability", item.availability)
         intent.putExtra("user_id", userId) // ✅ Pass user ID from session

@@ -276,6 +276,7 @@ class Uniform : AppCompatActivity() {
         intent.putExtra("itemType", "uniform")
         intent.putExtra("title", item.name)
         intent.putExtra("description", "${item.category} | ${item.department} | ${item.gender}")
+        intent.putExtra("item_description", item.description)
         intent.putExtra("sizes", relatedSizes)
         intent.putExtra("gender", item.gender)
         intent.putExtra("imageResId", item.imageResId)

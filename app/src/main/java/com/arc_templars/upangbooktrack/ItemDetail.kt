@@ -61,6 +61,7 @@ class ItemDetail : AppCompatActivity() {
         val itemImageDetail: ImageView = findViewById(R.id.itemImage)
         val itemTitle: TextView = findViewById(R.id.itemTitle)
         val itemDescription: TextView = findViewById(R.id.itemDescription)
+        val descriptionTextView = findViewById<TextView>(R.id.DescriptionforItems)
         val itemStocks: TextView = findViewById(R.id.itemStocks)
         val itemSizes: TextView = findViewById(R.id.itemSizes)
         val itemGender: TextView = findViewById(R.id.itemGender) // ✅ Gender TextView
@@ -78,6 +79,8 @@ class ItemDetail : AppCompatActivity() {
         val uniformId = intent.getIntExtra("uniform_id", -1) // Get uniform ID
         val availability = intent.getBooleanExtra("availability", false) // ✅ Get availability from API
         val isAvailable = availability // ✅ Use API response directly
+        val DescriptionforItems = intent.getStringExtra("item_description") ?: "No description available"
+        findViewById<TextView>(R.id.DescriptionforItems).text = DescriptionforItems
 
 
         //SHAREDPREF TO GET USER VALUES

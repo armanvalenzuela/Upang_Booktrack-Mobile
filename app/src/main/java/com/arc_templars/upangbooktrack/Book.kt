@@ -118,6 +118,7 @@ class Book : AppCompatActivity() {
         intent.putExtra("book_id", item.book_id) // ✅ Passes book_id
         intent.putExtra("title", item.name)
         intent.putExtra("description", "${item.category} | ${item.department}")
+        intent.putExtra("item_description", item.description)
         intent.putExtra("stock", item.stock)
         intent.putExtra("imageResId", item.imageResId)
         intent.putExtra("availability", item.availability)
