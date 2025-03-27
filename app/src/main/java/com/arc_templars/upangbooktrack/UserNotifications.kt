@@ -11,10 +11,14 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface fetchNotifs {
@@ -25,7 +29,7 @@ interface fetchNotifs {
 class UserNotifications : BottomSheetDialogFragment() {
 
     private lateinit var notificationRecyclerView: RecyclerView
-    private lateinit var notificationAdapter: NotificationAdapter  // Corrected here
+    private lateinit var notificationAdapter: NotificationAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,27 +40,27 @@ class UserNotifications : BottomSheetDialogFragment() {
         notificationRecyclerView = view.findViewById(R.id.rvNotifications)
         notificationRecyclerView.layoutManager = LinearLayoutManager(context)
 
-        // Get user_id from SharedPreferences
+        // GET USER ID FROM SHAREDPREF
         val sharedPreferences: SharedPreferences =
             requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("id", -1)  // Get user ID or default to -1 if not found
 
         if (userId != -1) {
-            // Fetch notifications using ApiClient
             fetchNotifications(userId)
         } else {
             Toast.makeText(context, "User ID not found", Toast.LENGTH_SHORT).show()
         }
 
-        // Close Button
+        // CLOSE BUTTON
         val closeButton: Button = view.findViewById(R.id.btnCloseNotifications)
         closeButton.setOnClickListener {
-            dismiss()  // Close the bottom sheet when the button is clicked
+            dismiss()  // DISMISS THE SHEET ONCE CLOSED
         }
 
         return view
     }
 
+    //FUNCT TO FETCH NOTIFICATION FOR THE SPECIFIC USER
     private fun fetchNotifications(userId: Int) {
         val apiService = ApiClient.getRetrofitInstance().create(fetchNotifs::class.java)
 
@@ -64,7 +68,7 @@ class UserNotifications : BottomSheetDialogFragment() {
             override fun onResponse(call: Call<NotificationResponse>, response: Response<NotificationResponse>) {
                 if (response.isSuccessful) {
                     val notifications = response.body()?.notifications ?: emptyList()
-                    notificationAdapter = NotificationAdapter(notifications)  // Corrected here
+                    notificationAdapter = NotificationAdapter(notifications)
                     notificationRecyclerView.adapter = notificationAdapter
                 } else {
                     Toast.makeText(context, "Failed to fetch notifications", Toast.LENGTH_SHORT).show()
@@ -77,3 +81,5 @@ class UserNotifications : BottomSheetDialogFragment() {
         })
     }
 }
+
+

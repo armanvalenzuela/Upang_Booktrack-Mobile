@@ -9,5 +9,7 @@ data class Notification(
     val notif_id: Int,
     val notifmessage: String,
     val notiftimestamp: String,
-    val notifstatus: String
+    val notifstatus: String,
+    val itemName: String,
+    val itemImage: String
 )

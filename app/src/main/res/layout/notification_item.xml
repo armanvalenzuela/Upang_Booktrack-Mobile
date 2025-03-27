@@ -1,32 +1,69 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:padding="16dp"
     android:background="@color/white"
-    android:layout_marginBottom="10dp">
+    android:layout_marginBottom="10dp"
+    android:gravity="center_vertical">
 
-    <TextView
-        android:id="@+id/notificationTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Notification Title"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+    <!-- Text Layout -->
+<LinearLayout
+android:layout_width="0dp"
+android:layout_height="wrap_content"
+android:orientation="vertical"
+android:layout_weight="1">
 
-    <TextView
-        android:id="@+id/notificationTimestamp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Timestamp"
-        android:textSize="18sp"
-        android:textColor="@color/black" />
+<TextView
+    android:id="@+id/notificationTitle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Notification Title"
+    android:textSize="16sp"
+    android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/notificationStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Status"
+<TextView
+    android:id="@+id/notificationItemName"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="ItemName"
+    android:textSize="18sp"
+    android:textColor="@color/black"/>
+
+<TextView
+    android:id="@+id/notificationTimestamp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Timestamp"
+    android:textSize="14sp"
+    android:textColor="@color/black" />
+
+
+<TextView
+    android:id="@+id/notificationStatus"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Fulfilled!"
+    android:textSize="12sp"
+    android:textColor="@color/green" />
+
+    <ImageView
+        android:id="@+id/haveReadbutton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/checkbutton"
+        android:layout_gravity="end"
         android:textSize="12sp"
-        android:textColor="@color/green" />
+        android:textColor="@color/green"
+        android:layout_marginTop="10dp"/>
 </LinearLayout>
+
+    <!-- Image -->
+<ImageView
+    android:id="@+id/notifImage"
+    android:layout_width="120dp"
+    android:layout_height="120dp"
+    android:scaleType="centerCrop"
+    android:src="@drawable/placeholder"
+    android:layout_marginStart="16dp" />
+    </LinearLayout>

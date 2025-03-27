@@ -12,6 +12,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.widget.*
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -49,6 +50,13 @@ class Book : AppCompatActivity() {
 
         // Show Dropdown Menu on Profile Icon Click
         profileIcon.setOnClickListener { showProfileMenu() }
+
+        //NOTIFICATION CLICK LISTENER
+        val notificationIcon = findViewById<View>(R.id.notificationIcon)
+        notificationIcon.setOnClickListener {
+            val bottomSheet = UserNotifications()
+            bottomSheet.show(supportFragmentManager, bottomSheet.tag)
+        }
 
         recyclerView = findViewById(R.id.recyclerView)
         btnFilter = findViewById(R.id.btnFilter)
