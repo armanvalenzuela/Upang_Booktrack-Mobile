@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -49,6 +50,12 @@ class MainActivity : AppCompatActivity() {
 
         // Show Dropdown Menu on Profile Icon Click
         profileIcon.setOnClickListener { showProfileMenu() }
+
+        val notificationIcon = findViewById<View>(R.id.notificationIcon)
+        notificationIcon.setOnClickListener {
+            val bottomSheet = UserNotifications()
+            bottomSheet.show(supportFragmentManager, bottomSheet.tag)
+        }
 
 
 
