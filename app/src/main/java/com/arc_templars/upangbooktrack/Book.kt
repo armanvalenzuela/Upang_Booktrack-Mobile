@@ -7,6 +7,8 @@ package com.arc_templars.upangbooktrack
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.widget.*
 import android.util.Log
@@ -34,8 +36,7 @@ class Book : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var btnFilter: ImageView
     private lateinit var itemAdapter: ItemAdapter
-
-
+    private lateinit var etSearchBar: EditText
     private var selectedCategory: String? = null
     private var showAvailableOnly: Boolean = false
     private var itemList = listOf<Item>()
@@ -60,6 +61,18 @@ class Book : AppCompatActivity() {
 
         // Open Filter Dialog on Click
         btnFilter.setOnClickListener { showFilterDialog() }
+
+        //Search Bar Implementation
+        etSearchBar = findViewById(R.id.etsearchBar)
+        etSearchBar.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                filterItems(s.toString())  // Calls the filtering function
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
 
         fetchBooks() // Fetch books from API
 
@@ -87,6 +100,13 @@ class Book : AppCompatActivity() {
                else -> false
            }
        }
+    }
+
+    private fun filterItems(query: String){
+        val filteredList = itemList.filter {
+            it.name.contains(query, ignoreCase = true)
+        }
+        itemAdapter.updateData(filteredList)
     }
 
     private fun fetchBooks() {
