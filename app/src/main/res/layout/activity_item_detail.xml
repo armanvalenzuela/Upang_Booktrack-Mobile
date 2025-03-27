@@ -51,8 +51,6 @@
 
         <!-- Item Title (Centered) -->
 
-        <!-- Category & Department (Centered) -->
-
         <TextView
             android:id="@+id/itemTitle"
             android:layout_width="wrap_content"
@@ -74,6 +72,7 @@
             android:layout_height="wrap_content"
             android:text="This is where the descripion for Books will be placed"
             android:textSize="20sp"
+            android:visibility="gone"
             android:gravity="start"
             android:fontFamily="@font/poppins_light"
             app:layout_constraintTop_toBottomOf="@id/itemTitle"
@@ -81,14 +80,13 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
 
-        <!-- Availability Status (Centered) -->
-
+        <!-- Category & Department (Centered) -->
         <TextView
             android:id="@+id/itemDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Category | Department"
+            android:text="Category | Department "
             android:textSize="16sp"
             android:fontFamily="@font/poppins_light"
             app:layout_constraintEnd_toEndOf="parent"
@@ -97,7 +95,6 @@
             app:layout_constraintTop_toBottomOf="@id/DescriptionforItems" />
 
         <!-- Gender (For Uniforms) - Hidden by Default -->
-
         <TextView
             android:id="@+id/itemGender"
             android:layout_width="wrap_content"
@@ -112,8 +109,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/itemDescription" />
 
-        <!-- Stock (For Books) - Hidden by Default -->
-
+        <!-- Availability Status (Centered) -->
         <TextView
             android:id="@+id/itemAvailability"
             android:layout_width="wrap_content"
@@ -139,6 +135,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/itemAvailability" />
 
+        <!-- Stock (For Books) - Hidden by Default -->
         <TextView
             android:id="@+id/itemStocks"
             android:layout_width="wrap_content"

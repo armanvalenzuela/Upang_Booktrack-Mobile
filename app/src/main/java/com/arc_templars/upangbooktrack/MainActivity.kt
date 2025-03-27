@@ -8,9 +8,12 @@ package com.arc_templars.upangbooktrack
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -38,6 +41,7 @@ data class BookUniformResponse(
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var etSearchBar: EditText
     private lateinit var recyclerView: RecyclerView
     private lateinit var itemAdapter: ItemAdapter
     private var itemList = listOf<Item>()
@@ -46,9 +50,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val profileIcon = findViewById<ImageView>(R.id.profileIcon)
+        //Show Dropdown Menu on Profile Icon Click
 
-        // Show Dropdown Menu on Profile Icon Click
+        val profileIcon = findViewById<ImageView>(R.id.profileIcon)
         profileIcon.setOnClickListener { showProfileMenu() }
 
         val notificationIcon = findViewById<View>(R.id.notificationIcon)
@@ -66,6 +70,17 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = itemAdapter
         recyclerView.addItemDecoration(GridSpacingItemDecoration(2, 30, true))
 
+        //Search Bar Implementation
+        etSearchBar = findViewById(R.id.etsearchBar)
+        etSearchBar.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                filterItems(s.toString())  // Calls the filtering function
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
 
         // Bottom Navigation
         fetchAllItems()
@@ -93,6 +108,13 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+
+    private fun filterItems(query: String){
+        val filteredList = itemList.filter {
+            it.name.contains(query, ignoreCase = true)
+        }
+        itemAdapter.updateData(filteredList)
     }
 
     // FETCH ALL DATA (MEDYO MAGULO PERO TIIS TIIS INTINDIHIN NYO LANG)

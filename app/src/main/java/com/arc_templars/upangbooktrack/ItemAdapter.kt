@@ -17,6 +17,8 @@ class ItemAdapter(
     private val onItemClick: (Item) -> Unit
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
+    private var filteredList: MutableList<Item> = itemList.toMutableList()
+
     class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val itemImage: ImageView = view.findViewById(R.id.itemImage)
         val itemName: TextView = view.findViewById(R.id.itemName)
@@ -77,8 +79,26 @@ class ItemAdapter(
 
     override fun getItemCount() = itemList.size
 
+    // 🔹 Filter Function for Search Bar
+    fun filter(query: String) {
+        filteredList.clear()
+        if (query.isEmpty()) {
+            filteredList.addAll(itemList) // Show all items when search is empty
+        } else {
+            val lowerCaseQuery = query.lowercase()
+            filteredList.addAll(itemList.filter {
+                it.name.lowercase().contains(lowerCaseQuery) ||  // Search by Name
+                        it.category.lowercase().contains(lowerCaseQuery) || // Search by Category
+                        it.department.lowercase().contains(lowerCaseQuery) // Search by Department
+            })
+        }
+        notifyDataSetChanged()
+    }
+
+    // 🔹 Update Adapter Data
     fun updateData(newList: List<Item>) {
         itemList = newList
+        filteredList = newList.toMutableList()
         notifyDataSetChanged()
     }
 }
