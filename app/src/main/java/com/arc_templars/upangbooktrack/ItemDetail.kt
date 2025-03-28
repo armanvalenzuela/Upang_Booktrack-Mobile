@@ -54,9 +54,18 @@ interface RequestService {
 
 class ItemDetail : AppCompatActivity() {
 
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var saveButton: ImageView
+    private var isSaved = false
+    private var itemId = -1
+    private var itemType = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_item_detail)
+
+        // Initialize shared preferences
+        sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
 
         val itemImageDetail: ImageView = findViewById(R.id.itemImage)
         val itemTitle: TextView = findViewById(R.id.itemTitle)
@@ -66,6 +75,7 @@ class ItemDetail : AppCompatActivity() {
         val itemSizes: TextView = findViewById(R.id.itemSizes)
         val itemGender: TextView = findViewById(R.id.itemGender) // ✅ Gender TextView
         val itemAvailability: TextView = findViewById(R.id.itemAvailability)
+        saveButton = findViewById(R.id.btnSave)
         val backButton: ImageView = findViewById(R.id.btnBack)
         val btnRequest: Button = findViewById(R.id.btnRequest) // ✅ Request Button
 
@@ -76,16 +86,17 @@ class ItemDetail : AppCompatActivity() {
         val sizes = intent.getStringExtra("sizes") ?: ""
         val gender = intent.getStringExtra("gender") ?: "Unspecified"
         val imageUrl = intent.getStringExtra("imageResId") ?: ""
+        val bookId = intent.getIntExtra("book_id", -1)
         val uniformId = intent.getIntExtra("uniform_id", -1) // Get uniform ID
         val availability = intent.getBooleanExtra("availability", false) // ✅ Get availability from API
         val isAvailable = availability // ✅ Use API response directly
         val DescriptionforItems = intent.getStringExtra("item_description") ?: "No description available"
         findViewById<TextView>(R.id.DescriptionforItems).text = DescriptionforItems
 
+        // Assign correct ID based on item type
+        itemId = if (itemType == "book") bookId else uniformId
 
-        //SHAREDPREF TO GET USER VALUES
-        val sharedPreferences: SharedPreferences =
-            getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        // Retrieve user ID from shared preferences
         val userId = sharedPreferences.getInt("id", -1)
 
         Log.d("ItemDetail", "Uniform ID: $uniformId, User ID: $userId")
@@ -171,7 +182,37 @@ class ItemDetail : AppCompatActivity() {
             }
         }
 
+        checkIfSaved()
+        saveButton.setOnClickListener { toggleSaveItem() }
+        backButton.setOnClickListener { finish() }
+    }
 
+    /*** Save & Bookmark Functions ***/
+    private fun checkIfSaved() {
+        val savedItems = sharedPreferences.getStringSet("savedItems", mutableSetOf()) ?: mutableSetOf()
+        isSaved = savedItems.contains("$itemType-$itemId")
+        updateSaveButton()
+    }
+
+    private fun toggleSaveItem() {
+        val savedItems = sharedPreferences.getStringSet("savedItems", mutableSetOf()) ?: mutableSetOf()
+        val itemKey = "$itemType-$itemId"
+
+        if (isSaved) {
+            savedItems.remove(itemKey)
+            Toast.makeText(this, "Removed from saved items", Toast.LENGTH_SHORT).show()
+        } else {
+            savedItems.add(itemKey)
+            Toast.makeText(this, "Saved successfully", Toast.LENGTH_SHORT).show()
+        }
+
+        sharedPreferences.edit().putStringSet("savedItems", savedItems).apply()
+        isSaved = !isSaved
+        updateSaveButton()
+    }
+
+    private fun updateSaveButton() {
+        saveButton.setImageResource(if (isSaved) R.drawable.unsaved else R.drawable.ic_bookmark)
     }
 
     // FUNCT TO SEND UNIFORM REQUEST
