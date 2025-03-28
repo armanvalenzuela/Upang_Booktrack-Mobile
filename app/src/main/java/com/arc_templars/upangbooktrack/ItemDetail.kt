@@ -134,46 +134,43 @@ class ItemDetail : AppCompatActivity() {
             itemStocks.visibility = TextView.GONE
         }
 
-        //CHECK AVAILABILITY, IF TRUE HIDE BUTTON IF FALSE SHOW
-        itemAvailability.text = if (isAvailable) "Available" else "Not Available"
-        itemAvailability.setTextColor(
-            resources.getColor(if (isAvailable) android.R.color.holo_green_dark else android.R.color.holo_red_dark)
-        )
-
-        btnRequest.isEnabled = !isAvailable
-        btnRequest.visibility = if (!isAvailable) View.VISIBLE else View.GONE
-
         backButton.setOnClickListener { finish() }
 
-        // REQUEST BUTTON LISTENER
-        btnRequest.setOnClickListener {
-            when (itemType) {
-                //IF TYPE IS A BOOK
-                "book" -> {
-                    val bookId = intent.getIntExtra("book_id", -1) // Get book ID
-                    Log.d("BookRequest", "Book ID: $bookId, User ID: $userId") // ✅ Log values before request
+        //CHECK AVAILABILITY, IF TRUE HIDE BUTTON IF FALSE SHOW
+        if (isAvailable) {
+            btnRequest.setBackgroundColor(resources.getColor(android.R.color.darker_gray)) // Set to gray
+            btnRequest.isEnabled = true // Keep it clickable for toast
+            btnRequest.setOnClickListener {
+                Toast.makeText(this, "Item is available, cannot request", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            btnRequest.isEnabled = true
+            btnRequest.visibility = View.VISIBLE
 
-                    if (bookId != -1 && userId != -1) {
-                        sendBookRequest(bookId, userId) // ✅ Request book
-                    } else {
-                        Toast.makeText(this, "Invalid book or user!", Toast.LENGTH_SHORT).show()
+            btnRequest.setOnClickListener {
+                when (itemType) {
+                    "book" -> {
+                        val bookId = intent.getIntExtra("book_id", -1)
+                        if (bookId != -1 && userId != -1) {
+                            sendBookRequest(bookId, userId)
+                        } else {
+                            Toast.makeText(this, "Invalid book or user!", Toast.LENGTH_SHORT).show()
+                        }
                     }
-                }
-                //IF TYPE IS A UNIFORM
-                "uniform" -> {
-                    Log.d("UniformRequest", "Uniform ID: $uniformId, User ID: $userId") // ✅ Log values before request
-
-                    if (uniformId != -1 && userId != -1) {
-                        showSizeSelectionDialog(uniformId, userId, sizes, gender) // ✅ Request uniform
-                    } else {
-                        Toast.makeText(this, "Invalid uniform or user!", Toast.LENGTH_SHORT).show()
+                    "uniform" -> {
+                        if (uniformId != -1 && userId != -1) {
+                            showSizeSelectionDialog(uniformId, userId, sizes, gender)
+                        } else {
+                            Toast.makeText(this, "Invalid uniform or user!", Toast.LENGTH_SHORT).show()
+                        }
                     }
-                }
-                else -> {
-                    Toast.makeText(this, "Unknown item type!", Toast.LENGTH_SHORT).show()
+                    else -> {
+                        Toast.makeText(this, "Unknown item type!", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
+
 
     }
 

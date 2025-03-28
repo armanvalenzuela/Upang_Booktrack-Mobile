@@ -2,11 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/white"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_backg"
     android:orientation="vertical"
     android:padding="16dp"
-    android:gravity="center">
+    android:gravity="center"
+    android:fitsSystemWindows="true">
+
+    <!-- Drag Indicator -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="5dp"
+        android:background="@color/gray"
+        android:layout_gravity="center"
+        android:layout_marginBottom="8dp"
+        android:radius="2dp"/>
 
     <!-- Title -->
     <TextView
@@ -20,16 +30,38 @@
         android:layout_gravity="center"
         android:paddingBottom="12dp"/>
 
+    <ImageView
+        android:id="@+id/ivNoNotifications"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/logo"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:id="@+id/tvNoNotifications"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No Current Notifications"
+        android:textSize="22sp"
+        android:fontFamily="@font/poppins_bold"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:paddingBottom="12dp"/>
+
     <!-- Notification List -->
+
+
+    <!-- Close Button -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvNotifications"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/light_grey"
         android:scrollbars="vertical"
-        app:layout_behavior="@string/bottom_sheet_behavior"
-        android:background="@color/light_grey"/>
+        app:layout_behavior="@string/bottom_sheet_behavior" />
 
-    <!-- Close Button -->
     <Button
         android:id="@+id/btnCloseNotifications"
         android:layout_width="125dp"
@@ -39,4 +71,5 @@
         android:textColor="@color/white"
         android:fontFamily="@font/poppins_bold"
         android:layout_marginTop="12dp"/>
+
 </LinearLayout>

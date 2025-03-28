@@ -78,30 +78,37 @@ class Uniform : AppCompatActivity() {
 
         fetchUniforms() // Fetch data from API
 
-        //Bottom Navigation - Highlight Uniform
+        // Bottom Navigation - Highlight Uniform
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
         bottomNavigation.selectedItemId = R.id.menu_uniform
         bottomNavigation.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.menu_home -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    overridePendingTransition(0, 0)
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish()
                     true
                 }
                 R.id.menu_book -> {
-                    startActivity(Intent(this, Book::class.java))
-                    overridePendingTransition(0, 0)
+                    val intent = Intent(this, Book::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish()
                     true
                 }
                 R.id.menu_uniform -> true
                 R.id.menu_bookmark -> {
-                    startActivity(Intent(this, Saved::class.java))
-                    overridePendingTransition(0, 0)
+                    val intent = Intent(this, Saved::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish()
                     true
                 }
                 else -> false
             }
         }
+
     }
 
     private fun filterItems(query: String){
@@ -318,5 +325,17 @@ class Uniform : AppCompatActivity() {
         intent.putExtra("user_id", userId) // ✅ Pass user ID from session/storage
         intent.putExtra("availability", item.availability)
         startActivity(intent)
+    }
+
+    private var backPressedTime: Long = 0
+
+    override fun onBackPressed() {
+        if (backPressedTime + 5000 > System.currentTimeMillis()) {
+            super.onBackPressed()
+            finishAffinity() // Closes the app
+        } else {
+            Toast.makeText(this, "Press back again to exit the app", Toast.LENGTH_SHORT).show()
+        }
+        backPressedTime = System.currentTimeMillis()
     }
 }

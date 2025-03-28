@@ -6,13 +6,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupMenu
+import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.Spinner
 import android.widget.Switch
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -27,6 +32,7 @@ class Saved : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var itemAdapter: ItemAdapter
     private lateinit var btnFilter: ImageView
+    private var selectedAvailability: String = "All"
 
 
     private var itemList = listOf(
@@ -80,18 +86,24 @@ class Saved : AppCompatActivity() {
         bottomNavigation.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.menu_home -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    overridePendingTransition(0, 0)
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish()
                     true
                 }
                 R.id.menu_book -> {
-                    startActivity(Intent(this, Book::class.java))
-                    overridePendingTransition(0, 0)
+                    val intent = Intent(this, Book::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish()
                     true
                 }
                 R.id.menu_uniform -> {
-                    startActivity(Intent(this, Uniform::class.java))
-                    overridePendingTransition(0, 0)
+                    val intent = Intent(this, Uniform::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish()
                     true
                 }
                 R.id.menu_bookmark -> true
@@ -110,44 +122,56 @@ class Saved : AppCompatActivity() {
     }
 
     // Function to Open Filter Dialog (Not yet polished)
+    //  Function to Open Filter Dialog
     private fun showFilterDialog() {
         val dialog = BottomSheetDialog(this)
         val view = LayoutInflater.from(this).inflate(R.layout.filter, null)
 
         val departmentGroup = view.findViewById<RadioGroup>(R.id.departmentGroup)
-        val availabilitySwitch = view.findViewById<Switch>(R.id.availabilitySwitch)
+        val availabilitySpinner = view.findViewById<Spinner>(R.id.availabilitySpinner)
         val applyButton = view.findViewById<Button>(R.id.applyFilterButton)
 
-        // Department Selection
+        // Hide SHS, CAS, and CITE Departments
+        listOf(R.id.department_shs, R.id.department_cas, R.id.department_cite).forEach { id ->
+            val department = view.findViewById<RadioButton>(id)
+            department.visibility = View.GONE
+            departmentGroup.removeView(department)
+        }
+
+        // Restore Previous Department Selection
         when (selectedCategory) {
             "CEA" -> departmentGroup.check(R.id.department_cea)
-            "CAS" -> departmentGroup.check(R.id.department_cas)
             "CMA" -> departmentGroup.check(R.id.department_cma)
             "CAHS" -> departmentGroup.check(R.id.department_cahs)
             "CCJE" -> departmentGroup.check(R.id.department_ccje)
-            "CITE" -> departmentGroup.check(R.id.department_cite)
         }
-        availabilitySwitch.isChecked = showAvailableOnly
 
-        // Category Selection
+        // Restore Previous Availability Selection
+        val availabilityOptions = arrayOf("All", "Available", "Not Available")
+        val adapter = ArrayAdapter(view.context, android.R.layout.simple_spinner_dropdown_item, availabilityOptions)
+        availabilitySpinner.adapter = adapter
+        availabilitySpinner.setSelection(availabilityOptions.indexOf(selectedAvailability))
+
+        // ✅ Set Department Selection
         departmentGroup.setOnCheckedChangeListener { _, checkedId ->
             selectedCategory = when (checkedId) {
                 R.id.department_cea -> "CEA"
-                R.id.department_cas -> "CAS"
                 R.id.department_cma -> "CMA"
                 R.id.department_cahs -> "CAHS"
                 R.id.department_ccje -> "CCJE"
-                R.id.department_cite -> "CITE"
                 else -> null
             }
         }
 
-        // Availability Toggle (Not yet polished)
-        availabilitySwitch.setOnCheckedChangeListener { _, isChecked ->
-            showAvailableOnly = isChecked
+        // ✅ Set Availability Selection
+        availabilitySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                selectedAvailability = availabilityOptions[position]
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        //Apply Filters and Close Dialog
+        // ✅ Apply Filters and Close Dialog
         applyButton.setOnClickListener {
             applyFilters()
             dialog.dismiss()
@@ -161,17 +185,18 @@ class Saved : AppCompatActivity() {
     private fun applyFilters() {
         var filteredList = itemList
 
-        // Filter by Category
+        // Filter by Department
         if (selectedCategory != null) {
             filteredList = filteredList.filter { it.department == selectedCategory }
         }
 
         // Filter by Availability
-        if (showAvailableOnly) {
-            filteredList = filteredList.filter { it.availability }
+        when (selectedAvailability) {
+            "Available" -> filteredList = filteredList.filter { it.availability }
+            "Not Available" -> filteredList = filteredList.filter { !it.availability }
         }
 
-        //  Update the RecyclerView
+        // Update the RecyclerView
         itemAdapter.updateData(filteredList)
     }
 
@@ -253,5 +278,17 @@ class Saved : AppCompatActivity() {
         }
 
         dialog.show()
+    }
+
+    private var backPressedTime: Long = 0
+
+    override fun onBackPressed() {
+        if (backPressedTime + 5000 > System.currentTimeMillis()) {
+            super.onBackPressed()
+            finishAffinity() // Closes the app
+        } else {
+            Toast.makeText(this, "Press back again to exit the app", Toast.LENGTH_SHORT).show()
+        }
+        backPressedTime = System.currentTimeMillis()
     }
 }

@@ -7,9 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -31,19 +34,31 @@ class UserNotifications : BottomSheetDialogFragment() {
     private lateinit var notificationRecyclerView: RecyclerView
     private lateinit var notificationAdapter: NotificationAdapter
 
+    override fun onStart() {
+        super.onStart()
+        dialog?.let {
+            val bottomSheet = it.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            bottomSheet?.layoutParams?.height = ViewGroup.LayoutParams.MATCH_PARENT
+
+            val behavior = BottomSheetBehavior.from(bottomSheet!!)
+            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.bottom_sheet_notifications, container, false)
 
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+
         notificationRecyclerView = view.findViewById(R.id.rvNotifications)
         notificationRecyclerView.layoutManager = LinearLayoutManager(context)
 
-        // GET USER ID FROM SHAREDPREF
         val sharedPreferences: SharedPreferences =
             requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("id", -1)  // Get user ID or default to -1 if not found
+        val userId = sharedPreferences.getInt("id", -1)
 
         if (userId != -1) {
             fetchNotifications(userId)
@@ -51,10 +66,9 @@ class UserNotifications : BottomSheetDialogFragment() {
             Toast.makeText(context, "User ID not found", Toast.LENGTH_SHORT).show()
         }
 
-        // CLOSE BUTTON
         val closeButton: Button = view.findViewById(R.id.btnCloseNotifications)
         closeButton.setOnClickListener {
-            dismiss()  // DISMISS THE SHEET ONCE CLOSED
+            dismiss()
         }
 
         return view
@@ -68,8 +82,15 @@ class UserNotifications : BottomSheetDialogFragment() {
             override fun onResponse(call: Call<NotificationResponse>, response: Response<NotificationResponse>) {
                 if (response.isSuccessful) {
                     val notifications = response.body()?.notifications ?: emptyList()
-                    notificationAdapter = NotificationAdapter(notifications)
-                    notificationRecyclerView.adapter = notificationAdapter
+
+                    if (notifications.isEmpty()) {
+                        view?.findViewById<TextView>(R.id.tvNoNotifications)?.visibility = View.VISIBLE
+                    } else {
+                        view?.findViewById<TextView>(R.id.tvNoNotifications)?.visibility = View.GONE
+                        notificationRecyclerView.visibility = View.VISIBLE
+                        notificationAdapter = NotificationAdapter(notifications)
+                        notificationRecyclerView.adapter = notificationAdapter
+                    }
                 } else {
                     Toast.makeText(context, "Failed to fetch notifications", Toast.LENGTH_SHORT).show()
                 }
@@ -80,6 +101,7 @@ class UserNotifications : BottomSheetDialogFragment() {
             }
         })
     }
+
 }
 
 
