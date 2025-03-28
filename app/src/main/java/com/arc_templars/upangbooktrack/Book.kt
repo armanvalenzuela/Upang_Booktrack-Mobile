@@ -37,7 +37,7 @@ class Book : AppCompatActivity() {
     private lateinit var itemAdapter: ItemAdapter
     private lateinit var etSearchBar: EditText
     private var selectedCategory: String? = null
-    private var showAvailableOnly: Boolean = false
+    private var selectedAvailability: String = "All"
     private var itemList = listOf<Item>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +55,6 @@ class Book : AppCompatActivity() {
             val bottomSheet = UserNotifications()
             bottomSheet.show(supportFragmentManager, bottomSheet.tag)
         }
-
 
         recyclerView = findViewById(R.id.recyclerView)
         btnFilter = findViewById(R.id.btnFilter)
@@ -156,36 +155,47 @@ class Book : AppCompatActivity() {
         val view = LayoutInflater.from(this).inflate(R.layout.filter, null)
 
         val departmentGroup = view.findViewById<RadioGroup>(R.id.departmentGroup)
-        val availabilitySwitch = view.findViewById<Switch>(R.id.availabilitySwitch)
+        val availabilitySpinner = view.findViewById<Spinner>(R.id.availabilitySpinner)
         val applyButton = view.findViewById<Button>(R.id.applyFilterButton)
 
-        // ✅ Restore Previous Selection
+        // Hide SHS, CAS, and CITE Departments
+        listOf(R.id.department_shs, R.id.department_cas, R.id.department_cite).forEach { id ->
+            val department = view.findViewById<RadioButton>(id)
+            department.visibility = View.GONE
+            departmentGroup.removeView(department)
+        }
+
+        // Restore Previous Department Selection
         when (selectedCategory) {
             "CEA" -> departmentGroup.check(R.id.department_cea)
-            "CAS" -> departmentGroup.check(R.id.department_cas)
             "CMA" -> departmentGroup.check(R.id.department_cma)
             "CAHS" -> departmentGroup.check(R.id.department_cahs)
             "CCJE" -> departmentGroup.check(R.id.department_ccje)
-            "CITE" -> departmentGroup.check(R.id.department_cite)
         }
-        availabilitySwitch.isChecked = showAvailableOnly
 
-        // ✅ Set Category Selection
+        // Restore Previous Availability Selection
+        val availabilityOptions = arrayOf("All", "Available", "Not Available")
+        val adapter = ArrayAdapter(view.context, android.R.layout.simple_spinner_dropdown_item, availabilityOptions)
+        availabilitySpinner.adapter = adapter
+        availabilitySpinner.setSelection(availabilityOptions.indexOf(selectedAvailability))
+
+        // ✅ Set Department Selection
         departmentGroup.setOnCheckedChangeListener { _, checkedId ->
             selectedCategory = when (checkedId) {
                 R.id.department_cea -> "CEA"
-                R.id.department_cas -> "CAS"
                 R.id.department_cma -> "CMA"
                 R.id.department_cahs -> "CAHS"
                 R.id.department_ccje -> "CCJE"
-                R.id.department_cite -> "CITE"
                 else -> null
             }
         }
 
-        // ✅ Set Availability Toggle
-        availabilitySwitch.setOnCheckedChangeListener { _, isChecked ->
-            showAvailableOnly = isChecked
+        // ✅ Set Availability Selection
+        availabilitySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                selectedAvailability = availabilityOptions[position]
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
         // ✅ Apply Filters and Close Dialog
@@ -202,17 +212,18 @@ class Book : AppCompatActivity() {
     private fun applyFilters() {
         var filteredList = itemList
 
-        //  Filter by Category
+        // Filter by Department
         if (selectedCategory != null) {
             filteredList = filteredList.filter { it.department == selectedCategory }
         }
 
-        //  Filter by Availability
-        if (showAvailableOnly) {
-            filteredList = filteredList.filter { it.availability }
+        // Filter by Availability
+        when (selectedAvailability) {
+            "Available" -> filteredList = filteredList.filter { it.availability }
+            "Not Available" -> filteredList = filteredList.filter { !it.availability }
         }
 
-        //  Update the RecyclerView
+        // Update the RecyclerView
         itemAdapter.updateData(filteredList)
     }
 
