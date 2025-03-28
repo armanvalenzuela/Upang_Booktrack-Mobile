@@ -5,9 +5,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/dialog_background"
     android:orientation="vertical"
-    android:padding="20dp"
+    android:padding="10dp"
     android:gravity="center"
-    android:elevation="8dp">
+    android:elevation="5dp">
 
 
     <!-- Title -->
@@ -32,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Are you sure you want to log out? You will need to re-enter your credentials to sign in again."
-        android:textSize="14sp"
+        android:textSize="13sp"
         android:fontFamily="@font/poppins_light"
         android:textColor="@color/black"
         android:gravity="center"
@@ -46,7 +46,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginTop="48dp">
+        android:layout_marginTop="15dp">
 
         <!-- Cancel Button -->
         <Button

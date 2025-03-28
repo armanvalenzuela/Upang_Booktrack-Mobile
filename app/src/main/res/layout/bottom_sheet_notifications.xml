@@ -32,7 +32,7 @@
     <!-- Close Button -->
     <Button
         android:id="@+id/btnCloseNotifications"
-        android:layout_width="match_parent"
+        android:layout_width="125dp"
         android:layout_height="wrap_content"
         android:text="Close"
         android:backgroundTint="@color/green"

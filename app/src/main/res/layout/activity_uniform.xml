@@ -61,6 +61,8 @@
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
                     android:hint="Search..."
+                    android:fontFamily="@font/poppins_light"
+                    android:textColorHighlight="@color/green"
                     android:inputType="text"
                     android:paddingStart="10dp"
                     android:textColor="@android:color/black"
@@ -75,8 +77,8 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="15dp"
             android:layout_marginEnd="5dp"
+            android:layout_marginTop="17dp"
             android:src="@drawable/bell"
             app:tint="@color/dark_yellow" />
 
@@ -85,11 +87,11 @@
             android:id="@+id/profileIcon"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="5dp"
+            android:layout_marginTop="17dp"
             android:src="@drawable/profile"
-            app:tint="@color/dark_green" />
+            app:tint="@color/dark_green"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="5dp"/>
     </LinearLayout>
 
     <ScrollView

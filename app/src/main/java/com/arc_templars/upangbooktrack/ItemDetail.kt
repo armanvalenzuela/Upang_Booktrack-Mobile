@@ -284,7 +284,7 @@ class ItemDetail : AppCompatActivity() {
         val spannable = SpannableStringBuilder()
 
         //
-        val label = SpannableString("Sizes:\n \n")
+        val label = SpannableString("Sizes:\n")
         label.setSpan(StyleSpan(Typeface.BOLD), 0, label.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         spannable.append(label)
 

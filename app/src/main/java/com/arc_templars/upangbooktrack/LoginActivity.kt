@@ -2,6 +2,7 @@ package com.arc_templars.upangbooktrack
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -10,6 +11,7 @@ import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
@@ -36,12 +38,16 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         val etStudentNo = findViewById<EditText>(R.id.etStudentNo)
+        etStudentNo.setHighlightColor(ContextCompat.getColor(this, R.color.green))
         val etPassword = findViewById<EditText>(R.id.etPassword)
         val btnTogglePass = findViewById<ImageView>(R.id.btnTogglePass)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val tvForgotPassword = findViewById<TextView>(R.id.tvForgotPassword)
         val tvSignUp = findViewById<TextView>(R.id.tvSignUp)
         val rememberMeSwitch = findViewById<Switch>(R.id.rememberme)
+
+        rememberMeSwitch.thumbTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.green))
+        rememberMeSwitch.trackTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.dark_green))
 
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val isRemembered = sharedPreferences.getBoolean("rememberMe", false)

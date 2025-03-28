@@ -42,19 +42,24 @@
         android:layout_gravity="left" />
 
     <!-- Username Field -->
+
+    <!-- Password Field -->
     <EditText
         android:id="@+id/etStudentNo"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:inputType="text"
-        android:hint="Student No. or Email"
-        android:fontFamily="@font/poppins_light"
-        android:background="@drawable/edittext_border"
-        android:padding="10dp"
         android:layout_marginTop="10dp"
-        android:singleLine="true"/>
+        android:background="@drawable/edittext_border"
+        android:fontFamily="@font/poppins_light"
+        android:hint="Student No. or Email"
+        android:textSize="16sp"
+        android:textColorHighlight="@color/green"
+        android:inputType="text"
+        android:padding="10dp"
+        android:singleLine="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Password Field -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -71,8 +76,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:hint="Password"
+                android:textSize="16sp"
                 android:background="@drawable/edittext_border"
                 android:fontFamily="@font/poppins_light"
+                android:textColorHighlight="@color/green"
                 android:padding="10dp"
                 android:inputType="textPassword"
                 android:paddingEnd="50dp" />
@@ -107,6 +114,9 @@
             android:text="Remember Me"
             android:textColor="@color/green"
             android:textSize="14sp"
+            android:buttonTint="@color/green"
+            android:thumbTint="@color/green"
+            android:trackTint="@color/green"
             android:fontFamily="@font/poppins_light"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

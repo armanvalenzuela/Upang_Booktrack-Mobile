@@ -1,6 +1,4 @@
-//TODO: add notification functionality
 //TODO: add bookmark functionality
-//TODO: add search functionality
 
 package com.arc_templars.upangbooktrack
 
@@ -58,6 +56,7 @@ class Book : AppCompatActivity() {
             bottomSheet.show(supportFragmentManager, bottomSheet.tag)
         }
 
+
         recyclerView = findViewById(R.id.recyclerView)
         btnFilter = findViewById(R.id.btnFilter)
 
@@ -76,9 +75,7 @@ class Book : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 filterItems(s.toString())  // Calls the filtering function
             }
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
