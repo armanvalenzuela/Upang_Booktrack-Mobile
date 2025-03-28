@@ -1,6 +1,4 @@
-//TODO: add notification functionality
 //TODO: add bookmark functionality
-//TODO: add search functionality
 
 package com.arc_templars.upangbooktrack
 
@@ -45,9 +43,8 @@ class Uniform : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_uniform)
 
-        val profileIcon = findViewById<ImageView>(R.id.profileIcon)
-
         // Show Dropdown Menu on Profile Icon Click
+        val profileIcon = findViewById<ImageView>(R.id.profileIcon)
         profileIcon.setOnClickListener { showProfileMenu() }
 
         //NOTIFICATION CLICK LISTENER
@@ -75,9 +72,7 @@ class Uniform : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 filterItems(s.toString())  // Calls the filtering function
             }
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 

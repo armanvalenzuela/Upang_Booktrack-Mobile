@@ -20,13 +20,15 @@ android:layout_weight="1">
     android:layout_height="wrap_content"
     android:text="Notification Title"
     android:textSize="16sp"
-    android:textStyle="bold" />
+    android:fontFamily="@font/poppins_bold"
+    android:textColor="@color/black" />
 
 <TextView
     android:id="@+id/notificationItemName"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="ItemName"
+    android:fontFamily="@font/poppins_light"
     android:textSize="18sp"
     android:textColor="@color/black"/>
 
@@ -35,6 +37,7 @@ android:layout_weight="1">
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="Timestamp"
+    android:fontFamily="@font/poppins_light"
     android:textSize="14sp"
     android:textColor="@color/black" />
 
@@ -44,6 +47,7 @@ android:layout_weight="1">
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="Fulfilled!"
+    android:fontFamily="@font/poppins_light"
     android:textSize="12sp"
     android:textColor="@color/green" />
 
