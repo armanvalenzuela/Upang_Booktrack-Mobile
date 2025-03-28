@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arc_templars.upangbooktrack.models.Item
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetDialog
-/*
+
 
 class Saved : AppCompatActivity() {
 
@@ -30,13 +30,14 @@ class Saved : AppCompatActivity() {
 
 
     private var itemList = listOf(
-        Item("","Applied Anatomy and Physiology", "", true, "Book", "CAHS", "", "", "", 0),
-        Item("Foundation of Nursing Theories", "", false, "Book", "CAHS", "", "", "", 0),
-        Item("Intermediate Accounting", "", true, "Book", "CMA", "", "", "", 0),
-        Item("Auditing and Assurance Services", "", false, "Book", "CMA", "", "", "", 0),
-        Item("Advanced Engineering Mathematics", "", true, "Book", "CEA", "", "", "", 0),
-        Item("Basic Electronics", "", false, "Book", "CEA", "", "", "", 0)
+        Item(null, null, "Applied Anatomy and Physiology", "", true, "Book", "CAHS", "", "", "", 0),
+        Item(null, null, "Foundation of Nursing Theories", "", false, "Book", "CAHS", "", "", "", 0),
+        Item(null, null, "Intermediate Accounting", "", true, "Book", "CMA", "", "", "", 0),
+        Item(null, null, "Auditing and Assurance Services", "", false, "Book", "CMA", "", "", "", 0),
+        Item(null, null, "Advanced Engineering Mathematics", "", true, "Book", "CEA", "", "", "", 0),
+        Item(null, null, "Basic Electronics", "", false, "Book", "CEA", "", "", "", 0)
     )
+
 
     private var selectedCategory: String? = null
     private var showAvailableOnly: Boolean = false
@@ -50,6 +51,13 @@ class Saved : AppCompatActivity() {
         // Show Dropdown Menu on Profile Icon Click
         profileIcon.setOnClickListener {
             showProfileMenu()
+        }
+
+        //NOTIFICATION CLICK LISTENER
+        val notificationIcon = findViewById<View>(R.id.notificationIcon)
+        notificationIcon.setOnClickListener {
+            val bottomSheet = UserNotifications()
+            bottomSheet.show(supportFragmentManager, bottomSheet.tag)
         }
 
         recyclerView = findViewById(R.id.recyclerView)
@@ -224,7 +232,6 @@ class Saved : AppCompatActivity() {
         dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
 
         // Find views
-        val switchRememberMe = dialogView.findViewById<Switch>(R.id.switchRememberMe)
         val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
         val btnConfirmLogout = dialogView.findViewById<Button>(R.id.btnConfirmLogout)
 
@@ -238,12 +245,6 @@ class Saved : AppCompatActivity() {
             val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
             val editor = sharedPreferences.edit()
 
-            // Check if "Remember Me" is checked
-            if (!switchRememberMe.isChecked) {
-                editor.clear() // Clear saved login info
-            }
-            editor.apply()
-
             // Redirect to LoginActivity
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
@@ -254,4 +255,3 @@ class Saved : AppCompatActivity() {
         dialog.show()
     }
 }
-*/
