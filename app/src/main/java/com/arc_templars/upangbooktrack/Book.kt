@@ -97,11 +97,11 @@ class Book : AppCompatActivity() {
                     overridePendingTransition(0, 0)
                     true
                 }
-                /* R.id.menu_bookmark -> {
+                R.id.menu_bookmark -> {
                    startActivity(Intent(this, Saved::class.java))
                    overridePendingTransition(0, 0)
                    true
-               } */
+               }
                else -> false
            }
        }
