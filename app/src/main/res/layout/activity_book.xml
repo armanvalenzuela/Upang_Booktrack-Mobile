@@ -93,64 +93,73 @@
             android:layout_marginEnd="5dp"/>
     </LinearLayout>
 
-    <ScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/headerLayout"
         app:layout_constraintBottom_toTopOf="@id/bottomNavigationContainer">
 
-        <LinearLayout
+        <!-- SwipeRefreshLayout for pull-to-refresh -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="10dp">
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <!-- Section Title with Filter Button -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingBottom="5dp">
+                android:orientation="vertical"
+                android:padding="10dp">
 
-                <TextView
-                    android:id="@+id/tvBooks"
-                    android:layout_width="wrap_content"
+                <!-- Section Title with Filter Button -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_weight="1"
-                    android:text="BOOKS"
-                    android:textSize="21sp"
-                    android:fontFamily="@font/poppins_bold"/>
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingBottom="5dp">
 
-                <!-- Filter Button (Dropdown) -->
-                <ImageView
-                    android:id="@+id/btnFilter"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginEnd="15dp"
-                    app:tint="@color/green"
-                    android:src="@drawable/filter"
-                    android:contentDescription="Filter Items"
-                    android:layout_marginStart="10dp"/>
+                    <TextView
+                        android:id="@+id/tvBooks"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_weight="1"
+                        android:text="BOOKS"
+                        android:textSize="21sp"
+                        android:fontFamily="@font/poppins_bold"/>
+
+                    <!-- Filter Button (Dropdown) -->
+                    <ImageView
+                        android:id="@+id/btnFilter"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginEnd="15dp"
+                        app:tint="@color/green"
+                        android:src="@drawable/filter"
+                        android:contentDescription="Filter Items"
+                        android:layout_marginStart="10dp"/>
+                </LinearLayout>
+
+                <!-- RecyclerView inside SwipeRefreshLayout -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:clipToPadding="false"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:gravity="center"
+                    android:layout_gravity="center"/>
             </LinearLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-            <!-- RecyclerView -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:clipToPadding="false"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                app:layout_constraintTop_toBottomOf="@id/headerLayout"
-                app:layout_constraintBottom_toTopOf="@id/bottomNavigationContainer"
-                android:gravity="center"
-                android:layout_gravity="center"/>
-        </LinearLayout>
-    </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <!-- Floating Bottom Navigation Bar -->
     <androidx.cardview.widget.CardView

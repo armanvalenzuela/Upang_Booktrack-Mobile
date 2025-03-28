@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arc_templars.upangbooktrack.models.Item
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -32,6 +33,7 @@ interface fetchBookApi {
 
 class Book : AppCompatActivity() {
 
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var recyclerView: RecyclerView
     private lateinit var btnFilter: ImageView
     private lateinit var itemAdapter: ItemAdapter
@@ -77,6 +79,16 @@ class Book : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
+        recyclerView = findViewById(R.id.recyclerView)
+
+        // Initialize SwipeRefreshLayout
+        swipeRefreshLayout.setOnRefreshListener {
+            itemList = emptyList()  // Clear current list
+            itemAdapter.updateData(itemList) // Notify adapter
+            fetchBooks()  // Refresh uniforms when swiped down
+        }
 
         fetchBooks() // Fetch books from API
 
@@ -134,6 +146,7 @@ class Book : AppCompatActivity() {
                 } else {
                     Toast.makeText(this@Book, "Failed to fetch books", Toast.LENGTH_SHORT).show()
                 }
+                swipeRefreshLayout.isRefreshing = false  // Hide loading indicator
             }
 
             override fun onFailure(call: Call<List<Item>>, t: Throwable) {

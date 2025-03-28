@@ -20,6 +20,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.arc_templars.upangbooktrack.models.Item
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import retrofit2.Call
@@ -39,6 +40,7 @@ data class BookUniformResponse(
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var etSearchBar: EditText
     private lateinit var recyclerView: RecyclerView
     private lateinit var itemAdapter: ItemAdapter
@@ -47,6 +49,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
+        swipeRefreshLayout.setOnRefreshListener {
+            refreshItems()
+        }
 
         // Show Dropdown Menu on Profile Icon Click
         val profileIcon = findViewById<ImageView>(R.id.profileIcon)
@@ -118,6 +125,12 @@ class MainActivity : AppCompatActivity() {
         itemAdapter.updateData(filteredList)
     }
 
+    private fun refreshItems() {
+        itemList = emptyList()  // Clear current list
+        itemAdapter.updateData(itemList) // Notify adapter
+        fetchAllItems() // Fetch updated data
+    }
+
     // FETCH ALL DATA (MEDYO MAGULO PERO TIIS TIIS INTINDIHIN NYO LANG)
     private fun fetchAllItems() {
         val apiService = ApiClient.getRetrofitInstance().create(fetchAllApi::class.java)
@@ -180,6 +193,7 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     Toast.makeText(this@MainActivity, "Failed to fetch data", Toast.LENGTH_SHORT).show()
                 }
+                swipeRefreshLayout.isRefreshing = false
             }
 
             override fun onFailure(call: Call<Map<String, List<Map<String, String>>>>, t: Throwable) {
