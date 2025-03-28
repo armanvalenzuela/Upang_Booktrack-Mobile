@@ -35,29 +35,31 @@ class ItemAdapter(
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        val item = itemList[position]
+        val item = filteredList[position] // 🔹 Use filteredList instead of itemList
 
         Log.d("ItemAdapter", "Image URL: ${item.imageResId}")  // Debugging
 
-        // Uses Glide to load image from url (check php to see the url)
+        // 🔹 Ensure proper image loading (prevents issues with empty URLs)
+        val imageUrl = item.imageResId.ifEmpty { "default_image_url" } // Replace with an actual default URL if needed
+
         Glide.with(holder.itemView.context)
-            .load(item.imageResId) // URL of the image
-            .placeholder(R.drawable.placeholder) // Optional placeholder
+            .load(imageUrl) // Load image safely
+            .placeholder(R.drawable.placeholder) // Placeholder if image fails to load
             .into(holder.itemImage)
 
         holder.itemName.text = item.name
 
-        // hide textview if value is null or empty (for books with no size or gender)
+        // 🔹 Hide textview if value is null or empty (for books with no size or gender)
         if (item.size.isNullOrEmpty()) {
-            holder.itemSize.visibility = View.GONE // Hide the TextView
+            holder.itemSize.visibility = View.GONE
         } else {
-            holder.itemSize.visibility = View.VISIBLE // Show it if there's a size
+            holder.itemSize.visibility = View.VISIBLE
             holder.itemSize.text = "Size: ${item.size}"
         }
 
         if (item.gender.isNullOrEmpty()){
             holder.itemGender.visibility = View.GONE
-        } else{
+        } else {
             holder.itemGender.visibility = View.VISIBLE
             holder.itemGender.text = "Gender: ${item.gender}"
         }
@@ -65,7 +67,7 @@ class ItemAdapter(
         holder.itemCategory.text = item.category
         holder.itemDepartment.text = item.department
 
-        // Set availability text and color
+        // 🔹 Set availability text and color
         if (item.availability) {
             holder.itemAvailability.text = "Available"
             holder.itemAvailability.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.holo_green_dark))
@@ -77,20 +79,19 @@ class ItemAdapter(
         holder.itemView.setOnClickListener { onItemClick(item) }
     }
 
-    override fun getItemCount() = itemList.size
+    override fun getItemCount() = filteredList.size // 🔹 Use filteredList instead of itemList
 
     // 🔹 Filter Function for Search Bar
     fun filter(query: String) {
-        filteredList.clear()
-        if (query.isEmpty()) {
-            filteredList.addAll(itemList) // Show all items when search is empty
+        val lowerCaseQuery = query.lowercase().trim()
+        filteredList = if (lowerCaseQuery.isEmpty()) {
+            itemList.toMutableList() // Show all items when search is empty
         } else {
-            val lowerCaseQuery = query.lowercase()
-            filteredList.addAll(itemList.filter {
+            itemList.filter {
                 it.name.lowercase().contains(lowerCaseQuery) ||  // Search by Name
                         it.category.lowercase().contains(lowerCaseQuery) || // Search by Category
                         it.department.lowercase().contains(lowerCaseQuery) // Search by Department
-            })
+            }.toMutableList()
         }
         notifyDataSetChanged()
     }

@@ -97,6 +97,20 @@ class ItemDetail : AppCompatActivity() {
             .error(R.drawable.placeholder)
             .into(itemImageDetail)
 
+        // DYNAMIC IMAGE SIZE ADJUSTMENT FOR BOOKS
+        if (itemType == "book") {
+            val displayMetrics = resources.displayMetrics
+            val screenWidth = displayMetrics.widthPixels
+
+            // Adjust height based on width to maintain aspect ratio (change ratio if needed)
+            val imageHeight = (screenWidth * 1.3).toInt()
+
+            itemImageDetail.layoutParams.width = screenWidth
+            itemImageDetail.layoutParams.height = imageHeight
+            itemImageDetail.scaleType = ImageView.ScaleType.FIT_CENTER
+            itemImageDetail.requestLayout()
+        }
+
         itemTitle.text = title
 
         //DESCRIPTION FORMATTING
