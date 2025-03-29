@@ -79,7 +79,12 @@ class UserNotifications : BottomSheetDialogFragment() {
 
         val readAllButton: Button = view.findViewById(R.id.btnReadAllNotifications)
         readAllButton.setOnClickListener {
-            markAllNotificationsAsRead(userId)
+            if (::notificationAdapter.isInitialized && notificationAdapter.itemCount > 0) {
+                markAllNotificationsAsRead(userId)
+            } else {
+                Toast.makeText(context, "No notifications!", Toast.LENGTH_SHORT).show()
+                dismiss()
+            }
         }
 
         return view

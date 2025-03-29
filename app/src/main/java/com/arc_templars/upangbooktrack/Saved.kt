@@ -1,23 +1,16 @@
+//TODO: add bookmark functionality
+
 package com.arc_templars.upangbooktrack
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
-import android.view.MenuItem
+import android.widget.*
+import android.util.Log
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.PopupMenu
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.Spinner
-import android.widget.Switch
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -25,28 +18,35 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arc_templars.upangbooktrack.models.Item
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
+import retrofit2.http.POST
+
+interface fetchSavedApi {
+    @FormUrlEncoded
+    @POST("user_fetch_bookmarks.php")
+    fun getBookmarked(@Field("user_id") userId: Int): Call<Map<String, Any>>
+}
 
 
 class Saved : AppCompatActivity() {
 
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var recyclerView: RecyclerView
-    private lateinit var itemAdapter: ItemAdapter
     private lateinit var btnFilter: ImageView
-    private var selectedAvailability: String = "All"
-
-
-    private var itemList = listOf(
-        Item(null, null, "Applied Anatomy and Physiology", "", true, "Book", "CAHS", "", "", "", 0),
-        Item(null, null, "Foundation of Nursing Theories", "", false, "Book", "CAHS", "", "", "", 0),
-        Item(null, null, "Intermediate Accounting", "", true, "Book", "CMA", "", "", "", 0),
-        Item(null, null, "Auditing and Assurance Services", "", false, "Book", "CMA", "", "", "", 0),
-        Item(null, null, "Advanced Engineering Mathematics", "", true, "Book", "CEA", "", "", "", 0),
-        Item(null, null, "Basic Electronics", "", false, "Book", "CEA", "", "", "", 0)
-    )
-
-
+    private lateinit var itemAdapter: ItemAdapter
+    private lateinit var etSearchBar: EditText
     private var selectedCategory: String? = null
-    private var showAvailableOnly: Boolean = false
+    private var selectedAvailability: String = "All"
+    private var itemList = listOf<Item>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,9 +55,7 @@ class Saved : AppCompatActivity() {
         val profileIcon = findViewById<ImageView>(R.id.profileIcon)
 
         // Show Dropdown Menu on Profile Icon Click
-        profileIcon.setOnClickListener {
-            showProfileMenu()
-        }
+        profileIcon.setOnClickListener { showProfileMenu() }
 
         //NOTIFICATION CLICK LISTENER
         val notificationIcon = findViewById<View>(R.id.notificationIcon)
@@ -76,11 +74,31 @@ class Saved : AppCompatActivity() {
         recyclerView.addItemDecoration(GridSpacingItemDecoration(2, 30, true))
 
         // Open Filter Dialog on Click
-        btnFilter.setOnClickListener {
-            showFilterDialog()
+        btnFilter.setOnClickListener { showFilterDialog() }
+
+        //Search Bar Implementation
+        etSearchBar = findViewById(R.id.etsearchBar)
+        etSearchBar.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                filterItems(s.toString())  // Calls the filtering function
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
+        recyclerView = findViewById(R.id.recyclerView)
+
+        // Initialize SwipeRefreshLayout
+        swipeRefreshLayout.setOnRefreshListener {
+            itemList = emptyList()  // Clear current list
+            itemAdapter.updateData(itemList) // Notify adapter
+            fetchBooks()  // Refresh uniforms when swiped down
         }
 
-        //  Bottom Navigation
+        fetchSavedItems()
+
+        // Bottom Navigation - Highlight Book
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
         bottomNavigation.selectedItemId = R.id.menu_bookmark
         bottomNavigation.setOnNavigationItemSelectedListener { item ->
@@ -112,16 +130,142 @@ class Saved : AppCompatActivity() {
         }
     }
 
-    //  Function to Open Item Details
+    private fun fetchSavedItems() {
+        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("id", -1) // Ensure the correct key is used
+
+        if (userId == -1) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val apiService = ApiClient.getRetrofitInstance().create(fetchSavedApi::class.java)
+
+        apiService.getBookmarked(userId).enqueue(object : Callback<Map<String, Any>> {
+            override fun onResponse(call: Call<Map<String, Any>>, response: Response<Map<String, Any>>) {
+                Log.d("SavedActivity", "Response code: ${response.code()}")
+                Log.d("SavedActivity", "Response body: ${response.errorBody()?.string() ?: "No error"}")
+
+                if (response.isSuccessful) {
+                    val data = response.body()
+                    Log.d("SavedActivity", "API Response: $data")
+
+
+                    if (data != null && data["success"] == true) {
+                        val newList = mutableListOf<Item>()
+
+                        val books = data["books"] as? List<Map<String, Any>> ?: emptyList()
+                        val uniforms = data["uniforms"] as? List<Map<String, Any>> ?: emptyList()
+
+                        books.forEach { book ->
+                            newList.add(
+                                Item(
+                                    book_id = (book["book_id"] as? String)?.toIntOrNull(),
+                                    uniform_id = null,
+                                    name = book["bookname"] as? String ?: "Unknown",
+                                    imageResId = book["bookimage"] as? String ?: "",
+                                    availability = book["bookstat"] == "available",
+                                    category = "Book",
+                                    department = book["bookcollege"] as? String ?: "",
+                                    description = book["bookdesc"] as? String ?: "",
+                                    size = "",
+                                    gender = "",
+                                    stock = (book["bookstock"] as? String)?.toIntOrNull() ?: 0
+                                )
+                            )
+                        }
+
+                        uniforms.forEach { uniform ->
+                            newList.add(
+                                Item(
+                                    book_id = null,
+                                    uniform_id = (uniform["uniform_id"] as? String)?.toIntOrNull(),
+                                    name = uniform["uniformname"] as? String ?: "Unknown",
+                                    imageResId = uniform["uniformimage"] as? String ?: "",
+                                    availability = uniform["uniformstat"] == "available",
+                                    category = "Uniform",
+                                    department = uniform["uniformcollege"] as? String ?: "",
+                                    description = uniform["uniformdesc"] as? String ?: "",
+                                    size = uniform["uniformsize"] as? String ?: "",
+                                    gender = uniform["uniformgender"] as? String ?: "",
+                                    stock = (uniform["uniformstock"] as? String)?.toIntOrNull() ?: 0
+                                )
+                            )
+                        }
+
+                        itemList = newList
+                        itemAdapter.updateData(itemList)
+                    } else {
+                        Toast.makeText(this@Saved, "No bookmarked items found", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this@Saved, "Failed to fetch data", Toast.LENGTH_SHORT).show()
+                }
+                swipeRefreshLayout.isRefreshing = false
+            }
+
+            override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
+                Toast.makeText(this@Saved, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+
+    private fun filterItems(query: String){
+        val filteredList = itemList.filter {
+            it.name.contains(query, ignoreCase = true)
+        }
+        itemAdapter.updateData(filteredList)
+    }
+
+    private fun fetchBooks() {
+        val apiService = ApiClient.getRetrofitInstance().create(fetchBookApi::class.java)
+
+        apiService.getBooks().enqueue(object : Callback<List<Item>> {
+            override fun onResponse(call: Call<List<Item>>, response: Response<List<Item>>) {
+                if (response.isSuccessful) {
+                    val books = response.body()
+                    if (books != null) {
+                        itemList = books
+                        itemAdapter.updateData(itemList) // Update RecyclerView
+                    }
+                } else {
+                    Toast.makeText(this@Saved, "Failed to fetch books", Toast.LENGTH_SHORT).show()
+                }
+                swipeRefreshLayout.isRefreshing = false  // Hide loading indicator
+            }
+
+            override fun onFailure(call: Call<List<Item>>, t: Throwable) {
+                Toast.makeText(this@Saved, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    // Function to Open Item Details
     private fun openItemDetail(item: Item) {
         val intent = Intent(this, ItemDetail::class.java)
+        intent.putExtra("itemType", if (item.uniform_id == null) "book" else "uniform")
         intent.putExtra("title", item.name)
         intent.putExtra("description", "${item.category} | ${item.department}")
+        intent.putExtra("item_description", item.description)
         intent.putExtra("imageResId", item.imageResId)
+        intent.putExtra("availability", item.availability)
+
+        if (item.uniform_id == null) {
+            intent.putExtra("book_id", item.book_id)
+            intent.putExtra("stock", item.stock)
+        } else {
+            val relatedSizes = itemList
+                .filter { it.name == item.name && it.department == item.department && it.gender == item.gender }
+                .joinToString(" ") { "${it.size}:${it.stock}" }
+            intent.putExtra("uniform_id", item.uniform_id)
+            intent.putExtra("sizes", relatedSizes)
+            intent.putExtra("gender", item.gender)
+        }
+
         startActivity(intent)
     }
 
-    // Function to Open Filter Dialog (Not yet polished)
     //  Function to Open Filter Dialog
     private fun showFilterDialog() {
         val dialog = BottomSheetDialog(this)
@@ -131,19 +275,15 @@ class Saved : AppCompatActivity() {
         val availabilitySpinner = view.findViewById<Spinner>(R.id.availabilitySpinner)
         val applyButton = view.findViewById<Button>(R.id.applyFilterButton)
 
-        // Hide SHS, CAS, and CITE Departments
-        listOf(R.id.department_shs, R.id.department_cas, R.id.department_cite).forEach { id ->
-            val department = view.findViewById<RadioButton>(id)
-            department.visibility = View.GONE
-            departmentGroup.removeView(department)
-        }
-
         // Restore Previous Department Selection
         when (selectedCategory) {
             "CEA" -> departmentGroup.check(R.id.department_cea)
             "CMA" -> departmentGroup.check(R.id.department_cma)
             "CAHS" -> departmentGroup.check(R.id.department_cahs)
             "CCJE" -> departmentGroup.check(R.id.department_ccje)
+            "CITE" -> departmentGroup.check(R.id.department_cite)
+            "SHS" -> departmentGroup.check(R.id.department_shs)
+            "CAS" -> departmentGroup.check(R.id.department_cas)
         }
 
         // Restore Previous Availability Selection
@@ -159,6 +299,9 @@ class Saved : AppCompatActivity() {
                 R.id.department_cma -> "CMA"
                 R.id.department_cahs -> "CAHS"
                 R.id.department_ccje -> "CCJE"
+                R.id.department_cite -> "CITE"
+                R.id.department_shs -> "SHS"
+                R.id.department_cas -> "CAS"
                 else -> null
             }
         }
@@ -227,8 +370,10 @@ class Saved : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val studentName = sharedPreferences.getString("studentName", "Lastname, Firstname") ?: "Lastname, Firstname"
         val studentNumber = sharedPreferences.getString("studentNumber", "N/A") ?: "N/A"
+        val userId = sharedPreferences.getString("id", "N/a") ?: "N/A"
 
-        txtUserInfo.text = "Welcome, $studentName"
+        Log.d("SavedActivity", "Retrieved user_id: $userId") // Add this line
+        txtUserInfo.text = "Name; $studentName"
 
         // Button click listeners
         btnChangePassword.setOnClickListener {
@@ -270,9 +415,15 @@ class Saved : AppCompatActivity() {
             val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
             val editor = sharedPreferences.edit()
 
+            // Completely remove all stored user data
+            editor.clear()
+            editor.apply()
+
             // Redirect to LoginActivity
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK // Clears all previous activities
+            startActivity(intent)
+            finish() // Close MainActivity
 
             dialog.dismiss()
         }
