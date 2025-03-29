@@ -50,7 +50,16 @@ interface RequestService {
         @Field("book_id") bookId: Int,
         @Field("user_id") userId: Int
     ): Call<ResponseBody>
+
+    @FormUrlEncoded
+    @POST("user_bookmark_item.php")
+    fun bookmarkItem(
+        @Field("user_id") userId: Int,
+        @Field("book_id") bookId: Int?,
+        @Field("uniform_id") uniformId: Int?
+    ): Call<ResponseBody>
 }
+
 
 class ItemDetail : AppCompatActivity() {
 
@@ -64,10 +73,11 @@ class ItemDetail : AppCompatActivity() {
         val descriptionTextView = findViewById<TextView>(R.id.DescriptionforItems)
         val itemStocks: TextView = findViewById(R.id.itemStocks)
         val itemSizes: TextView = findViewById(R.id.itemSizes)
-        val itemGender: TextView = findViewById(R.id.itemGender) // ✅ Gender TextView
+        val itemGender: TextView = findViewById(R.id.itemGender) // Gender TextView
         val itemAvailability: TextView = findViewById(R.id.itemAvailability)
         val backButton: ImageView = findViewById(R.id.btnBack)
-        val btnRequest: Button = findViewById(R.id.btnRequest) // ✅ Request Button
+        val btnRequest: Button = findViewById(R.id.btnRequest) // Request Button
+        val btnSave: ImageView = findViewById(R.id.btnSave) // Get the ImageView
 
         val itemType = intent.getStringExtra("itemType") // "book" or "uniform"
         val title = intent.getStringExtra("title")
@@ -77,8 +87,8 @@ class ItemDetail : AppCompatActivity() {
         val gender = intent.getStringExtra("gender") ?: "Unspecified"
         val imageUrl = intent.getStringExtra("imageResId") ?: ""
         val uniformId = intent.getIntExtra("uniform_id", -1) // Get uniform ID
-        val availability = intent.getBooleanExtra("availability", false) // ✅ Get availability from API
-        val isAvailable = availability // ✅ Use API response directly
+        val availability = intent.getBooleanExtra("availability", false) //Get availability from API
+        val isAvailable = availability // Use API response directly
         val DescriptionforItems = intent.getStringExtra("item_description") ?: "No description available"
         findViewById<TextView>(R.id.DescriptionforItems).text = DescriptionforItems
 
@@ -135,6 +145,17 @@ class ItemDetail : AppCompatActivity() {
         }
 
         backButton.setOnClickListener { finish() }
+
+        btnSave.setOnClickListener {
+            if (itemType == "book") {
+                sendBookmarkRequest(userId, intent.getIntExtra("book_id", -1), null)
+            } else if (itemType == "uniform") {
+                sendBookmarkRequest(userId, null, uniformId)
+            } else {
+                Toast.makeText(this, "Unknown item type!", Toast.LENGTH_SHORT).show()
+            }
+        }
+
 
         if (isAvailable) {
             itemAvailability.text = "Available"
@@ -329,5 +350,43 @@ class ItemDetail : AppCompatActivity() {
         }
         return spannable
     }
+
+    private fun sendBookmarkRequest(userId: Int, bookId: Int?, uniformId: Int?) {
+        val apiService = ApiClient.getRetrofitInstance().create(RequestService::class.java)
+
+        Log.d("sendBookmarkRequest", "Sending bookmark - User ID: $userId, Book ID: $bookId, Uniform ID: $uniformId")
+
+        apiService.bookmarkItem(userId, bookId, uniformId).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful && response.body() != null) {
+                    try {
+                        val jsonResponse = response.body()!!.string()
+                        val jsonObject = JSONObject(jsonResponse)
+
+                        // Log full server response
+                        Log.d("ServerResponse", "Response: $jsonResponse")
+
+                        // Show message from server response
+                        Toast.makeText(applicationContext, jsonObject.getString("message"), Toast.LENGTH_SHORT).show()
+
+                    } catch (e: Exception) {
+                        Log.e("sendBookmarkRequest", "JSON Parsing error: ${e.message}")
+                        Toast.makeText(applicationContext, "Response error!", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    // Log error response body
+                    val errorBody = response.errorBody()?.string() ?: "No error body"
+                    Log.e("ServerResponse", "Error response: $errorBody")
+
+                    Toast.makeText(applicationContext, "Bookmark failed! Try again.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.e("sendBookmarkRequest", "Request failed: ${t.message}")
+                Toast.makeText(applicationContext, "Network error! Check connection.", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
 }
-//TODO IF STATUS = AVAILABLE HIDE THE REQUEST BUTTON **OR** SAY "CANNOT REQUEST" !!!DONE!!!
