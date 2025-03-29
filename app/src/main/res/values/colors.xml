@@ -7,6 +7,9 @@
     <color name="green">#5FA82A</color>
     <color name="brown">#A98D00</color>
     <color name="dark_green">#1B5E20</color>
+    <color name="holo_green_dark">#006400</color>
+    <color name="holo_red_dark">#8B0000</color>
+    <color name="red">#FF0000</color>
     <color name="teal_700">#00796B</color>
     <color name="yellow">#FFEB3B</color>
     <color name="dark_yellow">#E2C614</color>
