@@ -29,6 +29,12 @@ interface fetchNotifs {
     fun getNotifications(@Query("user_id") userId: Int): Call<NotificationResponse>
 }
 
+interface ReadAllNotifsService {
+    @FormUrlEncoded
+    @POST("user_read_all_notifs.php")
+    fun markAllAsRead(@Field("user_id") userId: Int): Call<ResponseBody>
+}
+
 class UserNotifications : BottomSheetDialogFragment() {
 
     private lateinit var notificationRecyclerView: RecyclerView
@@ -71,6 +77,11 @@ class UserNotifications : BottomSheetDialogFragment() {
             dismiss()
         }
 
+        val readAllButton: Button = view.findViewById(R.id.btnReadAllNotifications)
+        readAllButton.setOnClickListener {
+            markAllNotificationsAsRead(userId)
+        }
+
         return view
     }
 
@@ -101,6 +112,29 @@ class UserNotifications : BottomSheetDialogFragment() {
             }
         })
     }
+
+    private fun markAllNotificationsAsRead(userId: Int) {
+        val apiService = ApiClient.getRetrofitInstance().create(ReadAllNotifsService::class.java)
+
+        apiService.markAllAsRead(userId).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(context, "All notifications marked as read", Toast.LENGTH_SHORT).show()
+
+                    // Refresh the list (clear notifications from RecyclerView)
+                    notificationAdapter.notifyItemRangeRemoved(0, notificationAdapter.itemCount)
+                    dismiss()
+                } else {
+                    Toast.makeText(context, "Failed to mark notifications as read", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
 
 }
 

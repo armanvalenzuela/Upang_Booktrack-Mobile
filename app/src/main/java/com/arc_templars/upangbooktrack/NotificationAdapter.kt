@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -20,8 +21,8 @@ import retrofit2.http.POST
 
 interface DeleteNotifService {
     @FormUrlEncoded
-    @POST("delete_notif.php")
-    fun deleteNotification(@Field("notif_id") notif_id: Int): Call<ResponseBody>
+    @POST("user_update_notif.php")
+    fun updateNotification(@Field("notif_id") notif_id: Int): Call<ResponseBody>
 }
 
 class NotificationAdapter(private val notifications: List<Notification>) : RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
@@ -43,9 +44,9 @@ class NotificationAdapter(private val notifications: List<Notification>) : Recyc
             .load(notification.itemImage)
             .into(holder.notifImage)
 
-        // DELETE (READ) BUTTON CLICK LISTENER
+        //READ BUTTON CLICK LISTENER
         holder.haveReadButton.setOnClickListener {
-            deleteNotification(notification.notif_id, holder.itemView.context)
+            updateNotificationStatus(notification.notif_id, holder.itemView.context)
         }
     }
 
@@ -58,14 +59,14 @@ class NotificationAdapter(private val notifications: List<Notification>) : Recyc
         val notificationStatus: TextView = view.findViewById(R.id.notificationStatus)
         val notificationItemName: TextView = view.findViewById(R.id.notificationItemName)
         val notifImage: ImageView = view.findViewById(R.id.notifImage)
-        val haveReadButton: ImageView = view.findViewById(R.id.haveReadbutton)
+        val haveReadButton: ImageView= view.findViewById(R.id.haveReadbutton)
     }
 
     // DELETE NOTIFICATION FUNCT
-    private fun deleteNotification(notif_id: Int, context: Context) {
-        Log.d("NotificationAdapter", "Deleting notification with ID: $notif_id")
+    private fun updateNotificationStatus(notif_id: Int, context: Context) {
+        Log.d("NotificationAdapter", "Updating notification status with ID: $notif_id")
         val apiService = ApiClient.getRetrofitInstance().create(DeleteNotifService::class.java)
-        apiService.deleteNotification(notif_id).enqueue(object : Callback<ResponseBody> {
+        apiService.updateNotification(notif_id).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
                     // IF SUCCESSFUL
@@ -80,7 +81,7 @@ class NotificationAdapter(private val notifications: List<Notification>) : Recyc
                     notifyDataSetChanged()
                 } else {
                     // IF FAILED
-                    Toast.makeText(context, "Failed to delete notification", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Failed to update notification", Toast.LENGTH_SHORT).show()
                 }
             }
 

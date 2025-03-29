@@ -53,13 +53,13 @@ android:layout_weight="1">
 
     <ImageView
         android:id="@+id/haveReadbutton"
-        android:layout_width="30dp"
+        android:layout_width="75dp"
         android:layout_height="30dp"
-        android:src="@drawable/checkbutton"
-        android:layout_gravity="end"
-        android:textSize="12sp"
+        android:layout_gravity="start"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/userhaveread"
         android:textColor="@color/green"
-        android:layout_marginTop="10dp"/>
+        android:textSize="12sp" />
 </LinearLayout>
 
     <!-- Image -->
