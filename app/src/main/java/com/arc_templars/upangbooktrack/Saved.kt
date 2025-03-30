@@ -346,7 +346,11 @@ class Saved : AppCompatActivity() {
 
         // AVAILABILITY SELECTION
         val availabilityOptions = arrayOf("All", "Available", "Not Available")
-        val adapter = ArrayAdapter(view.context, android.R.layout.simple_spinner_dropdown_item, availabilityOptions)
+
+        // Set custom layout for Spinner
+        val adapter = ArrayAdapter(view.context, R.layout.spinner_dropdown_item, availabilityOptions)
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
+
         availabilitySpinner.adapter = adapter
         availabilitySpinner.setSelection(availabilityOptions.indexOf(selectedAvailability))
 
