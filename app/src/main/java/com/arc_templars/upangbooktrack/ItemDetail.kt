@@ -120,7 +120,6 @@ class ItemDetail : AppCompatActivity() {
             }
         }
 
-
         //IMAGE LOADING
         Glide.with(this)
             .load(imageUrl)
@@ -177,7 +176,7 @@ class ItemDetail : AppCompatActivity() {
             }
         }
 
-
+        //CHECK AVAILABILITY HIGHLIGHT COLOR TEXT
         if (isAvailable) {
             itemAvailability.text = "Available"
             itemAvailability.setTextColor(resources.getColor(R.color.green, theme)) // Change to actual green color resource
