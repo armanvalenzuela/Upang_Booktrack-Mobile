@@ -48,6 +48,11 @@ class Saved : AppCompatActivity() {
     private var selectedAvailability: String = "All"
     private var itemList = listOf<Item>()
 
+    override fun onResume() {
+        super.onResume()
+        fetchSavedItems() //REFRESH WHEN COMING BACK TO ACT
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_saved)
