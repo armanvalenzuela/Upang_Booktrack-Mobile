@@ -54,7 +54,7 @@ class Saved : AppCompatActivity() {
 
         val profileIcon = findViewById<ImageView>(R.id.profileIcon)
 
-        // Show Dropdown Menu on Profile Icon Click
+        // DROPDOWN MENU FOR PROFILE
         profileIcon.setOnClickListener { showProfileMenu() }
 
         //NOTIFICATION CLICK LISTENER
@@ -67,16 +67,16 @@ class Saved : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         btnFilter = findViewById(R.id.btnFilter)
 
-        // Set up RecyclerView with Click Listener
+        // RECYCLERVIEW SETUP
         recyclerView.layoutManager = GridLayoutManager(this, 2)
         itemAdapter = ItemAdapter(itemList) { item -> openItemDetail(item) }
         recyclerView.adapter = itemAdapter
         recyclerView.addItemDecoration(GridSpacingItemDecoration(2, 30, true))
 
-        // Open Filter Dialog on Click
+        // FILTER DIALOG ON CLICK
         btnFilter.setOnClickListener { showFilterDialog() }
 
-        //Search Bar Implementation
+        //SEARCH BAR FUNCT
         etSearchBar = findViewById(R.id.etsearchBar)
         etSearchBar.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -89,16 +89,16 @@ class Saved : AppCompatActivity() {
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
         recyclerView = findViewById(R.id.recyclerView)
 
-        // Initialize SwipeRefreshLayout
+        // SWIPE REFRESH LAYOUT FUNCT
         swipeRefreshLayout.setOnRefreshListener {
-            itemList = emptyList()  // Clear current list
-            itemAdapter.updateData(itemList) // Notify adapter
-            fetchBooks()  // Refresh uniforms when swiped down
+            itemList = emptyList()  // CLEAR
+            itemAdapter.updateData(itemList) // NOTIFY
+            fetchSavedItems()  // GET AGAIN AFTER
         }
 
         fetchSavedItems()
 
-        // Bottom Navigation - Highlight Book
+        // BOTTOM NAV
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
         bottomNavigation.selectedItemId = R.id.menu_bookmark
         bottomNavigation.setOnNavigationItemSelectedListener { item ->
@@ -130,9 +130,10 @@ class Saved : AppCompatActivity() {
         }
     }
 
+    //FETCH USER BOOKMARKED ITEMS
     private fun fetchSavedItems() {
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("id", -1) // Ensure the correct key is used
+        val userId = sharedPreferences.getInt("id", -1)
 
         if (userId == -1) {
             Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
@@ -143,58 +144,66 @@ class Saved : AppCompatActivity() {
 
         apiService.getBookmarked(userId).enqueue(object : Callback<Map<String, Any>> {
             override fun onResponse(call: Call<Map<String, Any>>, response: Response<Map<String, Any>>) {
-                Log.d("SavedActivity", "Response code: ${response.code()}")
-                Log.d("SavedActivity", "Response body: ${response.errorBody()?.string() ?: "No error"}")
-
                 if (response.isSuccessful) {
                     val data = response.body()
-                    Log.d("SavedActivity", "API Response: $data")
-
-
                     if (data != null && data["success"] == true) {
                         val newList = mutableListOf<Item>()
 
-                        val books = data["books"] as? List<Map<String, Any>> ?: emptyList()
-                        val uniforms = data["uniforms"] as? List<Map<String, Any>> ?: emptyList()
-
-                        books.forEach { book ->
+                        // SETS DATA FOR BOOKS
+                        (data["books"] as? List<Map<String, Any>>)?.forEach { book ->
                             newList.add(
                                 Item(
-                                    book_id = (book["book_id"] as? String)?.toIntOrNull(),
+                                    book_id = parseNumberToInt(book["book_id"]),
                                     uniform_id = null,
                                     name = book["bookname"] as? String ?: "Unknown",
                                     imageResId = book["bookimage"] as? String ?: "",
-                                    availability = book["bookstat"] == "available",
+                                    availability = (book["bookstat"] as? String) == "available",
                                     category = "Book",
                                     department = book["bookcollege"] as? String ?: "",
                                     description = book["bookdesc"] as? String ?: "",
                                     size = "",
                                     gender = "",
-                                    stock = (book["bookstock"] as? String)?.toIntOrNull() ?: 0
+                                    stock = parseNumberToInt(book["bookstock"]) ?: 0
                                 )
                             )
                         }
 
-                        uniforms.forEach { uniform ->
+                        // SETS DATA FOR UNIFORMS
+                        (data["uniforms"] as? List<Map<String, Any>>)?.forEach { uniform ->
                             newList.add(
                                 Item(
                                     book_id = null,
-                                    uniform_id = (uniform["uniform_id"] as? String)?.toIntOrNull(),
+                                    uniform_id = parseNumberToInt(uniform["uniform_id"]),
                                     name = uniform["uniformname"] as? String ?: "Unknown",
                                     imageResId = uniform["uniformimage"] as? String ?: "",
-                                    availability = uniform["uniformstat"] == "available",
+                                    availability = (uniform["uniformstat"] as? String) == "available",
                                     category = "Uniform",
                                     department = uniform["uniformcollege"] as? String ?: "",
                                     description = uniform["uniformdesc"] as? String ?: "",
                                     size = uniform["uniformsize"] as? String ?: "",
                                     gender = uniform["uniformgender"] as? String ?: "",
-                                    stock = (uniform["uniformstock"] as? String)?.toIntOrNull() ?: 0
+                                    stock = parseNumberToInt(uniform["uniformstock"]) ?: 0
                                 )
                             )
                         }
 
                         itemList = newList
                         itemAdapter.updateData(itemList)
+
+                        // LOGGING
+                        Log.d("SavedActivity", "=== Saved Items (${itemList.size}) ===")
+                        itemList.forEachIndexed { index, item ->
+                            Log.d("SavedActivity", """
+                            [Item ${index + 1}]
+                            Type: ${if (item.book_id != null) "Book (ID:${item.book_id})" else "Uniform (ID:${item.uniform_id})"}
+                            Name: ${item.name}
+                            Category: ${item.category}
+                            Available: ${item.availability}
+                            Department: ${item.department}
+                            Stock: ${item.stock}
+                            Image: ${item.imageResId.take(30)}...
+                        """.trimIndent())
+                        }
                     } else {
                         Toast.makeText(this@Saved, "No bookmarked items found", Toast.LENGTH_SHORT).show()
                     }
@@ -206,11 +215,23 @@ class Saved : AppCompatActivity() {
 
             override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
                 Toast.makeText(this@Saved, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                swipeRefreshLayout.isRefreshing = false
             }
         })
     }
 
+    // PARSE ID NO TO INT !!!IMPORTANT!!!
+    private fun parseNumberToInt(number: Any?): Int? {
+        return when (number) {
+            is Double -> number.toInt()
+            is Int -> number
+            is String -> number.toIntOrNull()
+            else -> null
+        }
+    }
 
+
+    //FILTER FUNCTION
     private fun filterItems(query: String){
         val filteredList = itemList.filter {
             it.name.contains(query, ignoreCase = true)
@@ -218,55 +239,58 @@ class Saved : AppCompatActivity() {
         itemAdapter.updateData(filteredList)
     }
 
-    private fun fetchBooks() {
-        val apiService = ApiClient.getRetrofitInstance().create(fetchBookApi::class.java)
-
-        apiService.getBooks().enqueue(object : Callback<List<Item>> {
-            override fun onResponse(call: Call<List<Item>>, response: Response<List<Item>>) {
-                if (response.isSuccessful) {
-                    val books = response.body()
-                    if (books != null) {
-                        itemList = books
-                        itemAdapter.updateData(itemList) // Update RecyclerView
-                    }
-                } else {
-                    Toast.makeText(this@Saved, "Failed to fetch books", Toast.LENGTH_SHORT).show()
-                }
-                swipeRefreshLayout.isRefreshing = false  // Hide loading indicator
-            }
-
-            override fun onFailure(call: Call<List<Item>>, t: Throwable) {
-                Toast.makeText(this@Saved, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-    // Function to Open Item Details
+    // PASS DATA TO ITEM DETAIL
     private fun openItemDetail(item: Item) {
         val intent = Intent(this, ItemDetail::class.java)
+        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("user_id", -1) // Get user_id from session
+
         intent.putExtra("itemType", if (item.uniform_id == null) "book" else "uniform")
+        Log.d("ItemCheck", "Item Data: $item")
         intent.putExtra("title", item.name)
         intent.putExtra("description", "${item.category} | ${item.department}")
         intent.putExtra("item_description", item.description)
         intent.putExtra("imageResId", item.imageResId)
         intent.putExtra("availability", item.availability)
+        intent.putExtra("user_id", userId) // ✅ Pass user ID from session
 
         if (item.uniform_id == null) {
-            intent.putExtra("book_id", item.book_id)
+            // It's a book
+            intent.putExtra("book_id", item.book_id) // ✅ Pass book ID
+            Log.d("ItemDetail", "Sending Book ID: ${item.book_id}")
             intent.putExtra("stock", item.stock)
         } else {
+            // It's a uniform
             val relatedSizes = itemList
                 .filter { it.name == item.name && it.department == item.department && it.gender == item.gender }
                 .joinToString(" ") { "${it.size}:${it.stock}" }
-            intent.putExtra("uniform_id", item.uniform_id)
-            intent.putExtra("sizes", relatedSizes)
+
+            intent.putExtra("uniform_id", item.uniform_id) // ✅ Pass uniform ID
+            Log.d("ItemDetail", "Sending Uniform ID: ${item.uniform_id}")
+            intent.putExtra("sizes", relatedSizes) // ✅ Pass related sizes
             intent.putExtra("gender", item.gender)
         }
+
+        // LOGGING
+        Log.d("ItemDetailIntent", """
+        itemType: ${intent.getStringExtra("itemType")}
+        title: ${intent.getStringExtra("title")}
+        description: ${intent.getStringExtra("description")}
+        item_description: ${intent.getStringExtra("item_description")}
+        imageResId: ${intent.getStringExtra("imageResId")}
+        availability: ${intent.getBooleanExtra("availability", false)}
+        user_id: ${intent.getStringExtra("user_id")}
+        ${if (item.uniform_id == null)
+            "book_id: ${intent.getIntExtra("book_id", -1)}\nstock: ${intent.getIntExtra("stock", -1)}"
+        else
+            "uniform_id: ${intent.getIntExtra("uniform_id", -1)}\nsizes: ${intent.getStringExtra("sizes")}\ngender: ${intent.getStringExtra("gender")}"}
+    """.trimIndent())
 
         startActivity(intent)
     }
 
-    //  Function to Open Filter Dialog
+
+    // FILTER FUNCT
     private fun showFilterDialog() {
         val dialog = BottomSheetDialog(this)
         val view = LayoutInflater.from(this).inflate(R.layout.filter, null)
@@ -286,13 +310,13 @@ class Saved : AppCompatActivity() {
             "CAS" -> departmentGroup.check(R.id.department_cas)
         }
 
-        // Restore Previous Availability Selection
+        // AVAILABILITY SELECTION
         val availabilityOptions = arrayOf("All", "Available", "Not Available")
         val adapter = ArrayAdapter(view.context, android.R.layout.simple_spinner_dropdown_item, availabilityOptions)
         availabilitySpinner.adapter = adapter
         availabilitySpinner.setSelection(availabilityOptions.indexOf(selectedAvailability))
 
-        // ✅ Set Department Selection
+        // SET SELECTED DEPARTMENT
         departmentGroup.setOnCheckedChangeListener { _, checkedId ->
             selectedCategory = when (checkedId) {
                 R.id.department_cea -> "CEA"
@@ -306,7 +330,7 @@ class Saved : AppCompatActivity() {
             }
         }
 
-        // ✅ Set Availability Selection
+        // SET AVAILABILITY
         availabilitySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 selectedAvailability = availabilityOptions[position]
@@ -314,7 +338,7 @@ class Saved : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        // ✅ Apply Filters and Close Dialog
+        // APPLY FILTERS AND CLOSE
         applyButton.setOnClickListener {
             applyFilters()
             dialog.dismiss()
@@ -324,7 +348,7 @@ class Saved : AppCompatActivity() {
         dialog.show()
     }
 
-    // Function to Apply Filters
+    // APPLY FILTERS
     private fun applyFilters() {
         var filteredList = itemList
 
@@ -333,17 +357,17 @@ class Saved : AppCompatActivity() {
             filteredList = filteredList.filter { it.department == selectedCategory }
         }
 
-        // Filter by Availability
+        // FILTER BY AVAILABILITY
         when (selectedAvailability) {
             "Available" -> filteredList = filteredList.filter { it.availability }
             "Not Available" -> filteredList = filteredList.filter { !it.availability }
         }
 
-        // Update the RecyclerView
+        // UPDATE
         itemAdapter.updateData(filteredList)
     }
 
-    // Function to Show Profile Dropdown Menu
+    // PROFILE MENU DROPDOWN
     private fun showProfileMenu() {
         val builder = AlertDialog.Builder(this)
         val inflater = layoutInflater
@@ -352,21 +376,21 @@ class Saved : AppCompatActivity() {
 
         val alertDialog = builder.create()
 
-        // Apply transparent background
+        // TRANSPARENT BG
         alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        // **Set custom width & height**
+        // CUSTOM ALERTDIALOG SIZE
         alertDialog.setOnShowListener {
             val window = alertDialog.window
             window?.setLayout(400 * resources.displayMetrics.density.toInt(), 375 * resources.displayMetrics.density.toInt()) // Convert dp to pixels
         }
 
-        // Find views
+        // VIEWS INITIALIZATION
         val txtUserInfo = dialogView.findViewById<TextView>(R.id.txtUserInfo)
         val btnChangePassword = dialogView.findViewById<LinearLayout>(R.id.btnChangePassword)
         val btnLogout = dialogView.findViewById<LinearLayout>(R.id.btnLogout)
 
-        // Load user details
+        // USER DETAIL LOADING
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val studentName = sharedPreferences.getString("studentName", "Lastname, Firstname") ?: "Lastname, Firstname"
         val studentNumber = sharedPreferences.getString("studentNumber", "N/A") ?: "N/A"
@@ -389,7 +413,7 @@ class Saved : AppCompatActivity() {
         alertDialog.show()
     }
 
-    // Function to Show Log Out Confirmation Dialog
+    // LOGOUT CONFIRMATION DIALOG
     private fun showLogoutConfirmation() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_logout_confirmation, null)
         val dialog = AlertDialog.Builder(this, R.style.CustomDialog)
@@ -398,28 +422,28 @@ class Saved : AppCompatActivity() {
 
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        // Apply animation
+        // ANIMATION
         dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
 
-        // Find views
+        // VIEW INIT
         val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
         val btnConfirmLogout = dialogView.findViewById<Button>(R.id.btnConfirmLogout)
 
-        // Cancel button
+        // CANCEL
         btnCancel.setOnClickListener {
             dialog.dismiss()
         }
 
-        // Confirm Logout button
+        // LOGOUT CONFIRMATION
         btnConfirmLogout.setOnClickListener {
             val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
             val editor = sharedPreferences.edit()
 
-            // Completely remove all stored user data
+            // REMOVE ALL DATA
             editor.clear()
             editor.apply()
 
-            // Redirect to LoginActivity
+            // BACK TO LOGIN
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK // Clears all previous activities
             startActivity(intent)
@@ -431,8 +455,12 @@ class Saved : AppCompatActivity() {
         dialog.show()
     }
 
+    // BACKPRESS FUNCT
+
+    // SET INITIAL TIME
     private var backPressedTime: Long = 0
 
+    //ON BACKPRESS WITHIN 5 SECS AFTER INITIAL BACKPRESS WILL FINISH ACT
     override fun onBackPressed() {
         if (backPressedTime + 5000 > System.currentTimeMillis()) {
             super.onBackPressed()

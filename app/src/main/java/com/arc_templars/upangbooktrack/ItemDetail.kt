@@ -100,6 +100,7 @@ class ItemDetail : AppCompatActivity() {
 
         Log.d("ItemDetail", "Uniform ID: $uniformId, User ID: $userId")
 
+
         //IMAGE LOADING
         Glide.with(this)
             .load(imageUrl)
