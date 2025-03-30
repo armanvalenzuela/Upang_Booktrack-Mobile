@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/login_backg"
+    android:background="@drawable/dialog_background"
     android:orientation="vertical"
     android:padding="16dp"
     android:gravity="center"
@@ -13,7 +13,7 @@
     <View
         android:layout_width="40dp"
         android:layout_height="5dp"
-        android:background="@color/gray"
+        android:background="@color/black"
         android:layout_gravity="center"
         android:layout_marginBottom="8dp"
         android:radius="2dp"/>
@@ -22,37 +22,29 @@
     <TextView
         android:id="@+id/tvNotificationTitle"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="38dp"
         android:text="Notifications"
         android:textSize="22sp"
+        android:textColor="@color/black"
         android:fontFamily="@font/poppins_bold"
         android:textStyle="bold"
         android:layout_gravity="center"
         android:paddingBottom="12dp"/>
-
-    <ImageView
-        android:id="@+id/ivNoNotifications"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:src="@drawable/logo"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"/>
 
     <TextView
         android:id="@+id/tvNoNotifications"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="39dp"
+        android:layout_marginTop="25dp"
         android:text="No Current Notifications"
         android:textSize="22sp"
         android:fontFamily="@font/poppins_bold"
         android:textStyle="bold"
+        android:textColor="@color/black"
         android:layout_gravity="center"
         android:paddingBottom="12dp"/>
 
     <!-- Notification List -->
-
-
-    <!-- Close Button -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvNotifications"
         android:layout_width="match_parent"
@@ -69,19 +61,22 @@
         android:gravity="center"
         android:layout_marginTop="12dp">
 
+        <!-- Close Button -->
         <Button
             android:id="@+id/btnCloseNotifications"
-            android:layout_width="170dp"
+            android:layout_width="125dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
             android:text="Close"
             android:backgroundTint="@color/green"
             android:textColor="@color/white"
             android:fontFamily="@font/poppins_bold"
             android:layout_marginEnd="8dp"/>
 
+        <!-- Read All Button -->
         <Button
             android:id="@+id/btnReadAllNotifications"
-            android:layout_width="170dp"
+            android:layout_width="125dp"
             android:layout_height="wrap_content"
             android:text="Read All"
             android:backgroundTint="@color/green"

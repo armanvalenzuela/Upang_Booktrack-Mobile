@@ -1,6 +1,3 @@
-//TODO: add notification functionality
-//TODO: add bookmark functionality
-
 package com.arc_templars.upangbooktrack
 
 import android.content.Context
@@ -226,8 +223,6 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-
-
 
     // Function to Show item detail, fixed for both books and unif -kenchi
     private fun openItemDetail(item: Item) {

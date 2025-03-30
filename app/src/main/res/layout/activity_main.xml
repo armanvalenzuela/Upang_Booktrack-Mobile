@@ -154,7 +154,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
     <!-- Floating Bottom Navigation Bar -->
     <androidx.cardview.widget.CardView
         android:id="@+id/bottomNavigationContainer"

@@ -202,9 +202,13 @@ class Uniform : AppCompatActivity() {
 
         // Restore Previous Availability Selection
         val availabilityOptions = arrayOf("All", "Available", "Not Available")
-        val adapter = ArrayAdapter(view.context, android.R.layout.simple_spinner_dropdown_item, availabilityOptions)
+        // Set custom layout for Spinner
+        val adapter = ArrayAdapter(view.context, R.layout.spinner_dropdown_item, availabilityOptions)
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
+
         availabilitySpinner.adapter = adapter
         availabilitySpinner.setSelection(availabilityOptions.indexOf(selectedAvailability))
+
 
         // ✅ Set Department Selection
         departmentGroup.setOnCheckedChangeListener { _, checkedId ->
@@ -366,6 +370,7 @@ class Uniform : AppCompatActivity() {
         startActivity(intent)
     }
 
+    //Check User Notification
     private fun checkUserNotifications(userId: Int) {
         Log.d("UniformActivity", "Checking notifications for user: $userId")
         val apiService = ApiClient.getRetrofitInstance().create(fetchUnifApi::class.java)

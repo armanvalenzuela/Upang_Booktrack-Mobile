@@ -199,20 +199,27 @@ class Book : AppCompatActivity() {
         val availabilitySpinner = view.findViewById<Spinner>(R.id.availabilitySpinner)
         val applyButton = view.findViewById<Button>(R.id.applyFilterButton)
 
+        // Hide SHS, CAS, and CITE Departments
+        listOf(R.id.department_shs, R.id.department_cas, R.id.department_cite).forEach { id ->
+            val department = view.findViewById<RadioButton>(id)
+            department.visibility = View.GONE
+            departmentGroup.removeView(department)
+        }
+
         // Restore Previous Department Selection
         when (selectedCategory) {
             "CEA" -> departmentGroup.check(R.id.department_cea)
             "CMA" -> departmentGroup.check(R.id.department_cma)
             "CAHS" -> departmentGroup.check(R.id.department_cahs)
             "CCJE" -> departmentGroup.check(R.id.department_ccje)
-            "CITE" -> departmentGroup.check(R.id.department_cite)
-            "SHS" -> departmentGroup.check(R.id.department_shs)
-            "CAS" -> departmentGroup.check(R.id.department_cas)
         }
 
         // Restore Previous Availability Selection
         val availabilityOptions = arrayOf("All", "Available", "Not Available")
-        val adapter = ArrayAdapter(view.context, android.R.layout.simple_spinner_dropdown_item, availabilityOptions)
+        // Set custom layout for Spinner
+        val adapter = ArrayAdapter(view.context, R.layout.spinner_dropdown_item, availabilityOptions)
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
+
         availabilitySpinner.adapter = adapter
         availabilitySpinner.setSelection(availabilityOptions.indexOf(selectedAvailability))
 
@@ -223,9 +230,6 @@ class Book : AppCompatActivity() {
                 R.id.department_cma -> "CMA"
                 R.id.department_cahs -> "CAHS"
                 R.id.department_ccje -> "CCJE"
-                R.id.department_cite -> "CITE"
-                R.id.department_shs -> "SHS"
-                R.id.department_cas -> "CAS"
                 else -> null
             }
         }
