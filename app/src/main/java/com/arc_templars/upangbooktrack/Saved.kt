@@ -34,11 +34,16 @@ interface fetchSavedApi {
     @FormUrlEncoded
     @POST("user_fetch_bookmarks.php")
     fun getBookmarked(@Field("user_id") userId: Int): Call<Map<String, Any>>
+
+    @FormUrlEncoded
+    @POST("user_check_notif.php")
+    fun checkNotif(@Field("user_id") userId: Int): Call<Map<String, Boolean>>
 }
 
 
 class Saved : AppCompatActivity() {
 
+    private lateinit var notificationBadge: TextView
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var recyclerView: RecyclerView
     private lateinit var btnFilter: ImageView
@@ -50,7 +55,14 @@ class Saved : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        fetchSavedItems() //REFRESH WHEN COMING BACK TO ACT
+        fetchSavedItems()
+
+        // Also refresh notifications when coming back to activity
+        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("id", -1)
+        if (userId != -1) {
+            checkUserNotifications(userId)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +79,16 @@ class Saved : AppCompatActivity() {
         notificationIcon.setOnClickListener {
             val bottomSheet = UserNotifications()
             bottomSheet.show(supportFragmentManager, bottomSheet.tag)
+        }
+
+        notificationBadge = findViewById(R.id.notificationBadge)
+        notificationBadge.visibility = View.GONE
+
+        // Check notifications on activity start
+        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("id", -1)
+        if (userId != -1) {
+            checkUserNotifications(userId)
         }
 
         recyclerView = findViewById(R.id.recyclerView)
@@ -96,9 +118,16 @@ class Saved : AppCompatActivity() {
 
         // SWIPE REFRESH LAYOUT FUNCT
         swipeRefreshLayout.setOnRefreshListener {
-            itemList = emptyList()  // CLEAR
-            itemAdapter.updateData(itemList) // NOTIFY
-            fetchSavedItems()  // GET AGAIN AFTER
+            itemList = emptyList()
+            itemAdapter.updateData(itemList)
+            fetchSavedItems()
+
+            // Also check notifications on refresh
+            val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            val userId = sharedPreferences.getInt("id", -1)
+            if (userId != -1) {
+                checkUserNotifications(userId)
+            }
         }
 
         fetchSavedItems()
@@ -460,7 +489,29 @@ class Saved : AppCompatActivity() {
         dialog.show()
     }
 
-    // BACKPRESS FUNCT
+    private fun checkUserNotifications(userId: Int) {
+        Log.d("SavedActivity", "Checking notifications for user: $userId")
+        val apiService = ApiClient.getRetrofitInstance().create(fetchSavedApi::class.java)
+
+        apiService.checkNotif(userId).enqueue(object : Callback<Map<String, Boolean>> {
+            override fun onResponse(call: Call<Map<String, Boolean>>, response: Response<Map<String, Boolean>>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val responseBody = response.body()
+                    Log.d("SavedActivity", "Notification Response: $responseBody")
+                    val hasNotif = responseBody?.get("hasNotif") ?: false
+                    notificationBadge.visibility = if (hasNotif) View.VISIBLE else View.GONE
+                } else {
+                    Log.e("SavedActivity", "Failed to fetch notifications")
+                    notificationBadge.visibility = View.GONE
+                }
+            }
+
+            override fun onFailure(call: Call<Map<String, Boolean>>, t: Throwable) {
+                Log.e("SavedActivity", "API call failed: ${t.message}")
+                notificationBadge.visibility = View.GONE
+            }
+        })
+    }
 
     // SET INITIAL TIME
     private var backPressedTime: Long = 0

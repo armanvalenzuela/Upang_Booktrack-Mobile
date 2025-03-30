@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
@@ -23,15 +24,23 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.POST
 
 interface fetchUnifApi{
     @GET("user_fetch_uniforms.php")
     fun getuniform(): Call<List<Item>>
+
+    @FormUrlEncoded
+    @POST("user_check_notif.php")
+    fun checkNotif(@Field("user_id") userId: Int): Call<Map<String, Boolean>>
 }
 
 class Uniform : AppCompatActivity() {
 
+    private lateinit var notificationBadge: TextView
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var recyclerView: RecyclerView
     private lateinit var btnFilter: ImageView
@@ -54,6 +63,17 @@ class Uniform : AppCompatActivity() {
         notificationIcon.setOnClickListener {
             val bottomSheet = UserNotifications()
             bottomSheet.show(supportFragmentManager, bottomSheet.tag)
+        }
+
+        // Initialize notification badge
+        notificationBadge = findViewById(R.id.notificationBadge)
+        notificationBadge.visibility = View.GONE
+
+        // Check notifications on activity start
+        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("id", -1)
+        if (userId != -1) {
+            checkUserNotifications(userId)
         }
 
         recyclerView = findViewById(R.id.recyclerView)
@@ -83,9 +103,16 @@ class Uniform : AppCompatActivity() {
 
         // Initialize SwipeRefreshLayout
         swipeRefreshLayout.setOnRefreshListener {
-            itemList = emptyList()  // Clear current list
-            itemAdapter.updateData(itemList) // Notify adapter
-            fetchUniforms()  // Refresh uniforms when swiped down
+            itemList = emptyList()
+            itemAdapter.updateData(itemList)
+            fetchUniforms()
+
+            // Also check notifications on refresh
+            val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            val userId = sharedPreferences.getInt("id", -1)
+            if (userId != -1) {
+                checkUserNotifications(userId)
+            }
         }
 
         fetchUniforms() // Fetch data from API
@@ -319,7 +346,7 @@ class Uniform : AppCompatActivity() {
     private fun openItemDetail(item: Item) {
 
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("user_id", -1) // Get user_id, default to -1 if not found
+        val userId = sharedPreferences.getInt("id", -1) // Get user_id, default to -1 if not found
         // Filter all items with the same name, department, AND gender
         val relatedSizes = itemList
             .filter { it.name == item.name && it.department == item.department && it.gender == item.gender }
@@ -333,10 +360,34 @@ class Uniform : AppCompatActivity() {
         intent.putExtra("sizes", relatedSizes)
         intent.putExtra("gender", item.gender)
         intent.putExtra("imageResId", item.imageResId)
-        intent.putExtra("uniform_id", item.uniform_id) // ✅ Add uniform_id
-        intent.putExtra("user_id", userId) // ✅ Pass user ID from session/storage
+        intent.putExtra("uniform_id", item.uniform_id) // Add uniform_id
+        intent.putExtra("user_id", userId) // Pass user ID from session/storage
         intent.putExtra("availability", item.availability)
         startActivity(intent)
+    }
+
+    private fun checkUserNotifications(userId: Int) {
+        Log.d("UniformActivity", "Checking notifications for user: $userId")
+        val apiService = ApiClient.getRetrofitInstance().create(fetchUnifApi::class.java)
+
+        apiService.checkNotif(userId).enqueue(object : Callback<Map<String, Boolean>> {
+            override fun onResponse(call: Call<Map<String, Boolean>>, response: Response<Map<String, Boolean>>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val responseBody = response.body()
+                    Log.d("UniformActivity", "Notification Response: $responseBody")
+                    val hasNotif = responseBody?.get("hasNotif") ?: false
+                    notificationBadge.visibility = if (hasNotif) View.VISIBLE else View.GONE
+                } else {
+                    Log.e("UniformActivity", "Failed to fetch notifications")
+                    notificationBadge.visibility = View.GONE
+                }
+            }
+
+            override fun onFailure(call: Call<Map<String, Boolean>>, t: Throwable) {
+                Log.e("UniformActivity", "API call failed: ${t.message}")
+                notificationBadge.visibility = View.GONE
+            }
+        })
     }
 
     private var backPressedTime: Long = 0

@@ -26,11 +26,18 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.POST
 
 interface fetchAllApi {
     @GET("user_fetch_all.php")
     fun getAll(): Call<Map<String, List<Map<String, String>>>>
+
+    @FormUrlEncoded
+    @POST("user_check_notif.php")
+    fun checkNotif(@Field("user_id") userId: Int): Call<Map<String, Boolean>>
 }
 
 data class BookUniformResponse(
@@ -45,14 +52,32 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var itemAdapter: ItemAdapter
     private var itemList = listOf<Item>()
+    private lateinit var notificationBadge: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        notificationBadge = findViewById(R.id.notificationBadge)
+        notificationBadge.visibility = View.GONE // Ensure it's hidden initially
+
+        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("id", -1)
+        Log.d("MainActivity", "Retrieved userId: $userId") // Add this log
+
+        if (userId != -1) {
+            checkUserNotifications(userId)
+        }
+
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
         swipeRefreshLayout.setOnRefreshListener {
             refreshItems()
+
+            val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            val userId = sharedPreferences.getInt("id", -1)
+            if (userId != -1) {
+                checkUserNotifications(userId)
+            }
         }
 
         // Show Dropdown Menu on Profile Icon Click
@@ -208,7 +233,7 @@ class MainActivity : AppCompatActivity() {
     private fun openItemDetail(item: Item) {
         val intent = Intent(this, ItemDetail::class.java)
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("user_id", -1) // Get user_id from session
+        val userId = sharedPreferences.getInt("id", -1) // Get user_id from session
 
         intent.putExtra("itemType", if (item.uniform_id == null) "book" else "uniform")
         intent.putExtra("title", item.name)
@@ -322,6 +347,31 @@ class MainActivity : AppCompatActivity() {
         }
 
         dialog.show()
+    }
+
+    private fun checkUserNotifications(userId: Int) {
+        Log.d("MainActivity", "Checking notifications for user: $userId")
+        val apiService = ApiClient.getRetrofitInstance().create(fetchAllApi::class.java)
+
+        apiService.checkNotif(userId).enqueue(object : Callback<Map<String, Boolean>> {
+            override fun onResponse(call: Call<Map<String, Boolean>>, response: Response<Map<String, Boolean>>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val responseBody = response.body()
+                    Log.d("MainactTest", "Notification Response: $responseBody") // Debug log
+
+                    val hasNotif = responseBody?.get("hasNotif") ?: false
+                    notificationBadge.visibility = if (hasNotif) View.VISIBLE else View.GONE
+                } else {
+                    Log.e("MainActivity", "Failed to fetch notifications, response: ${response.errorBody()?.string()}")
+                    notificationBadge.visibility = View.GONE // Ensure it's hidden on failure
+                }
+            }
+
+            override fun onFailure(call: Call<Map<String, Boolean>>, t: Throwable) {
+                Log.e("MainActivity", "API call failed: ${t.message}")
+                notificationBadge.visibility = View.GONE // Hide on error
+            }
+        })
     }
 
     private var backPressedTime: Long = 0

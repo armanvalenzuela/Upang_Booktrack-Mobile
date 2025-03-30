@@ -1,5 +1,3 @@
-//TODO: add bookmark functionality
-
 package com.arc_templars.upangbooktrack
 
 import android.content.Context
@@ -24,11 +22,18 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.POST
 
 interface fetchBookApi {
     @GET("user_fetch_books.php")
     fun getBooks(): Call<List<Item>>
+
+    @FormUrlEncoded
+    @POST("user_check_notif.php")
+    fun checkNotif(@Field("user_id") userId: Int): Call<Map<String, Boolean>>
 }
 
 class Book : AppCompatActivity() {
@@ -38,6 +43,7 @@ class Book : AppCompatActivity() {
     private lateinit var btnFilter: ImageView
     private lateinit var itemAdapter: ItemAdapter
     private lateinit var etSearchBar: EditText
+    private lateinit var notificationBadge: TextView
     private var selectedCategory: String? = null
     private var selectedAvailability: String = "All"
     private var itemList = listOf<Item>()
@@ -45,6 +51,9 @@ class Book : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_book)
+
+        notificationBadge = findViewById(R.id.notificationBadge)
+        notificationBadge.visibility = View.GONE // Ensure it's hidden initially
 
         val profileIcon = findViewById<ImageView>(R.id.profileIcon)
 
@@ -88,9 +97,21 @@ class Book : AppCompatActivity() {
             itemList = emptyList()  // Clear current list
             itemAdapter.updateData(itemList) // Notify adapter
             fetchBooks()  // Refresh uniforms when swiped down
+
+            val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            val userId = sharedPreferences.getInt("id", -1)
+            if (userId != -1) {
+                checkUserNotifications(userId)
+            }
         }
 
         fetchBooks() // Fetch books from API
+
+        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("id", -1)
+        if (userId != -1) {
+            checkUserNotifications(userId)
+        }
 
         // Bottom Navigation - Highlight Book
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
@@ -330,6 +351,31 @@ class Book : AppCompatActivity() {
         }
 
         dialog.show()
+    }
+
+    private fun checkUserNotifications(userId: Int) {
+        Log.d("BookActivity", "Checking notifications for user: $userId")
+        val apiService = ApiClient.getRetrofitInstance().create(fetchBookApi::class.java)
+
+        apiService.checkNotif(userId).enqueue(object : Callback<Map<String, Boolean>> {
+            override fun onResponse(call: Call<Map<String, Boolean>>, response: Response<Map<String, Boolean>>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val responseBody = response.body()
+                    Log.d("BookActivity", "Notification Response: $responseBody")
+
+                    val hasNotif = responseBody?.get("hasNotif") ?: false
+                    notificationBadge.visibility = if (hasNotif) View.VISIBLE else View.GONE
+                } else {
+                    Log.e("BookActivity", "Failed to fetch notifications, response: ${response.errorBody()?.string()}")
+                    notificationBadge.visibility = View.GONE
+                }
+            }
+
+            override fun onFailure(call: Call<Map<String, Boolean>>, t: Throwable) {
+                Log.e("BookActivity", "API call failed: ${t.message}")
+                notificationBadge.visibility = View.GONE
+            }
+        })
     }
 
     private var backPressedTime: Long = 0
