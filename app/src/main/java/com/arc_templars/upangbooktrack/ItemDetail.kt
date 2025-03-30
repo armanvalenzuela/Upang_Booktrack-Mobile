@@ -58,6 +58,14 @@ interface RequestService {
         @Field("book_id") bookId: Int?,
         @Field("uniform_id") uniformId: Int?
     ): Call<ResponseBody>
+
+    @FormUrlEncoded
+    @POST("user_check_bookmark.php") // Match your PHP filename
+    fun checkBookmarkStatus(
+        @Field("user_id") userId: Int,
+        @Field("book_id") bookId: Int?,
+        @Field("uniform_id") uniformId: Int?
+    ): Call<ResponseBody>
 }
 
 
@@ -99,6 +107,18 @@ class ItemDetail : AppCompatActivity() {
         val userId = sharedPreferences.getInt("id", -1)
 
         Log.d("ItemDetail", "Uniform ID: $uniformId, User ID: $userId")
+
+        // Check bookmark status when activity starts
+        if (itemType == "book") {
+            val bookId = intent.getIntExtra("book_id", -1)
+            if (bookId != -1 && userId != -1) {
+                checkBookmarkStatus(userId, bookId, null)
+            }
+        } else if (itemType == "uniform") {
+            if (uniformId != -1 && userId != -1) {
+                checkBookmarkStatus(userId, null, uniformId)
+            }
+        }
 
 
         //IMAGE LOADING
@@ -364,21 +384,23 @@ class ItemDetail : AppCompatActivity() {
                         val jsonResponse = response.body()!!.string()
                         val jsonObject = JSONObject(jsonResponse)
 
-                        // Log full server response
-                        Log.d("ServerResponse", "Response: $jsonResponse")
-
                         // Show message from server response
                         Toast.makeText(applicationContext, jsonObject.getString("message"), Toast.LENGTH_SHORT).show()
+
+                        // Refresh bookmark status after successful action
+                        if (bookId != null) {
+                            checkBookmarkStatus(userId, bookId, null)
+                        } else if (uniformId != null) {
+                            checkBookmarkStatus(userId, null, uniformId)
+                        }
 
                     } catch (e: Exception) {
                         Log.e("sendBookmarkRequest", "JSON Parsing error: ${e.message}")
                         Toast.makeText(applicationContext, "Response error!", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    // Log error response body
                     val errorBody = response.errorBody()?.string() ?: "No error body"
                     Log.e("ServerResponse", "Error response: $errorBody")
-
                     Toast.makeText(applicationContext, "Bookmark failed! Try again.", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -388,6 +410,48 @@ class ItemDetail : AppCompatActivity() {
                 Toast.makeText(applicationContext, "Network error! Check connection.", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun checkBookmarkStatus(userId: Int, bookId: Int?, uniformId: Int?) {
+        val apiService = ApiClient.getRetrofitInstance().create(RequestService::class.java)
+
+        // Log the request being sent
+        Log.d("BookmarkCheck", "Checking status - User: $userId, Book: $bookId, Uniform: $uniformId")
+
+        apiService.checkBookmarkStatus(userId, bookId, uniformId).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    try {
+                        val jsonResponse = response.body()?.string()
+                        // SINGLE COMPREHENSIVE LOG (what you asked for)
+                        Log.d("BookmarkCheck", "PHP Response: $jsonResponse")
+
+                        val jsonObject = JSONObject(jsonResponse)
+                        val isBookmarked = jsonObject.getString("BMstatus") == "bookmarked"
+                        updateBookmarkIcon(isBookmarked)
+
+                    } catch (e: Exception) {
+                        Log.e("BookmarkCheck", "JSON parsing error", e)
+                    }
+                } else {
+                    Log.e("BookmarkCheck", "Server error: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.e("BookmarkCheck", "Network error", t)
+            }
+        })
+    }
+
+    private fun updateBookmarkIcon(isBookmarked: Boolean) {
+        runOnUiThread {
+            val btnSave = findViewById<ImageView>(R.id.btnSave)
+            btnSave.setImageResource(
+                if (isBookmarked) R.drawable.unsaved
+                else R.drawable.save
+            )
+        }
     }
 
 }
