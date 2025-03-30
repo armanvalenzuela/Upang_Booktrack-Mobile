@@ -71,16 +71,36 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Notification -->
-        <ImageView
-            android:id="@+id/notificationIcon"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+        <!-- Notification Icon with Badge -->
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="5dp"
-            android:layout_marginTop="17dp"
-            android:src="@drawable/bell"
-            app:tint="@color/dark_yellow" />
+            android:layout_marginTop="17dp">
+
+            <!-- Notification Icon -->
+            <ImageView
+                android:id="@+id/notificationIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/bell"
+                app:tint="@color/dark_yellow"/>
+
+            <!-- Badge (Notification Count) -->
+            <TextView
+                android:id="@+id/notificationBadge"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:background="@drawable/badge_background"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:layout_gravity="end"
+                android:layout_marginEnd="2dp"
+                android:layout_marginTop="2dp"
+                android:visibility="visible"/>  <!-- Initially hidden -->
+        </FrameLayout>
 
         <!-- Profile Icon -->
         <ImageView
