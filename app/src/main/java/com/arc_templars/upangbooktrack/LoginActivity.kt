@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -113,58 +114,88 @@ class LoginActivity : AppCompatActivity() {
         val loginApi = ApiClient.getRetrofitInstance().create(LoginApi::class.java)
         loginApi.login(identifier, password).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                if (response.isSuccessful) {
-                    val jsonResponse = response.body()?.string() ?: return
-                    val jsonObject = JSONObject(jsonResponse)
-                    val status = jsonObject.getString("status")
+                try {
+                    if (response.isSuccessful) {
+                        val jsonResponse = response.body()?.string() ?: run {
+                            Toast.makeText(this@LoginActivity, "Empty response", Toast.LENGTH_SHORT).show()
+                            return
+                        }
 
-                    if (status == "success") {
-                        val userId = jsonObject.getInt("id")
-                        val studentName = jsonObject.getString("studentName")
-                        val studentNo = jsonObject.getString("studentNo")
-                        val email = jsonObject.getString("email")
+                        val jsonObject = JSONObject(jsonResponse)
+                        when (jsonObject.getString("status")) {
+                            "success" -> {
+                                // Get all required data
+                                val userId = jsonObject.getInt("id")
+                                val studentName = jsonObject.getString("studentName")
+                                val studentNo = jsonObject.getString("studentNo")
+                                val email = jsonObject.getString("email")
 
-                        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                        val rememberMeSwitch = findViewById<Switch>(R.id.rememberme)
+                                // Save credentials using the correct SharedPreferences syntax
+                                val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                                val editor = sharedPreferences.edit()
+                                val rememberMeSwitch = findViewById<Switch>(R.id.rememberme)
 
-                        with(sharedPreferences.edit()) {
-                            putInt("id", userId)
-                            putString("studentName", studentName)
-                            putString("studentNo", studentNo)
-                            putString("email", email)
+                                editor.putInt("id", userId)
+                                    .putString("studentName", studentName)
+                                    .putString("studentNo", studentNo)
+                                    .putString("email", email)
 
-                            if (rememberMeSwitch.isChecked) {
-                                putString("password", password)
-                                putBoolean("rememberMe", true)
-                            } else {
-                                remove("password")
-                                putBoolean("rememberMe", false)
+                                if (rememberMeSwitch.isChecked) {
+                                    editor.putString("password", password)
+                                        .putBoolean("rememberMe", true)
+                                } else {
+                                    editor.remove("password")
+                                        .putBoolean("rememberMe", false)
+                                }
+                                editor.apply()
+
+                                // Show welcome message
+                                val welcomeMessage = if (isAutoLogin) {
+                                    "Welcome back, $studentName!"
+                                } else {
+                                    "Log in successful!"
+                                }
+                                Toast.makeText(this@LoginActivity, welcomeMessage, Toast.LENGTH_SHORT).show()
+
+                                // Navigate to MainActivity
+                                val intent = Intent(this@LoginActivity, MainActivity::class.java).apply {
+                                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                }
+                                startActivity(intent)
+                                finish()
                             }
-                            apply()
+                            else -> {
+                                Toast.makeText(
+                                    this@LoginActivity,
+                                    "Login failed: ${jsonObject.optString("message", "Unknown error")}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
-
-                        val welcomeMessage = if (isAutoLogin) {
-                            "Welcome back, $studentName!"
-                        } else {
-                            "Log in successful!"
-                        }
-                        Toast.makeText(this@LoginActivity, welcomeMessage, Toast.LENGTH_SHORT).show()
-
-                        // Navigate to MainActivity
-                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                        startActivity(intent)
-                        finish()
                     } else {
-                        Toast.makeText(this@LoginActivity, "Login failed: ${jsonObject.getString("message")}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "Error: ${response.errorBody()?.string() ?: response.message()}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-                } else {
-                    Toast.makeText(this@LoginActivity, "Error: ${response.message()}", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        this@LoginActivity,
+                        "Error processing response: ${e.localizedMessage}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    Log.e("LoginError", "Error parsing response", e)
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Toast.makeText(this@LoginActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@LoginActivity,
+                    "Network error: ${t.localizedMessage}",
+                    Toast.LENGTH_SHORT
+                ).show()
+                Log.e("NetworkError", "Login failed", t)
             }
         })
     }

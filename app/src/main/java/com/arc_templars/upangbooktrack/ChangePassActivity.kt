@@ -77,38 +77,60 @@ class ChangePassActivity : AppCompatActivity() {
     private fun togglePasswordVisibility(editText: EditText, toggleButton: ImageView) {
         if (editText.inputType == (InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
             editText.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-            toggleButton.setImageResource(R.drawable.eye_closed) // Change icon to "eye open"
+            toggleButton.setImageResource(R.drawable.eye_closed) //EYE ICON OPEN
         } else {
             editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-            toggleButton.setImageResource(R.drawable.eyelogo) // Change icon to "eye closed"
+            toggleButton.setImageResource(R.drawable.eyelogo) // EYE ICON CLOSE
         }
-        editText.setSelection(editText.text.length) // Retain cursor position
+        editText.setSelection(editText.text.length)
     }
 
     private fun validateAndChangePassword() {
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val storedOldPass = sharedPreferences.getString("password", "") ?: ""
 
-        val oldPass = etOldPass.text.toString().trim()
-        val newPass = etNewPass.text.toString().trim()
-        val confirmPass = etConfirmPass.text.toString().trim()
+        val oldPass = etOldPass.text.toString()
+        val newPass = etNewPass.text.toString()
+        val confirmPass = etConfirmPass.text.toString()
 
-        if (oldPass.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
+        // CHECK NEW PASS SPACES
+        if (newPass.contains(" ")) {
+            Toast.makeText(this, "Password cannot contain spaces", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // CHECK LENGTH
+        val trimmedNewPass = newPass.trim()
+        if (trimmedNewPass.length < 6) {
+            Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // BALIDATIONS
+        val trimmedOldPass = oldPass.trim()
+        val trimmedConfirmPass = confirmPass.trim()
+
+        if (trimmedOldPass.isEmpty() || trimmedNewPass.isEmpty() || trimmedConfirmPass.isEmpty()) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
             return
         }
 
-        if (oldPass != storedOldPass) {
+        if (trimmedOldPass != storedOldPass) {
             Toast.makeText(this, "Old password is incorrect", Toast.LENGTH_SHORT).show()
             return
         }
 
-        if (newPass != confirmPass) {
-            Toast.makeText(this, "New Password and Confirm Password must be the same", Toast.LENGTH_SHORT).show()
+        if (trimmedNewPass != trimmedConfirmPass) {
+            Toast.makeText(this, "New passwords don't match", Toast.LENGTH_SHORT).show()
             return
         }
 
-        changePassword(userId, newPass)
+        if (trimmedNewPass == trimmedOldPass) {
+            Toast.makeText(this, "New password must be different", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        changePassword(userId, trimmedNewPass)
     }
 
 
