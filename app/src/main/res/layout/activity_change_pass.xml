@@ -6,13 +6,13 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/login_backg"
+    android:background="@color/white"
     tools:context=".ChangePassActivity">
 
     <ImageView
         android:id="@+id/btnBackButton"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
         android:layout_marginTop="48dp"
         android:contentDescription="Back Button"
         android:src="@drawable/back_button"

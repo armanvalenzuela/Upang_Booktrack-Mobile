@@ -84,7 +84,7 @@ class Saved : AppCompatActivity() {
         notificationBadge = findViewById(R.id.notificationBadge)
         notificationBadge.visibility = View.GONE
 
-        // Check notifications on activity start
+        // Check notifications
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("id", -1)
         if (userId != -1) {
@@ -103,7 +103,7 @@ class Saved : AppCompatActivity() {
         // FILTER DIALOG ON CLICK
         btnFilter.setOnClickListener { showFilterDialog() }
 
-        //SEARCH BAR FUNCT
+        //SEARCH BAR FUNCTION
         etSearchBar = findViewById(R.id.etsearchBar)
         etSearchBar.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -116,7 +116,7 @@ class Saved : AppCompatActivity() {
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
         recyclerView = findViewById(R.id.recyclerView)
 
-        // SWIPE REFRESH LAYOUT FUNCT
+        // SWIPE REFRESH LAYOUT FUNCTION
         swipeRefreshLayout.setOnRefreshListener {
             itemList = emptyList()
             itemAdapter.updateData(itemList)
@@ -324,7 +324,7 @@ class Saved : AppCompatActivity() {
     }
 
 
-    // FILTER FUNCT
+    // FILTER FUNCTION
     private fun showFilterDialog() {
         val dialog = BottomSheetDialog(this)
         val view = LayoutInflater.from(this).inflate(R.layout.filter, null)
@@ -431,11 +431,10 @@ class Saved : AppCompatActivity() {
         // USER DETAIL LOADING
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val studentName = sharedPreferences.getString("studentName", "Lastname, Firstname") ?: "Lastname, Firstname"
-        val studentNumber = sharedPreferences.getString("studentNumber", "N/A") ?: "N/A"
-        val userId = sharedPreferences.getString("id", "N/a") ?: "N/A"
+        //val userId = sharedPreferences.getString("id", "N/a") ?: "N/A"
 
-        Log.d("SavedActivity", "Retrieved user_id: $userId") // Add this line
-        txtUserInfo.text = "Name; $studentName"
+        //Log.d("SavedActivity", "Retrieved user_id: $userId") // Add this line
+        txtUserInfo.text = "Name: $studentName"
 
         // Button click listeners
         btnChangePassword.setOnClickListener {

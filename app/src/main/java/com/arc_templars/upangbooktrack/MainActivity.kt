@@ -284,9 +284,10 @@ class MainActivity : AppCompatActivity() {
         // Load user details
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val studentName = sharedPreferences.getString("studentName", "Lastname, Firstname") ?: "Lastname, Firstname"
-        val studentNumber = sharedPreferences.getString("studentNumber", "N/A") ?: "N/A"
+        //val studentNumber = sharedPreferences.getString("studentNumber", "N/A") ?: "N/A"
 
         txtUserInfo.text = "Name: $studentName"
+
 
         // Button click listeners
         btnChangePassword.setOnClickListener {

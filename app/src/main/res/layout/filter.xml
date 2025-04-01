@@ -54,7 +54,7 @@
                 <RadioButton android:id="@+id/department_cahs" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CAHS" android:fontFamily="@font/poppins_light" android:textStyle="bold"/>
                 <RadioButton android:id="@+id/department_ccje" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CCJE" android:fontFamily="@font/poppins_light" android:textStyle="bold"/>
                 <RadioButton android:id="@+id/department_cite" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CITE" android:fontFamily="@font/poppins_light" android:textStyle="bold"/>
-                <RadioButton android:id="@+id/department_shs" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SHS" android:fontFamily="@font/poppins_light" android:textStyle="bold"/>/>
+                <RadioButton android:id="@+id/department_shs" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SHS" android:fontFamily="@font/poppins_light" android:textStyle="bold"/>
             </RadioGroup>
         </LinearLayout>
 

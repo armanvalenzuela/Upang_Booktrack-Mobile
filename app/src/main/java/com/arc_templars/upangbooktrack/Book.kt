@@ -57,7 +57,7 @@ class Book : AppCompatActivity() {
 
         val profileIcon = findViewById<ImageView>(R.id.profileIcon)
 
-        // Show Dropdown Menu on Profile Icon Click
+        // Show Dropdown Menu on Profile Icon
         profileIcon.setOnClickListener { showProfileMenu() }
 
         //NOTIFICATION CLICK LISTENER
@@ -76,10 +76,10 @@ class Book : AppCompatActivity() {
         recyclerView.adapter = itemAdapter
         recyclerView.addItemDecoration(GridSpacingItemDecoration(2, 30, true))
 
-        // Open Filter Dialog on Click
+        // FILTER DIALOG ON CLICK
         btnFilter.setOnClickListener { showFilterDialog() }
 
-        //Search Bar Implementation
+        //SEARCH BAR FUNCTION
         etSearchBar = findViewById(R.id.etsearchBar)
         etSearchBar.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -283,7 +283,7 @@ class Book : AppCompatActivity() {
         // Apply transparent background
         alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        // **Set custom width & height**
+        // custom set width & height
         alertDialog.setOnShowListener {
             val window = alertDialog.window
             window?.setLayout(400 * resources.displayMetrics.density.toInt(), 375 * resources.displayMetrics.density.toInt()) // Convert dp to pixels
@@ -297,7 +297,7 @@ class Book : AppCompatActivity() {
         // Load user details
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val studentName = sharedPreferences.getString("studentName", "Lastname, Firstname") ?: "Lastname, Firstname"
-        val studentNumber = sharedPreferences.getString("studentNumber", "N/A") ?: "N/A"
+        //val studentNumber = sharedPreferences.getString("studentNumber", "N/A") ?: "N/A"
 
         txtUserInfo.text = "Name; $studentName"
 
@@ -315,7 +315,7 @@ class Book : AppCompatActivity() {
         alertDialog.show()
     }
 
-    // Function to Show Log Out Confirmation Dialog
+    //Show Log Out Confirmation
     private fun showLogoutConfirmation() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_logout_confirmation, null)
         val dialog = AlertDialog.Builder(this, R.style.CustomDialog)
@@ -324,7 +324,7 @@ class Book : AppCompatActivity() {
 
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        // Apply animation
+        //Animation
         dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
 
         // Find views

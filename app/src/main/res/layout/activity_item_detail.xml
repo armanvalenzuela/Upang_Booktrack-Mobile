@@ -26,8 +26,8 @@
         <!-- Save Button (Right) -->
         <ImageView
             android:id="@+id/btnSave"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:layout_margin="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
