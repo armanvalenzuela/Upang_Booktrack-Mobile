@@ -29,7 +29,7 @@
         android:gravity="center"
         android:textColor="@color/black"/>
 
-   <!-- User Info
+   <!-- Student No info -->
     <TextView
         android:id="@+id/txtStudentNo"
         android:layout_width="match_parent"
@@ -39,7 +39,7 @@
         android:textStyle="bold"
         android:paddingBottom="8dp"
         android:gravity="center"
-        android:textColor="@color/black"/>-->
+        android:textColor="@color/black"/>
 
     <!-- Change Password -->
     <LinearLayout

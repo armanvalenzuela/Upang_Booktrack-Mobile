@@ -276,17 +276,19 @@ class MainActivity : AppCompatActivity() {
             window?.setLayout(400 * resources.displayMetrics.density.toInt(), 375 * resources.displayMetrics.density.toInt()) // Convert dp to pixels
         }
 
-        // Find views
+        // STUDENT INFO
         val txtUserInfo = dialogView.findViewById<TextView>(R.id.txtUserInfo)
+        val txtStudentNo = dialogView.findViewById<TextView>(R.id.txtStudentNo)
         val btnChangePassword = dialogView.findViewById<LinearLayout>(R.id.btnChangePassword)
         val btnLogout = dialogView.findViewById<LinearLayout>(R.id.btnLogout)
 
-        // Load user details
+        // SHAREDPREF LOAD FOR USER DETAILS
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val studentName = sharedPreferences.getString("studentName", "Lastname, Firstname") ?: "Lastname, Firstname"
-        //val studentNumber = sharedPreferences.getString("studentNumber", "N/A") ?: "N/A"
+        val studentNo = sharedPreferences.getString("studentNo", "N/A") ?: "N/A"
 
         txtUserInfo.text = "Name: $studentName"
+        txtStudentNo.text = "Student No: $studentNo"
 
 
         // Button click listeners

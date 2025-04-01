@@ -423,18 +423,19 @@ class Saved : AppCompatActivity() {
             window?.setLayout(400 * resources.displayMetrics.density.toInt(), 375 * resources.displayMetrics.density.toInt()) // Convert dp to pixels
         }
 
-        // VIEWS INITIALIZATION
+        // STUDENT INFO
         val txtUserInfo = dialogView.findViewById<TextView>(R.id.txtUserInfo)
+        val txtStudentNo = dialogView.findViewById<TextView>(R.id.txtStudentNo)
         val btnChangePassword = dialogView.findViewById<LinearLayout>(R.id.btnChangePassword)
         val btnLogout = dialogView.findViewById<LinearLayout>(R.id.btnLogout)
 
-        // USER DETAIL LOADING
+        // SHAREDPREF LOAD FOR USER DETAILS
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val studentName = sharedPreferences.getString("studentName", "Lastname, Firstname") ?: "Lastname, Firstname"
-        //val userId = sharedPreferences.getString("id", "N/a") ?: "N/A"
+        val studentNo = sharedPreferences.getString("studentNo", "N/A") ?: "N/A"
 
-        //Log.d("SavedActivity", "Retrieved user_id: $userId") // Add this line
         txtUserInfo.text = "Name: $studentName"
+        txtStudentNo.text = "Student No: $studentNo"
 
         // Button click listeners
         btnChangePassword.setOnClickListener {
