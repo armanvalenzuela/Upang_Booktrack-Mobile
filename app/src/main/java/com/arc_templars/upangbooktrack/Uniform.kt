@@ -189,7 +189,7 @@ class Uniform : AppCompatActivity() {
         val availabilitySpinner = view.findViewById<Spinner>(R.id.availabilitySpinner)
         val applyButton = view.findViewById<Button>(R.id.applyFilterButton)
 
-        // Restore Previous Department Selection
+        // Restore Previous Department Selection (Include "All" as Default)
         when (selectedCategory) {
             "CEA" -> departmentGroup.check(R.id.department_cea)
             "CMA" -> departmentGroup.check(R.id.department_cma)
@@ -198,17 +198,15 @@ class Uniform : AppCompatActivity() {
             "CITE" -> departmentGroup.check(R.id.department_cite)
             "SHS" -> departmentGroup.check(R.id.department_shs)
             "CAS" -> departmentGroup.check(R.id.department_cas)
+            else -> departmentGroup.check(R.id.department_all) // Default to "All"
         }
 
         // Restore Previous Availability Selection
         val availabilityOptions = arrayOf("All", "Available", "Not Available")
-        // Set custom layout for Spinner
         val adapter = ArrayAdapter(view.context, R.layout.spinner_dropdown_item, availabilityOptions)
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
-
         availabilitySpinner.adapter = adapter
         availabilitySpinner.setSelection(availabilityOptions.indexOf(selectedAvailability))
-
 
         // ✅ Set Department Selection
         departmentGroup.setOnCheckedChangeListener { _, checkedId ->
@@ -220,7 +218,7 @@ class Uniform : AppCompatActivity() {
                 R.id.department_cite -> "CITE"
                 R.id.department_shs -> "SHS"
                 R.id.department_cas -> "CAS"
-                else -> null
+                else -> null // "All" selected
             }
         }
 
@@ -241,6 +239,7 @@ class Uniform : AppCompatActivity() {
         dialog.setContentView(view)
         dialog.show()
     }
+
 
     // Function to Apply Filters
     private fun applyFilters() {

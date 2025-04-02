@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
 object ApiClient {
-    private const val BASE_URL = "http://10.0.2.2/UPBooktrack/" // Replace with your server's IP or domain
+    private const val BASE_URL = "http://192.168.1.13/UPBooktrack/" // Replace with your server's IP or domain
     //NOTE*** 10.0.1.1 PAG SA EMULATOR
     // PERO IF TRA TRY NYO SA PHONE USE THE IP ADDRESS OF THE SERVER (KUNG SAAN NAKA CONNECT) **
 
